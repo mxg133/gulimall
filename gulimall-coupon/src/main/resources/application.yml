@@ -1,0 +1,24 @@
+server:
+  port: 7000
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://10.211.55.3:3306/gulimall_ums?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      username: root
+      password: root
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: gulimall-coupon
+
+mybatis-plus:
+#  告诉Mybatis Plus 扫描哪里
+  mapper-locations: classpath:/mapper/**/*.xml
+#  主键自增！
+  global-config:
+    db-config:
+      id-type: auto
