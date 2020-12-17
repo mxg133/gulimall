@@ -7,7 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 
 /**
- * 1、如何使用Nacos作为配置中心统一管理配置
+ * 1、如何,使用Nacos作为配置中心统一管理配置
  *
  * 1）、引入依赖，
  *         <dependency>
