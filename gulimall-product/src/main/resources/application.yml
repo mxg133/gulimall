@@ -15,6 +15,7 @@ spring:
         server-addr: 127.0.0.1:8848
   application:
     name: gulimall-product
+
 mybatis-plus:
 #  告诉Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml
@@ -22,3 +23,8 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+logging:
+  level:
+    com.atguigu.gulimall: debug
