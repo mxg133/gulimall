@@ -13,6 +13,12 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+#        阿里云对象上传
+    alicloud:
+      access-key: LTAI4G6sWhsMNcDrwdR7mKck
+      secret-key: ODyHrcm0AuMLobxHWl4IWM2vsqnh65
+      oss:
+        endpoint: oss-cn-beijing.aliyuncs.com
   application:
     name: gulimall-product
 
@@ -28,3 +34,5 @@ mybatis-plus:
 logging:
   level:
     com.atguigu.gulimall: debug
+
+#阿里云
