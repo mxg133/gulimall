@@ -18,12 +18,22 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
+        - id: third-party
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty/(?<segment>.*),/$\{segment}
+
+        #没有匹配到的，交给后台
         - id: admin_route
           uri: lb://renren-fast #负载均衡到哪里
           predicates: #你的判断依据是：
             - Path=/api/**
           filters: #路径重写 下面是！
             - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
+
+
 
 
 ##前段项目，/api
