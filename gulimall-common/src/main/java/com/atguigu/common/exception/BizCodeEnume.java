@@ -1,4 +1,4 @@
-package com.atguigu.exception;
+package com.atguigu.common.exception;
 
 /***
  * 错误码和错误信息定义类
