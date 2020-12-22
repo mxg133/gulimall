@@ -8,15 +8,15 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * sku销售属性&值
+ * spu图片
  * 
  * @author mxg
  * @email mxg@gmail.com
  * @date 2020-12-21 11:53:38
  */
 @Data
-@TableName("pms_sku_sale_attr_value")
-public class SkuSaleAttrValueEntity implements Serializable {
+@TableName("pms_spu_images")
+public class SpuImagesEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -25,24 +25,24 @@ public class SkuSaleAttrValueEntity implements Serializable {
 	@TableId
 	private Long id;
 	/**
-	 * sku_id
+	 * spu_id
 	 */
-	private Long skuId;
+	private Long spuId;
 	/**
-	 * attr_id
+	 * 图片名
 	 */
-	private Long attrId;
+	private String imgName;
 	/**
-	 * 销售属性名
+	 * 图片地址
 	 */
-	private String attrName;
-	/**
-	 * 销售属性值
-	 */
-	private String attrValue;
+	private String imgUrl;
 	/**
 	 * 顺序
 	 */
-	private Integer attrSort;
+	private Integer imgSort;
+	/**
+	 * 是否默认图
+	 */
+	private Integer defaultImg;
 
 }

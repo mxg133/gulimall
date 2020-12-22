@@ -3,6 +3,8 @@ package com.atguigu.gulimall.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.atguigu.gulimall.product.entity.SpuCommentEntity;
+import com.atguigu.gulimall.product.service.SpuCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,32 +12,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.atguigu.gulimall.product.entity.SkuInfoEntity;
-import com.atguigu.gulimall.product.service.SkuInfoService;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 
 
 
 /**
- * sku信息
+ * 商品评价
  *
  * @author mxg
  * @email mxg@gmail.com
  * @date 2020-12-21 11:53:38
  */
 @RestController
-@RequestMapping("product/skuinfo")
-public class SkuInfoController {
+@RequestMapping("product/spucomment")
+public class SpuCommentController {
     @Autowired
-    private SkuInfoService skuInfoService;
+    private SpuCommentService spuCommentService;
 
     /**
      * 列表
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = skuInfoService.queryPage(params);
+        PageUtils page = spuCommentService.queryPage(params);
 
         return R.ok().put("page", page);
     }
@@ -44,19 +44,19 @@ public class SkuInfoController {
     /**
      * 信息
      */
-    @RequestMapping("/info/{skuId}")
-    public R info(@PathVariable("skuId") Long skuId){
-		SkuInfoEntity skuInfo = skuInfoService.getById(skuId);
+    @RequestMapping("/info/{id}")
+    public R info(@PathVariable("id") Long id){
+		SpuCommentEntity spuComment = spuCommentService.getById(id);
 
-        return R.ok().put("skuInfo", skuInfo);
+        return R.ok().put("spuComment", spuComment);
     }
 
     /**
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody SkuInfoEntity skuInfo){
-		skuInfoService.save(skuInfo);
+    public R save(@RequestBody SpuCommentEntity spuComment){
+		spuCommentService.save(spuComment);
 
         return R.ok();
     }
@@ -65,8 +65,8 @@ public class SkuInfoController {
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody SkuInfoEntity skuInfo){
-		skuInfoService.updateById(skuInfo);
+    public R update(@RequestBody SpuCommentEntity spuComment){
+		spuCommentService.updateById(spuComment);
 
         return R.ok();
     }
@@ -75,8 +75,8 @@ public class SkuInfoController {
      * 删除
      */
     @RequestMapping("/delete")
-    public R delete(@RequestBody Long[] skuIds){
-		skuInfoService.removeByIds(Arrays.asList(skuIds));
+    public R delete(@RequestBody Long[] ids){
+		spuCommentService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }

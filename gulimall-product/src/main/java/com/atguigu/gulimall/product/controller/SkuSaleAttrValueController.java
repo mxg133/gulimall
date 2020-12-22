@@ -22,7 +22,7 @@ import com.atguigu.common.utils.R;
  *
  * @author mxg
  * @email mxg@gmail.com
- * @date 2020-12-16 10:36:06
+ * @date 2020-12-21 11:53:38
  */
 @RestController
 @RequestMapping("product/skusaleattrvalue")

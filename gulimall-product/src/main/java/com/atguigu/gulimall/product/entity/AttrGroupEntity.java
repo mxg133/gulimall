@@ -8,41 +8,41 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * sku销售属性&值
+ * 属性分组
  * 
  * @author mxg
  * @email mxg@gmail.com
  * @date 2020-12-21 11:53:38
  */
 @Data
-@TableName("pms_sku_sale_attr_value")
-public class SkuSaleAttrValueEntity implements Serializable {
+@TableName("pms_attr_group")
+public class AttrGroupEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * id
+	 * 分组id
 	 */
 	@TableId
-	private Long id;
+	private Long attrGroupId;
 	/**
-	 * sku_id
+	 * 组名
 	 */
-	private Long skuId;
+	private String attrGroupName;
 	/**
-	 * attr_id
+	 * 排序
 	 */
-	private Long attrId;
+	private Integer sort;
 	/**
-	 * 销售属性名
+	 * 描述
 	 */
-	private String attrName;
+	private String descript;
 	/**
-	 * 销售属性值
+	 * 组图标
 	 */
-	private String attrValue;
+	private String icon;
 	/**
-	 * 顺序
+	 * 所属分类id
 	 */
-	private Integer attrSort;
+	private Long catelogId;
 
 }
