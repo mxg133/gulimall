@@ -38,12 +38,20 @@ public class AttrGroupController {
     AttrService attrService;
 
     //product/attrgroup/{attrgroupId}/attr/relation
-    @GetMapping("{attrgroupId}/attr/relation")
+    @GetMapping("/{attrgroupId}/attr/relation")
     public R attrRelation(@PathVariable("attrgroupId") Long catelogId){
         List<AttrEntity> entities = attrService.getRelationAttr(catelogId);
         return R.ok().put("data", entities);
     }
 
+    //product/attrgroup/{attrgroupId}/noattr/relation
+    @GetMapping("/{attrgroupId}/noattr/relation")
+    public R attrNoRelation(
+            @RequestParam Map<String, Object> params,
+            @PathVariable("attrgroupId") Long attrgroupId){
+        PageUtils page = attrService.getNoRelationAttr(params, attrgroupId);
+        return R.ok().put("page", page);
+    }
 
     /**
      * 列表
