@@ -21,6 +21,9 @@ spring:
 #        endpoint: oss-cn-beijing.aliyuncs.com
   application:
     name: gulimall-product
+    #日期格式化
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 
 mybatis-plus:
 #  告诉Mybatis Plus 扫描哪里
@@ -35,4 +38,4 @@ logging:
   level:
     com.atguigu.gulimall: debug
 
-#阿里云
+
