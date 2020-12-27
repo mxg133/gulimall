@@ -9,6 +9,14 @@ spring:
       username: root
       password: root
 
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: gulimall-ware
+
+
 mybatis-plus:
 #  搞死Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml
@@ -16,3 +24,8 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+
+#打印SQL
+logging:
+  level:
+    com.atguigu: debug
