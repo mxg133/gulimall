@@ -11,7 +11,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.image.Kernel;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -213,14 +212,17 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 obj.eq("id", key).or().like("spu_name", key);
             });
         }
+
         String catelogId = (String)params.get("catelogId");
-        if (!StringUtils.isEmpty(catelogId)) {
+        if (!StringUtils.isEmpty(catelogId) && !"0".equalsIgnoreCase(catelogId)) {
             wrapper.eq("catalog_id", catelogId);
         }
+
         String brandId = (String)params.get("brandId");
-        if (!StringUtils.isEmpty(brandId)) {
+        if (!StringUtils.isEmpty(brandId) && !"0".equalsIgnoreCase(brandId)) {
             wrapper.eq("brand_id", brandId);
         }
+
         String status = (String)params.get("status");
         if (!StringUtils.isEmpty(status)) {
             wrapper.eq("publish_status", status);
