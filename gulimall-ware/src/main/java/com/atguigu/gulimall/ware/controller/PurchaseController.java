@@ -2,9 +2,11 @@ package com.atguigu.gulimall.ware.controller;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.atguigu.gulimall.ware.vo.MergeVo;
+import com.atguigu.gulimall.ware.vo.PurchaseDoneVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +30,27 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
+    //完成采购  /ware/purchase/done
+    @PostMapping("/done")
+    public R finish(@RequestBody PurchaseDoneVo doneVo){
+        purchaseService.done(doneVo);
+
+        return R.ok();
+    }
+
+    //领取采购单  /ware/purchase/received
+    @PostMapping("/received")
+    public R received(@RequestBody List<Long> ids) {
+        purchaseService.received(ids);
+
+        return R.ok();
+    }
+
     //ware/purchase/merge
     @PostMapping("/merge")
     public R merge(@RequestBody MergeVo mergeVo) {
         purchaseService.mergePurchase(mergeVo);
+
         return R.ok();
     }
 
