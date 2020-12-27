@@ -15,6 +15,9 @@ spring:
         server-addr: 127.0.0.1:8848
   application:
     name: gulimall-ware
+#    时间格式化
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 
 
 mybatis-plus:
