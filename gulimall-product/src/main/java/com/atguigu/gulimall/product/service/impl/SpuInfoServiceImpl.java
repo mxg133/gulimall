@@ -2,6 +2,7 @@ package com.atguigu.gulimall.product.service.impl;
 
 import com.atguigu.common.to.SkuReductionTo;
 import com.atguigu.common.to.SpuBoundsTo;
+import com.atguigu.common.to.es.SkuEsModel;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.entity.*;
 import com.atguigu.gulimall.product.feign.CouponFeignService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Autowired
     SkuInfoService skuInfoService;
+
     @Autowired
     SkuImagesService skuImagesService;
 
@@ -52,6 +55,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Autowired
     CouponFeignService couponFeignService;
+
+    @Autowired
+    BrandService brandService;
+
+    @Autowired
+    CategoryService categoryService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -232,6 +241,40 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 new Query<SpuInfoEntity>().getPage(params), wrapper
         );
         return new PageUtils(page);
+    }
+
+    /**
+     * 商品上架
+     *   意思就是把信息放到es中
+     */
+    @Override
+    public void up(Long spuId) {
+
+        //1 查出当前spuId对应的所有sku信息，包含品牌的名字
+        List<SkuInfoEntity> skus = skuInfoService.getSkuBySpuId(spuId);
+
+        //TODO 4 查询当前sku的所有被用来检索的规格属性
+
+        //2 封装每个sku的信息
+        List<SkuEsModel> upProducts = skus.stream().map((entity) -> {
+            //组装需要的数据
+            SkuEsModel esModel = new SkuEsModel();
+            BeanUtils.copyProperties(entity, esModel);
+            esModel.setSkuPrice(entity.getPrice());
+            esModel.setSkuImg(entity.getSkuDefaultImg());
+            //TODO 1 发送远程调用，库存系统查询是否有库存
+            //TODO 2 热度评分 0默认
+            //TODO 3 查询品牌和分类的名字信息8
+            BrandEntity brandEntity = brandService.getById(esModel.getBrandId());
+            esModel.setBrandName(brandEntity.getName());
+            esModel.setBrandImg(brandEntity.getLogo());
+            CategoryEntity categoryEntity = categoryService.getById(esModel.getCatalogId());
+            esModel.setCatalogName(categoryEntity.getName());
+
+            return esModel;
+        }).collect(Collectors.toList());
+
+        //TODO 5 将数据发送给es进行保存 gulimall-search
     }
 
 }
