@@ -18,6 +18,6 @@ import java.util.List;
 @FeignClient("gulimall-ware")//这个远程服务
 public interface WareFeignService {
 
-    @PostMapping("ware/waresku/hasstock")
+    @PostMapping("/ware/waresku/hasstock")
     R getSkuHasStock(@RequestBody List<Long> skuIds);
 }
