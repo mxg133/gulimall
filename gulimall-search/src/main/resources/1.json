@@ -1,0 +1,65 @@
+//PUT product
+{
+  "mappings" : {
+    "properties" : {
+      "attrs" : {
+        "type" : "nested",
+        "properties" : {
+          "attrId" : {
+            "type" : "long"
+          },
+          "attrName" : {
+            "type" : "keyword"
+          },
+          "attrValue" : {
+            "type" : "keyword"
+          }
+        }
+      },
+      "brandId" : {
+        "type" : "long"
+      },
+      "brandImg" : {
+        "type" : "keyword"
+      },
+      "brandName" : {
+        "type" : "keyword"
+      },
+      "catalogId" : {
+        "type" : "long"
+      },
+      "catalogName" : {
+        "type" : "keyword"
+      },
+      "catelogId" : {
+        "type" : "long"
+      },
+      "hasStock" : {
+        "type" : "boolean"
+      },
+      "hotScore" : {
+        "type" : "long"
+      },
+      "saleCount" : {
+        "type" : "long"
+      },
+      "skuId" : {
+        "type" : "long"
+      },
+      "skuImg" : {
+        "type" : "text",
+        "analyzer" : "ik_smart"
+      },
+      "skuPrice" : {
+        "type" : "keyword"
+      },
+      "skuTitle" : {
+        "type" : "text",
+        "analyzer" : "ik_smart"
+      },
+      "spuId" : {
+        "type" : "keyword"
+      }
+    }
+  }
+}
