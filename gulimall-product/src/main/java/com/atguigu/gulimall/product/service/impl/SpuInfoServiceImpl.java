@@ -1,11 +1,13 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.common.to.SkuHasStockVo;
 import com.atguigu.common.to.SkuReductionTo;
 import com.atguigu.common.to.SpuBoundsTo;
 import com.atguigu.common.to.es.SkuEsModel;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.entity.*;
 import com.atguigu.gulimall.product.feign.CouponFeignService;
+import com.atguigu.gulimall.product.feign.WareFeignService;
 import com.atguigu.gulimall.product.service.*;
 import com.atguigu.gulimall.product.vo.*;
 import org.springframework.beans.BeanUtils;
@@ -58,6 +60,9 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    WareFeignService wareFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -249,6 +254,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
         //1 查出当前spuId对应的所有sku信息，包含品牌的名字
         List<SkuInfoEntity> skus = skuInfoService.getSkuBySpuId(spuId);
+        List<Long> skuIdList = skus.stream().map(SkuInfoEntity::getSkuId).collect(Collectors.toList());
 
         //TODO 4 查询当前sku的所有被用来检索的规格属性
         List<ProductAttrValueEntity> baseAttrs = attrValueService.baseListForSpu(spuId);
@@ -266,15 +272,30 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return attrs1;
         }).collect(Collectors.toList());
 
+        //TODO 1 发送远程调用，库存系统查询是否有库存
+        Map<Long, Boolean> stockMap = null;
+        try {
+            //假如远程调用失败
+            R<List<SkuHasStockVo>> skuHasStock = wareFeignService.getSkuHasStock(skuIdList);
+            stockMap = skuHasStock.getData().stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, item -> item.getHasStock()));
+        }catch (Exception e) {
+            log.error("库存服务查询异常...原因：{}", e);
+        }
+
         //2 封装每个sku的信息
+        Map<Long, Boolean> finalStockMap = stockMap;
         List<SkuEsModel> upProducts = skus.stream().map((entity) -> {
             //组装需要的数据
             SkuEsModel esModel = new SkuEsModel();
             BeanUtils.copyProperties(entity, esModel);
             esModel.setSkuPrice(entity.getPrice());
             esModel.setSkuImg(entity.getSkuDefaultImg());
-            //TODO 1 发送远程调用，库存系统查询是否有库存
-            esModel.setHasStock(false);
+            //设置库存信息
+            if (finalStockMap == null) {
+                esModel.setHasStock(true);
+            } else {
+                esModel.setHasStock(finalStockMap.get(entity.getSkuId()));
+            }
             //TODO 2 热度评分 0默认
             esModel.setHotScore(0L);
             //TODO 3 查询品牌和分类的名字信息8
