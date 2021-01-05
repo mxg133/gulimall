@@ -7,8 +7,8 @@ spring:
   application:
     name: gulimall-search
 
-
 logging:
   level:
     com.atguigu.gulimall: debug
-
+server:
+  port: 12000

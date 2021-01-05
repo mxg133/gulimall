@@ -56,8 +56,7 @@ public class ProductServiceImpl implements ProductService {
             return item.getId();
         }).collect(Collectors.toList());
         BulkItemResponse[] items = bulk.getItems();
-        log.error("商品上架错误：{}原因", collect);
-
+        log.info("商品上架完成：{}原因", collect);
 
         return b;
     }
