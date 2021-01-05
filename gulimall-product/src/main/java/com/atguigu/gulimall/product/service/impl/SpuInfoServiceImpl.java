@@ -326,7 +326,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         if (code == 0) {
             //远程调用成功
             //TODO 6 修改当前spu的状态
-            baseMapper.updateSpuStatus(spuId, 1);
+            baseMapper.updateSpuStatus(spuId, ProductConstant.StatusEnum.SPU_UP.getCode());
         } else {
             //失败
             //TODO 7 重复调用的问题 接口幂等性 重试机制
