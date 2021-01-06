@@ -31,5 +31,7 @@ public interface CategoryService extends IService<CategoryEntity> {
 
     //级联更新 所有数据
     void updateCascade(CategoryEntity category);
+
+    List<CategoryEntity> getLevel1Catrgorys();
 }
 

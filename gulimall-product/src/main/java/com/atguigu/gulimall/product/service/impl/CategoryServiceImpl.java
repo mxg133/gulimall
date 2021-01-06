@@ -85,6 +85,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     }
 
+    @Override
+    public List<CategoryEntity> getLevel1Catrgorys() {
+
+        List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
+        return categoryEntities;
+    }
+
     //递归 225
     private List<Long> findParentPath(Long catelogId, List<Long> paths) {
         //1 收集当前结点id
