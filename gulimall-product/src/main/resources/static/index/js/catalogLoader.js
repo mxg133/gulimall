@@ -1,5 +1,5 @@
 $(function(){
-    $.getJSON("index/json/catalog.json",function (data) {
+    $.getJSON("index/catalog.json",function (data) {
 
         var ctgall=data;
         $(".header_main_left_a").each(function(){
