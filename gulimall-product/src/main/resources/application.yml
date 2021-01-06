@@ -24,6 +24,9 @@ spring:
     #日期格式化
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+#    关闭thymeleaf缓存 开发期间就能看到实时效果
+  thymeleaf:
+    cache: false
 
 mybatis-plus:
 #  告诉Mybatis Plus 扫描哪里
@@ -34,6 +37,7 @@ mybatis-plus:
       id-type: auto
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
 logging:
   level:
     com.atguigu.gulimall: debug
