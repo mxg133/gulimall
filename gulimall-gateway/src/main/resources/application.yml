@@ -40,7 +40,11 @@ spring:
           filters: #路径重写 下面是！
             - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
 
-
+        #nginx负载均衡
+        - id: gulimall_host_rout
+          uri: lb://gulimall-product
+          predicates:
+            - Host=**.gulimall.com,gulimall.com
 
 
 ##前段项目，/api
