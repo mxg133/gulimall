@@ -38,4 +38,12 @@ public class IndexController {
         Map<String, List<Catelog2Vo>> map = categoryService.getCatelogJson();
         return map;
     }
+
+    //压力测试
+    @ResponseBody
+    @GetMapping("/hello")
+    public String hello() {
+
+        return "hello";
+    }
 }

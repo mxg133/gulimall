@@ -88,8 +88,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public List<CategoryEntity> getLevel1Catrgorys() {
-
+        //压力测试  数据库navicat增加了 parent_cid 为索引
+//        long l = System.currentTimeMillis();
         List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
+//        System.out.println("消耗时间->：" + (System.currentTimeMillis()-l) + "ms");
         return categoryEntities;
     }
 

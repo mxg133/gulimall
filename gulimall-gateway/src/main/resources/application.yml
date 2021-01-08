@@ -2,10 +2,11 @@ spring:
   cloud:
     gateway:
       routes:
+#product /hello为压力测试
         - id: product_route
           uri: lb://gulimall-product
           predicates:
-            - Path=/api/product/**
+            - Path=/api/product/**,/hello
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
