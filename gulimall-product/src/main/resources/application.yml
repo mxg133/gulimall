@@ -28,6 +28,10 @@ spring:
   thymeleaf:
 #    cache: false
     cache: true
+#    配置Redis缓存
+  redis:
+    host: 10.211.55.3
+    port: 6379
 
 mybatis-plus:
 #  告诉Mybatis Plus 扫描哪里
@@ -44,5 +48,4 @@ logging:
     #上线后，可以降低日志级别
 #    com.atguigu.gulimall: debuug
     com.atguigu.gulimall: error
-
 
