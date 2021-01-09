@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -113,6 +114,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
         //给缓存中放入json字符串，拿出的json字符串，还要逆转为能用的对象【序列化与反序列化】
 
+        /**
+         * 1、空结果缓存:解决缓存穿透
+         * 2、设置过期时间(加随机值):解决缓存雪崩
+         * 3、加锁;解决缓存击穿
+         */
+
         //1 加入缓存逻辑， 以后缓存中存放的都是json字符串   json跨平台、跨语言兼容
         String catalogJson = redisTemplate.opsForValue().get("catalogJson");
         if (StringUtils.isEmpty(catalogJson)) {
@@ -120,7 +127,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             Map<String, List<Catelog2Vo>> catalogJsonFromDb = getCatalogJsonFromDb();
             //3 查到的数据库再放入缓存， 将对象转为json放在缓存中
             String jsonString = JSON.toJSONString(catalogJsonFromDb);
-            redisTemplate.opsForValue().set("catalogJson", jsonString);
+            //1天过期
+            redisTemplate.opsForValue().set("catalogJson", jsonString, 1, TimeUnit.DAYS);
             return catalogJsonFromDb;
         }
 
