@@ -121,7 +121,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
          */
 
         //1 加入缓存逻辑， 以后缓存中存放的都是json字符串   json跨平台、跨语言兼容
-        String catalogJson = redisTemplate.opsForValue().get("catalogJson");
+        String catalogJson = redisTemplate.opsForValue().get("catalogJSON");
         if (StringUtils.isEmpty(catalogJson)) {
             //2 缓存中没有，查询数据库。
             System.out.println("缓存不命中！。。。。查询数据库。。");
@@ -187,7 +187,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
             //3 查到的数据库再放入缓存， 将对象转为json放在缓存中
             String jsonString = JSON.toJSONString(parent_cid);
-            redisTemplate.opsForValue().set("catalogJson", jsonString, 1, TimeUnit.DAYS);//1天过期
+            redisTemplate.opsForValue().set("catalogJSON", jsonString, 1, TimeUnit.DAYS);//1天过期
             return parent_cid;
         }
     }
