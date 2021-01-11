@@ -87,6 +87,13 @@ public class IndexController {
 
     //保证一定读到最新数据， 修改期间，写锁是一个排他锁（互斥锁） 读锁是一个共享锁
     //写锁没释放，读就必须等待
+    // 读锁 都可以读取到数据
+    // 写锁 -》读锁读取不到数据 写锁完成后 才能读取到数据 保证数据最新 一致性
+    // 读 + 读 无锁模式 并发读 只会在redis中记录好 所有当前读锁他们都会加锁成功
+    // 写 + 读 等待写锁释放
+    // 写 + 写 阻塞方式
+    // 读 + 写 有读锁 写也需要等待
+    // 只要有写的存在 都需要等待 （我写着呢 你读个几把啊）
     @ResponseBody
     @GetMapping("/write")
     public String writeValue() {
@@ -97,6 +104,7 @@ public class IndexController {
         try {
             //1 改数据加写锁，读数据加读锁
             rLock.lock();
+            System.out.println("写锁加锁成功..." + Thread.currentThread().getId());
             s = UUID.randomUUID().toString();
             Thread.sleep(30000);
             redisTemplate.opsForValue().set("writeValue", s);
@@ -104,6 +112,7 @@ public class IndexController {
             e.printStackTrace();
         } finally {
             rLock.unlock();
+            System.out.println("写锁释放..." + Thread.currentThread().getId());
         }
 
         return s;
@@ -119,11 +128,14 @@ public class IndexController {
         RLock rLock = lock.readLock();
         rLock.lock();
         try {
+            System.out.println("读锁加锁成功..." + Thread.currentThread().getId());
             s = redisTemplate.opsForValue().get("writeValue");
+            Thread.sleep(30000);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             rLock.unlock();
+            System.out.println("读锁释放..." + Thread.currentThread().getId());
         }
 
         return s;
