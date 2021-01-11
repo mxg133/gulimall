@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 孟享广
@@ -53,9 +54,18 @@ public class IndexController {
         RLock lock = redisson.getLock("my-lock");
 
         //2 加锁
-        lock.lock();//阻塞式等待 默认加的锁 都是30s
+//        lock.lock();//阻塞式等待 默认加的锁 都是30s
         //1） 锁的自动续期，如果业务超长，运行期间自动给锁续上新的30s。不用担心担心业务时间长，锁自动过期被删掉
         //2） 加锁的业务只要运行完成，不会给当前锁续期，即使不手动解锁 锁也会在30s以后自动删除
+
+        lock.lock(10, TimeUnit.SECONDS); //10秒自动解锁，自动解锁时间一定要大于业务的执行时间
+        //1) 如果我们传递了锁的超时时间，就发送给redis执行脚本进行占锁，默认超时时间就是我们指定的时间
+        //2) 如果我们没有指定锁的超时时间，就使用30*1000 【看门狗默认时间】
+        //      只要占锁成功，就会启动一个定时任务【重新给锁设置过期时间，新的过期时间就是看门狗默认时间】每隔20秒自动续期，续成30s
+        //      【看门狗时间】3，10s
+
+        //最佳实战
+        //1） 推荐lock.lock(30, TimeUnit.SECONDS); 省掉了续期操作。手动解锁
         try {
             System.out.println("加锁成功，执行业务..." + Thread.currentThread().getId());
             Thread.sleep(30000);
