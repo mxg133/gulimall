@@ -3,14 +3,12 @@ package com.atguigu.gulimall.product.web;
 import com.atguigu.gulimall.product.entity.CategoryEntity;
 import com.atguigu.gulimall.product.service.CategoryService;
 import com.atguigu.gulimall.product.vo.Catelog2Vo;
-import org.redisson.api.RLock;
-import org.redisson.api.RReadWriteLock;
-import org.redisson.api.RSemaphore;
-import org.redisson.api.RedissonClient;
+import org.redisson.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -144,6 +142,7 @@ public class IndexController {
 
 
     /**
+     * 信号量
      * 车库停车
      * 3 车位
      * 信号量可以作为分布式限流
@@ -168,7 +167,7 @@ public class IndexController {
     }
 
     /**
-     * 车库停车
+     * 车库开走车
      * 3 车位
      */
     @ResponseBody
@@ -179,5 +178,34 @@ public class IndexController {
         park.release();//释放一个信号 释放一个值 释放一个车位
 
         return "ok";
+    }
+
+    /**
+     * 闭锁
+     * 放假、锁门
+     * 1 班没人了， 2···
+     * 5个班 全部走完 我们才可以占锁
+     */
+    @ResponseBody
+    @GetMapping("/lockDoor")
+    public String lockDoor() throws InterruptedException {
+
+        RCountDownLatch door = redisson.getCountDownLatch("door");
+        door.trySetCount(5);//等待5个锁都锁
+        door.await();//等待闭锁完成 等待锁的数量为0
+        return "放假成功....";
+    }
+
+    /**
+     * 闭锁
+     * 放假、锁门
+     */
+    @ResponseBody
+    @GetMapping("/gogogo/{id}")
+    public String gogogo(@PathVariable("id") Long id) throws InterruptedException {
+
+        RCountDownLatch door = redisson.getCountDownLatch("door");
+        door.countDown();//计数-1，锁的数-1 (i--)
+        return id + " 走了....";
     }
 }
