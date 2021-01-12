@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
 import com.atguigu.gulimall.product.vo.Catelog2Vo;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -37,6 +39,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     StringRedisTemplate redisTemplate;
+
+    @Autowired
+    RedissonClient redisson;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -90,6 +95,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         this.updateById(category);
         categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
 
+        //同时修改缓存中的数据
+        //redis.del(catalogJSON);等待下次主动查询进行更新
+
     }
 
     @Override
@@ -122,7 +130,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         if (StringUtils.isEmpty(catalogJson)) {
             //2 缓存中没有，查询数据库。
             System.out.println("缓存不命中！。。。。查询数据库。。");
-            Map<String, List<Catelog2Vo>> catalogJsonFromDb = getCatalogJsonFromDbWithRedisLock();
+            Map<String, List<Catelog2Vo>> catalogJsonFromDb = getCatalogJsonFromDbWithRedissonLock();
             return catalogJsonFromDb;
         }
         System.out.println("缓存命中！。。。。直接返回。");
@@ -130,6 +138,47 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //转为指定的对象
         Map<String, List<Catelog2Vo>> result = JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {});
         return result;
+    }
+
+    /**
+     * 使用分布式锁
+     * 从数据库查询并封装分类数据
+     *
+     * 缓存一致性问题
+     * 缓存里面的数据如何和数据库里面的数据保持一致？
+     * 1） 双写模式 数据库改完后，缓存也改
+     * 2） 失效模式 数据库改完后，把缓存删掉
+     *
+     * 缓存数据一致性-解决方案
+     * 无论是双写模式还是失效模式,都会导致缓存的不一致问题,即多个实例同时更新会出事,怎么办?
+     * 1、如果是用户纬度数据(订单数据、用户数据),这种并发几率非常小,不用考虑这个问题,缓存数据加上过期时间,每隔一段时间触发读的主动更新即可
+     * 2、如果是菜单,商品介绍等基础数据,也可以去使用canal订阅binlog的方式。
+     * 3、缓存数据+过期时间也足够解决大部分业务对于缓存的要求。
+     * 4、通过加效保证并发读写,写写的时候按顺序排好队,读读无所谓,所以适合使用读写锁,(业务不关心脏数据,允许临时脏数据可忽略);
+     * 总结。
+     * 我们能放入缓存的数据本就不应该是实时性、一致性要求超高的,所以缓存数据的时候加上过期时间,保证每天拿到当前最新数据即可,
+     * 我们不应该过度设计,增加系统的复杂性
+     * 遇到实时性、一致性要求高的数据,就应该查数据库,即使慢点。
+     *
+     * 我们系统的一致性解决方案:
+     * 1、缓存的所有数据都有过期时间,数据过期下一次查询触发主动更新
+     * 2、读写敌据的时候,加上分布式的读写锁。
+     *          经常写,经常读
+     */
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithRedissonLock() {
+
+        //1 锁的名字，锁的粒度，越细越快
+        RLock lock = redisson.getLock("catalogJson-lock");
+        //加锁
+        lock.lock();
+        Map<String, List<Catelog2Vo>> dataFromDB;
+        try {
+            //业务代码
+            dataFromDB = getDataFromDB();
+        }finally {
+            lock.unlock();
+        }
+        return dataFromDB;
     }
 
     /**
