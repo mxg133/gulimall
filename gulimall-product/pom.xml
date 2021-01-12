@@ -79,6 +79,11 @@
             <version>3.12.0</version>
         </dependency>
 
+<!--        整合SringCache 简化缓存开发-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

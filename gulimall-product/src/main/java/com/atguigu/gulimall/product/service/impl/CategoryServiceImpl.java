@@ -7,6 +7,7 @@ import com.atguigu.gulimall.product.vo.Catelog2Vo;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -100,8 +101,15 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     }
 
+    //表示这个东西是结果是需要缓存的，如果缓存中有，方法不调用；否则调用方法，放入缓存
+    //每一个需要缓存的数据我们都要来指定要放在哪个名字的缓存里【缓存的分区(按照业务类型区分)】
+    @Cacheable({"category"})
     @Override
     public List<CategoryEntity> getLevel1Catrgorys() {
+
+        //测试spring cache
+//        System.out.println("public List<CategoryEntity> getLevel1Catrgorys() {....");
+
         //压力测试  数据库navicat增加了 parent_cid 为索引
 //        long l = System.currentTimeMillis();
         List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
