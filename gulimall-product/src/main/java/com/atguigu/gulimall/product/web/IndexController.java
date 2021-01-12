@@ -5,6 +5,7 @@ import com.atguigu.gulimall.product.service.CategoryService;
 import com.atguigu.gulimall.product.vo.Catelog2Vo;
 import org.redisson.api.RLock;
 import org.redisson.api.RReadWriteLock;
+import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -141,4 +142,42 @@ public class IndexController {
         return s;
     }
 
+
+    /**
+     * 车库停车
+     * 3 车位
+     * 信号量可以作为分布式限流
+     */
+    @ResponseBody
+    @GetMapping("/park")
+    public String park() throws InterruptedException {
+
+        RSemaphore park = redisson.getSemaphore("park");
+        //acquire()是阻塞式获取，我一定要获取一个车位
+//        park.acquire();//获取一个信号 获取一个值 占一个车位
+
+        boolean b = park.tryAcquire();//有了就占 没了就算了
+        if (b) {
+            //执行业务
+
+        }else {
+            //直接返回
+            return "error";
+        }
+        return "ok" + b;
+    }
+
+    /**
+     * 车库停车
+     * 3 车位
+     */
+    @ResponseBody
+    @GetMapping("/go")
+    public String go() throws InterruptedException {
+
+        RSemaphore park = redisson.getSemaphore("park");
+        park.release();//释放一个信号 释放一个值 释放一个车位
+
+        return "ok";
+    }
 }
