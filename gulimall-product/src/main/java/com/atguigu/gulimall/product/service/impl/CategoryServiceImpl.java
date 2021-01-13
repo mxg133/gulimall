@@ -129,8 +129,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      *       spel表达式地址
      *   2)、指定缓存的数据存活时间 配置文件中修改ttl
      *   3）、将数据修改为json格式-
-     */
-    @Cacheable(value = {"category"}, key = "#root.method.name")
+     */ //sync = true解决缓存击穿
+    @Cacheable(value = {"category"}, key = "#root.method.name", sync = true)
     @Override
     public List<CategoryEntity> getLevel1Catrgorys() {
 
