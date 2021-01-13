@@ -128,6 +128,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
 //        System.out.println("消耗时间->：" + (System.currentTimeMillis()-l) + "ms");
         return categoryEntities;
+//        return null;//测试缓存空值
     }
 
     //TODO 产生堆外内存溢出：OutOfDirectMemoryError

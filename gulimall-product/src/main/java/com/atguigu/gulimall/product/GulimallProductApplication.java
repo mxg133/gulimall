@@ -2,7 +2,6 @@ package com.atguigu.gulimall.product;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
@@ -77,11 +76,11 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *           2)配置使用redis作为缓存
  *           spring.cache.type=redis
  *       3）、测试使用缓存
- *      @Cacheable 触发将数据保存到缓存操作
- *       @CacheEvict 触发将数据从缓存删除的操作
- *       @CachePut 不影响方法执行更新操作
- *       @Caching 组合以上多个操作
- *       @CacheConfig 在类级别共享缓存的相同配置
+ *          @Cacheable 触发将数据保存到缓存操作
+ *          @CacheEvict 触发将数据从缓存删除的操作
+ *          @CachePut 不影响方法执行更新操作
+ *          @Caching 组合以上多个操作
+ *          @CacheConfig 在类级别共享缓存的相同配置
  *       1)、开启缓存功能
  *           @EnableCaching
  *       2）、只需要使用注解
@@ -107,8 +106,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *  2）、使用@ExceptionHandler标注方法可以处理的异常。
  */
 
-//开启缓存功能
-@EnableCaching
 //开启feign客户度的远程调用功能
 //扫描feign文件夹下的带有@FeignClient注解的接口
 @EnableFeignClients(basePackages = "com.atguigu.gulimall.product.feign")
