@@ -61,6 +61,12 @@
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
             <version>7.4.2</version>
         </dependency>
+
+<!--        引入模版引擎 thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
