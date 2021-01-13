@@ -7,7 +7,10 @@ import com.atguigu.gulimall.product.vo.Catelog2Vo;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -89,8 +92,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return parentPath.toArray(new Long[parentPath.size()]);
     }
 
-    //级联更新 所有数据
+    //存储同一类型的数据，都可以指定成同一个分区 分区名默认就是缓存的前缀
+    //失效模式 删除category区下所有的数据
+    @CacheEvict(value = "category", allEntries = true)
+    //同时进行多种缓存操作 组合删除
+//    @Caching(evict = {
+//            //失效模式：修改删除缓存
+//            @CacheEvict(value = "category", key = "'getLevel1Catrgorys'"),
+//            @CacheEvict(value = "category", key = "'getCatalogJson'")
+//    })
+    //双写模式
+//    @CachePut
     @Transactional
+    //级联更新 所有数据
     @Override
     public void updateCascade(CategoryEntity category) {
         this.updateById(category);
@@ -131,14 +145,50 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 //        return null;//测试缓存空值
     }
 
+    @Override
+    @Cacheable(value = "category", key = "#root.methodName")
+    public Map<String, List<Catelog2Vo>> getCatalogJson() {
+        System.out.println("查询数据库...");
+        List<CategoryEntity> selectList = baseMapper.selectList(null);
+
+        //1 查出所有1级分类
+        List<CategoryEntity> level1Catrgorys = getParent_cid(selectList, 0L);
+
+        //2 封装分类
+        Map<String, List<Catelog2Vo>> parent_cid = level1Catrgorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+            //1 拿到每一个1级分类 查到这个1级分类的2级分类
+            List<CategoryEntity> categoryEntities = getParent_cid(selectList, v.getCatId());
+            //2 封装上面的结果
+            List<Catelog2Vo> catelog2Vos = null;
+            if (categoryEntities != null) {
+                catelog2Vos = categoryEntities.stream().map(l2 -> {
+                    Catelog2Vo catelog2Vo = new Catelog2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
+                    //1 找当前二级分类的三级分类封装成vo
+                    List<CategoryEntity> level3Catelog = getParent_cid(selectList, l2.getCatId());
+                    if (level3Catelog != null) {
+                        List<Catelog2Vo.Catalog3Vo> collect = level3Catelog.stream().map(l3 -> {
+                            //2 封装成指定格式
+                            Catelog2Vo.Catalog3Vo catalog3Vo = new Catelog2Vo.Catalog3Vo(l2.getCatId().toString(), l3.getCatId().toString(), l3.getName());
+                            return catalog3Vo;
+                        }).collect(Collectors.toList());
+                        catelog2Vo.setCatalog3List(collect);
+                    }
+                    return catelog2Vo;
+                }).collect(Collectors.toList());
+            }
+            return catelog2Vos;
+        }));
+        return parent_cid;
+    }
+
     //TODO 产生堆外内存溢出：OutOfDirectMemoryError
     //1)、Springboot2.0以后默认使用Lettuce作为操作redis的客户端。它使用netty进行网络通信。
     //2), Lettuce的bug导致netty堆外内存溢出 -Xmx300m; netty如果没有指定堆外内存，默认使用Xmx300m
     //      可以通过-Dio.netty.maxDirectMemory进行设置
     //解决方案  不能使用-Dio.netty.maxDirectMemory只是去调大堆外内存。
     //        1)、升级Lettuce客户端。 2),切换使用jedis
-    @Override
-    public Map<String, List<Catelog2Vo>> getCatalogJson() {
+//    @Override
+    public Map<String, List<Catelog2Vo>> getCatalogJson2() {
         //给缓存中放入json字符串，拿出的json字符串，还要逆转为能用的对象【序列化与反序列化】
 
         /**
