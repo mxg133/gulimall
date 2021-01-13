@@ -115,7 +115,7 @@
         <input id="searchText" type="text" placeholder="" />
         <span style="background: url('/static/index/img/img_12.png') 0 -1px;"></span>
         <!--<button><i class="glyphicon"></i></button>-->
-        <a href="/static/#" ><img src="/static/index/img/img_09.png" onclick="search()" /></a>
+        <a href="javascript:search()" ><img src="/static/index/img/img_09.png" /></a>
       </div>
       <div class="header_ico">
         <div class="header_gw">
@@ -202,7 +202,7 @@
         <div class="header_main_left">
           <ul>
             <li th:each="category: ${categorys}">
-              <a href="/static/#" class="header_main_left_a" th:attr="ctg-data=${category.catId}"><b th:text="${category.name}">家用电器1</b></a>
+              <a href="search.gulimall.com" class="header_main_left_a" th:attr="ctg-data=${category.catId}"><b th:text="${category.name}">家用电器1</b></a>
             </li>
           </ul>
 
@@ -607,7 +607,7 @@
 <script type="text/javascript">
   function search() {
       var keyword=$("#searchText").val()
-      window.location.href="/static/http://search.gulimall.com/search.html?keyword="+keyword;
+      window.location.href="http://search.gulimall.com/list.html?keyword="+keyword;
   }
 
 </script>

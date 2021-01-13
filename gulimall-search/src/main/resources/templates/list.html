@@ -8,6 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="/static/search/css/index.css">
     <link rel="stylesheet" type="text/css" href="/static/search/font/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="/static/search/font/iconfont.css">
     <!--<script src="/static/search/./js/jquery-3.2.1.min.js"></script>-->
     <script src="/static/search/js/jquery-1.12.4.js"></script>
     <title>Document</title>
@@ -18,7 +19,7 @@
     <div class="header_head_box">
         <b class="header_head_p">
             <div style="overflow: hidden">
-                <a href="/static/search/#" class="header_head_p_a1" style="width:73px;">
+                <a href="http://gulimall.com" class="header_head_p_a1" style="width:73px;">
                     谷粒商城首页
                 </a>
                 <a href="/static/search/#" class="header_head_p_a">
@@ -400,7 +401,7 @@
 <!--搜索导航-->
 <div class="header_sous">
     <div class="logo">
-        <a href="/static/search/#"><img src="/static/search/./image/logo1.jpg" alt=""></a>
+        <a href="http://gulimall.com"><img src="/static/search/./image/logo1.jpg" alt=""></a>
     </div>
     <div class="header_form">
         <input type="text" placeholder="手机" />
@@ -3559,8 +3560,8 @@
         var index=$(this).parents('li').index();
         $(this).parents('li').css('border','2px solid red').siblings('li').css('border','1px solid #ccc');
         $(this).parents('ul').prev().find('img').prop('src',a);
-        $(this).parents('ul').siblings('.tab_JE').find('a').eq(index).css('display','block').siblings('a').css('display','none');
-        $(this).parents('ul').siblings('.tab_R').find('span').eq(index).css('display','block').siblings('span').css('display','none')
+        $(this).parents('ul').siblings('.tab_JE').find('a').eq(list).css('display','block').siblings('a').css('display','none');
+        $(this).parents('ul').siblings('.tab_R').find('span').eq(list).css('display','block').siblings('span').css('display','none')
     });
 
     $(".JD_ipone_one").hover(function(){
