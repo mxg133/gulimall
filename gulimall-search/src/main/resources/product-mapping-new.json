@@ -1,0 +1,83 @@
+//PUT gulimall_product
+{
+  "mappings": {
+    "properties": {
+      "attrs": {
+        "type": "nested",
+        "properties": {
+          "attrId": {
+            "type": "long"
+          },
+          "attrName": {
+            "type": "keyword"
+          },
+          "attrValue": {
+            "type": "keyword"
+          }
+        }
+      },
+      "brandId": {
+        "type": "long"
+      },
+      "brandImg": {
+        "type": "keyword"
+      },
+      "brandName": {
+        "type": "keyword"
+      },
+      "catalogId": {
+        "type": "long"
+      },
+      "catalogName": {
+        "type": "keyword"
+      },
+      "hasStock": {
+        "type": "boolean"
+      },
+      "hotScore": {
+        "type": "long"
+      },
+      "saleCount": {
+        "type": "long"
+      },
+      "skuId": {
+        "type": "long"
+      },
+      "skuImg": {
+        "type": "keyword"
+      },
+      "skuPrice": {
+        "type": "keyword"
+      },
+      "skuTitle": {
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "spuId": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+//数据迁移
+//POST _reindex
+{
+  "source": {
+    "index": "product"
+  },
+  "dest": {
+    "index": "gulimall_product"
+  }
+}
+
+//##数据迁移
+//POST _reindex
+{
+"source": {
+"index": "bank",
+"type": "account"
+},
+"dest": {
+"index": "newbank"
+}
+}

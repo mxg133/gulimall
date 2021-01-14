@@ -15,13 +15,14 @@ import org.springframework.stereotype.Service;
 public class MallSearchServiceImpl implements MallSearchService {
 
     /**
-     *
+     * 去es进行检索
      * @param param 检索的所有参数
      * @return 返回检索的结果
      */
     @Override
     public SearchResult search(SearchParam param) {
 
+        //1 动态构建出查询需要的DSL语句
         return null;
     }
 }
