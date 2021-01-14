@@ -1,7 +1,14 @@
 package com.atguigu.gulimall.search.controller;
 
+import com.atguigu.gulimall.search.service.MallSearchService;
+import com.atguigu.gulimall.search.vo.SearchParam;
+import com.atguigu.gulimall.search.vo.SearchResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Map;
 
 /**
  * @author 孟享广
@@ -12,8 +19,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class SearchController {
 
+    @Autowired
+    MallSearchService mallSearchService;
+
     @GetMapping("list.html")
-    public String listPage() {
+    public String listPage(@RequestBody SearchParam param, Map<String, SearchResult> map) {
+        //1 根据传递来的页面的查询参数，去ES中解锁商品
+        SearchResult result = mallSearchService.search(param);
+        map.put("result", result);
         return "list";
     }
 }
