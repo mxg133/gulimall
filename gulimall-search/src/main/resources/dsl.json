@@ -97,7 +97,7 @@
             "size": 10
           }
         },
-        "brand_img": {
+        "brand_img_agg": {
           "terms": {
             "field": "brandImg",
             "size": 10
