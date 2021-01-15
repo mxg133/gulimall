@@ -53,7 +53,7 @@ public class SearchParam {
     /**
      * 页码
      */
-    private Integer pageNum;
+    private Integer pageNum = 1;
 
     /**
      * 原生所有的查询条件

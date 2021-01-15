@@ -14,6 +14,8 @@ import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -70,7 +72,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         //1 构建boolQuery
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         //1.1 must 模糊匹配
-        if (!StringUtils.isEmpty(param)) {
+        if (!StringUtils.isEmpty(param.getKeyword())) {
             boolQuery.must(QueryBuilders.matchQuery("skuTitle", param.getKeyword()));
         }
         //1.2 bool = filter 按照3级分类id查询
@@ -126,10 +128,32 @@ public class MallSearchServiceImpl implements MallSearchService {
         /**
          * 排序 分页 高亮
          */
+        //2.1 排序
+        if (!StringUtils.isEmpty(param.getSort())) {
+            //sort=saleCount_asc/desc 倒序
+            String[] s = param.getSort().split("_");
+            SortOrder order = s[1].equalsIgnoreCase("asc")?SortOrder.ASC:SortOrder.DESC;
+            sourceBuilder.sort(s[0], order);
+        }
+        //2.2 分页 每页5个，
+        sourceBuilder.from((param.getPageNum() - 1) * EsConstant.PRODUCT_PAGESIZE);
+        sourceBuilder.size(EsConstant.PRODUCT_PAGESIZE);
+
+        //2.3 高亮
+        if (!StringUtils.isEmpty(param.getKeyword())) {
+            HighlightBuilder builder = new HighlightBuilder();
+            builder.field("skuTitle");
+            builder.preTags("<b style='color:red'>");
+            builder.postTags("</b>");
+            sourceBuilder.highlighter(builder);
+        }
 
         /**
          * 聚合分析
          */
+
+        String s = sourceBuilder.toString();
+        System.out.println("构建的DSL。。。" + s);
 
         SearchRequest searchRequest = new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX}, sourceBuilder);
         return searchRequest;
