@@ -33,7 +33,7 @@ public class SearchParam {
      * attrs1_5寸_6寸
      * // 0 无库存 1有库存
      */
-    private Integer hasStock = 1;
+    private Integer hasStock;
 
     /**
      * 价格区查询

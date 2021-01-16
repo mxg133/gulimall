@@ -116,7 +116,9 @@ public class MallSearchServiceImpl implements MallSearchService {
             }
         }
         //1.2 bool = filter 按照是否有库存进行查询
-        boolQuery.filter(QueryBuilders.termQuery("hasStock", param.getHasStock() == 1));
+        if (param.getHasStock() != null) {
+            boolQuery.filter(QueryBuilders.termQuery("hasStock", param.getHasStock() == 1));
+        }
 
         //1.2 bool = filter 按照价格区间进行查询
         //1_500   _500  500_
@@ -254,6 +256,7 @@ public class MallSearchServiceImpl implements MallSearchService {
 
             attrVos.add(attrVo);
         }
+        result.setAttrs(attrVos);
 
         //3 当前所有商品所涉及的品牌信息 Aggregation -> ParsedLongTerms
         ArrayList<SearchResult.BrandVo> brandVos = new ArrayList<>();
@@ -303,6 +306,6 @@ public class MallSearchServiceImpl implements MallSearchService {
         //5 分页信息 - 总页码 计算得到 11 / 2 = 5 ... 1
         int totalPages = (int)total % EsConstant.PRODUCT_PAGESIZE == 0?(int)total/EsConstant.PRODUCT_PAGESIZE:(int)(total/EsConstant.PRODUCT_PAGESIZE + 1);
         result.setTotalPages(totalPages);
-        return null;
+        return result;
     }
 }
