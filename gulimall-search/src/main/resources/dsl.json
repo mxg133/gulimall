@@ -84,7 +84,8 @@
     "pre_tags": "<b style='color:red'>",
     "post_tags": "</b>"
   },
-    "aggs": {
+  //////////////////////////////////////////////////////
+  "aggs": {
     "brand_agg": {
       "terms": {
         "field": "brandId",
@@ -104,8 +105,8 @@
           }
         }
       }
-    },
-    "catalog_agg": {
+  },
+  "catalog_agg": {
       "terms": {
         "field": "catalogId",
         "size": 10
@@ -118,8 +119,8 @@
           }
         }
       }
-    },
-    "attr_agg": {
+  },
+  "attr_agg": {
       "nested": {
         "path": "attrs"
       },
@@ -145,6 +146,6 @@
           }
         }
       }
-    }
+  }
   }
 }
