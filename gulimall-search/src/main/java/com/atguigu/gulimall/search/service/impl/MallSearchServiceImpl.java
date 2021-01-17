@@ -306,6 +306,14 @@ public class MallSearchServiceImpl implements MallSearchService {
         //5 分页信息 - 总页码 计算得到 11 / 2 = 5 ... 1
         int totalPages = (int)total % EsConstant.PRODUCT_PAGESIZE == 0?(int)total/EsConstant.PRODUCT_PAGESIZE:(int)(total/EsConstant.PRODUCT_PAGESIZE + 1);
         result.setTotalPages(totalPages);
+
+        //页码导航
+        ArrayList<Integer> pageNavs = new ArrayList<>();
+        for (int i = 1; i <= totalPages; i++) {
+            pageNavs.add(i);
+        }
+        result.setPageNavs(pageNavs);
+
         return result;
     }
 }

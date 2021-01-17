@@ -22,6 +22,7 @@ public class SearchResult {
     private Integer pageNum;//当前页码
     private Long total;//总记录数
     private Integer totalPages;//总页码数
+    private List<Integer> pageNavs;
 
     private List<BrandVo> brands;//当前查到的结果，所有涉及到的品牌
     @Data
