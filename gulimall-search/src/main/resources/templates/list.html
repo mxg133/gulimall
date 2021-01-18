@@ -1027,16 +1027,31 @@
                 <div class="filter">
                     <!--综合排序-->
                     <div class="filter_top">
-                        <div class="filter_top_left">
-                            <a href="/static/search/#">综合排序</a>
-                            <a href="/static/search/#">销量</a>
-                            <a href="/static/search/#">价格</a>
-                            <a href="/static/search/#">评论分</a>
-                            <a href="/static/search/#">上架时间</a>
+                        <div class="filter_top_left" th:with="p = ${param.sort} ,priceRange=${param.skuPrice}">
+                            <a th:class="${(!#strings.isEmpty(p) && #strings.startsWith(p,'hotScore') && #strings.endsWith(p,'desc')) ? 'sort_a desc' : 'sort_a'}"
+                               th:attr="style=${(#strings.isEmpty(p) || #strings.startsWith(p,'hotScore')) ? 'color: #FFF;border-color:#e4383c;background:#e4393c':'color:#333;border-color:#CCC;background:#FFF'}"
+                               sort="hotScore"
+                               href="/static/search/#">综合排序 [[${(!#strings.isEmpty(p) && #strings.startsWith(p,'hotScore') && #strings.endsWith(p,'desc')) ? '↓':'↑'}]]</a>
+
+                            <a th:class="${(!#strings.isEmpty(p) && #strings.startsWith(p,'saleCount') && #strings.endsWith(p,'desc')) ? 'sort_a desc' : 'sort_a'}"
+                               th:attr="style=${(!#strings.isEmpty(p) && #strings.startsWith(p,'saleCount')) ? 'color: #FFF;border-color:#e4383c;background:#e4393c' : 'color:#333;border-color:#CCC;background:#FFF'}"
+                               sort="saleCount"
+                               href="/static/search/#">销量 [[${(!#strings.isEmpty(p) && #strings.startsWith(p,'saleCount') && #strings.endsWith(p,'desc')) ? '↓':'↑'}]]</a>
+
+                            <a th:class="${(!#strings.isEmpty(p) && #strings.startsWith(p,'skuPrice') && #strings.endsWith(p,'desc')) ? 'sort_a desc' : 'sort_a'}"
+                               th:attr="style=${(!#strings.isEmpty(p) && #strings.startsWith(p,'skuPrice')) ? 'color: #FFF;border-color:#e4383c;background:#e4393c' : 'color:#333;border-color:#CCC;background:#FFF'}"
+                               sort="skuPrice"
+                               href="/static/search/#">价格 [[${(!#strings.isEmpty(p) && #strings.startsWith(p,'skuPrice') && #strings.endsWith(p,'desc'))  ? '↓':'↑'}]]</a>
+
+                            <a class="sort_a"  href="/static/search/#">评论分</a>
+                            <a class="sort_a"  href="/static/search/#">上架时间</a>
+                            <input  id="skuPriceFrom" type="number" style="width:100px;margin-left: 30px" th:value="${ #strings.isEmpty(priceRange)?'': #strings.substringBefore(priceRange,'_')}"/> -
+                            <input  id="skuPriceTo"   type="number" style="width:100px;" th:value="${ #strings.isEmpty(priceRange) ? '': #strings.substringAfter(priceRange,'_')}"/>
+                            <button id="skuPriceSearchBtn">确定</button>
                         </div>
                         <div class="filter_top_right">
                             <span class="fp-text">
-                               <b>1</b><em>/</em><i>169</i>
+                               <b>1</b><em>/</em><i>169</i>+    ·
                            </span>
                             <a href="/static/search/#" class="prev"><</a>
                             <a href="/static/search/#" class="next"> > </a>
@@ -1131,7 +1146,8 @@
                                 <li>
                                     <a href="/static/search/#">
                                         <i></i>
-                                        京尊达                                    </a>
+                                        京尊达
+                                    </a>
                                 </li>
                                 <li>
                                     <a href="/static/search/#">
@@ -1140,8 +1156,8 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="/static/search/#">
-                                        <i></i>
+                                    <a th:with="check = ${param.hasStock}">
+                                        <input type="checkbox" id="showHasStock" th:checked="${#strings.equals(check,'1')}">
                                         仅显示有货
                                     </a>
                                 </li>
@@ -1967,37 +1983,139 @@
 
     function searchProducts(name, value) {
         //原来的页面
-        var href = location.href + "";
-        if (href.indexOf("?") != -1) {
-            location.href = location.href + "&"+name+"="+value;
-        }else {
-            location.href = location.href + "?"+name+"="+value;
-        }
+        // var href = location.href + "";
+        // if (href.indexOf("?") != -1) {
+        //     location.href = location.href + "&"+name+"="+value;
+        // }else {
+        //     location.href = location.href + "?"+name+"="+value;
+        // }
+        let c = replaceAndAddParanmVal(location.href,name,value);
+        location.href = c;
     }
 
     function searchByKeyword() {
         searchProducts("keyword", $("#keyword_input").val())
     }
 
+    //分页被点击后
     $(".page_a").click(function () {
+        //拿到当前属性中自定义属性pn 用户记录当前记录数 默认是1
         var pn = $(this).attr("pn");
+        //拿到当前连接
         var href = location.href;
+        console.log(href)
+        //连接存在pagenum字段
+        console.log(href.indexOf("pageNum"))
+        //没找到
         if (href.indexOf("pageNum") != -1) {
-            //替换pageNum
-            location.href = replaceParamVal(href,"pageNum",pn);
-        }else {
-            location.href = location.href + "&pageNum="+pn;
+            //替换pageNum的值
+            location.href = replaceAndAddParanmVal(href, "pageNum", pn);
+        } else {
+            let c = replaceAndAddParanmVal(location.href,"pageNum",pn,true);
+            location.href = c;
+            //否则
+            // location.href = location.href + "&pageNum=" + pn;
         }
-        return false;
-    });
+        return false
+    })
 
     //替换指定传入参数的值,paramName为参数,replaceWith为新值
-    function replaceParamVal(url,paramName,replaceVal) {
+    //连接转换
+    function replaceAndAddParanmVal(url,paramName,replaceVal,forceAdd) {
+
         var oUrl = url.toString();
-        var re=eval('/('+ paramName+'=)([^&]*)/gi');
-        var nUrl = oUrl.replace(re,paramName+'='+replaceVal);
-        return nUrl;
+        //1、如果没有就添加 有就替换
+        if(oUrl.indexOf(paramName)!= -1) {
+            if(forceAdd) {
+                var nUrl = "";
+                if(oUrl.indexOf("?") != -1) {
+                    nUrl = oUrl + "&" + paramName + "=" + replaceVal;
+                } else {
+                    nUrl = oUrl + "?" + paramName + "=" + replaceVal;
+                }
+                return nUrl;
+            } else {
+                var re = eval('/(' + paramName + '=)([^&]*)/gi');
+                var nUrl = oUrl.replace(re, paramName + '=' + replaceVal);
+                return nUrl;
+            }
+        } else {
+            var nUrl = "";
+            if(oUrl.indexOf("?") != -1) {
+                nUrl = oUrl + "&" + paramName + "=" + replaceVal;
+            } else {
+                nUrl = oUrl + "?" + paramName + "=" + replaceVal;
+            }
+            return nUrl;
+        }
     }
+
+    $(".sort_a").click(function () {
+        //1、当前被点击的变为选中状态
+        //改变当前元素以及兄弟元素的样式
+        chageStyle(this);
+        // $(this).toggleClass("desc");
+        //2.跳转到指定位置
+
+        //拿到自定义属性
+        var sort = $(this).attr("sort");
+        //当前元素拥有指定样式 desc 降序 否则升序
+        sort = $(this).hasClass("desc")?sort+"_desc":sort+"_asc";
+        //替换对应连接
+        let href = replaceAndAddParanmVal(location.href,"sort",sort);
+
+        location.href=href;
+
+        //禁止默认行为
+        return false;
+    })
+
+    function chageStyle(ele) {
+        //设置当前css
+        $(".sort_a").css({"color":"#333","borderColor":"#CCC","background":"#FFF"});
+        $(".sort_a").each(function(){
+            var text = $(this).text().replace("↓","").replace("↑","");
+            $(this).text(text);
+        })
+        $(ele).css({"color":"#FFF","border_color":"#e4393c","background":"#e4393c"});
+        //改变升降序
+        $(ele).toggleClass("desc");//加上就是降序 不加就是升序
+        //是否有该class
+        if($(ele).hasClass("desc")) {
+            //降序 拿到当前箭头替换为空
+            var text = $(ele).text().replace("↓","").replace("↑","");
+            //当前内容加下箭头
+            text = text + "↓";
+            $(ele).text(text);
+        } else {
+            var text = $(ele).text().replace("↓","").replace("↑","");
+            text = text + "↑";
+            $(ele).text(text);
+        }
+    }
+
+    //价格搜索
+    $("#skuPriceSearchBtn").click(function() {
+
+        //1、拼上价格区间的查询条件
+        var from = $("#skuPriceFrom").val();
+        var to = $("#skuPriceTo").val();
+        var query = from + "_" + to;
+        location.href = replaceAndAddParanmVal(location.href,"skuPrice",query);
+    })
+
+    //是否有用库存
+    $("#showHasStock").change(function() {
+        if($(this).prop('checked')) {
+            location.href = replaceAndAddParanmVal(location.href,"hasStock",1)
+        } else {
+            //没选中
+            var re = eval('/(hasStock=)([^g]*)/gi');
+            location.href=(location.href+"").replace(re,'');
+        }
+        return false;
+    })
+
 </script>
 </body>
 </html>
