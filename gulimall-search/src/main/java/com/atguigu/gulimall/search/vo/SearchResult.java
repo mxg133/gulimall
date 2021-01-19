@@ -46,4 +46,13 @@ public class SearchResult {
         private String attrName;
         private List<String> attrValue;
     }
+
+    //面包屑导航数据
+    private List<NavVo> navs;
+    @Data
+    public static class NavVo {
+        private String navName;
+        private String navValue;
+        private String link;
+    }
 }
