@@ -5,6 +5,7 @@ import com.atguigu.common.utils.PageUtils;
 import com.atguigu.gulimall.product.entity.BrandEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,5 +21,7 @@ public interface BrandService extends IService<BrandEntity> {
 
     //保证冗余字段的数据一致
     void updateDetail(BrandEntity brand);
+
+    List<BrandEntity> getBrandsByIds(List<Long> brandIds);
 }
 

@@ -786,9 +786,9 @@
                 <h3><b>手机</b><em>商品筛选</em></h3>
                 <div class="st-ext">共&nbsp;<span>10135</span>个商品 </div>
             </div>
-            <div class="JD_nav_logo">
+            <div class="JD_nav_logo" th:with="brandid = ${param.brandId}">
                 <!--品牌-->
-                <div class="JD_nav_wrap">
+                <div class="JD_nav_wrap"  th:if="${#strings.isEmpty(brandid)}">
                     <div class="sl_key">
                         <span><b>品牌：</b></span>
                     </div>
@@ -796,7 +796,8 @@
                         <div class="sl_value_logo">
                             <ul>
                                 <li th:each="brand:${result.brands}">
-                                    <a href="/static/search/#" th:href="${'javascript:searchProducts(&quot;brandId&quot;,'+brand.brandId+')'}">
+                                    <a href="/static/search/#"
+                                       th:href="${'javascript:searchProducts(&quot;brandId&quot;,'+brand.brandId+ ')'}">
                                         <img th:src="${brand.brandImg}" alt="">
                                         <div th:text="${brand.brandName}">
                                             华为(HUAWEI)
@@ -847,7 +848,7 @@
                     </div>
                 </div>
                 <!--其他属性-->
-                <div class="JD_pre" th:each="attr:${result.getAttrs()}">
+                <div class="JD_pre" th:each="attr:${result.attrs}" th:if="${!#lists.contains(result.attrIds,attr.attrId)}">
                     <div class="sl_key">
                         <span th:text="${attr.attrName}">屏幕尺寸：</span>
                     </div>
@@ -1998,7 +1999,7 @@
         // }else {
         //     location.href = location.href + "?"+name+"="+value;
         // }
-        location.href = replaceAndAddParamVal(location.href,name,value, true);
+        location.href = replaceAndAddParamVal(location.href,name,value,true);
     }
 
     function searchByKeyword() {
@@ -2055,7 +2056,6 @@
                 }
                 return nUrl;
             }
-
         }
 
     $(".sort_a").click(function () {
@@ -2070,9 +2070,7 @@
         //当前元素拥有指定样式 desc 降序 否则升序
         sort = $(this).hasClass("desc")?sort+"_desc":sort+"_asc";
         //替换对应连接
-        let href = replaceAndAddParamVal(location.href,"sort",sort);
-
-        location.href=href;
+        location.href = replaceAndAddParamVal(location.href,"sort",sort);
 
         //禁止默认行为
         return false;
