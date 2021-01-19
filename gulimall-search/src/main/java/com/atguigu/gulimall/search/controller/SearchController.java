@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -24,7 +25,12 @@ public class SearchController {
     MallSearchService mallSearchService;
 
     @GetMapping("list.html")
-    public String listPage(SearchParam param, Model model) {
+    public String listPage(SearchParam param, Model model, HttpServletRequest request) {
+
+        //拿到后面的完整的查询字符串
+        String queryString = request.getQueryString();
+        param.set_queryString(queryString);
+
         //1 根据传递来的页面的查询参数，去ES中解锁商品
         SearchResult result = mallSearchService.search(param);
         model.addAttribute("result",result);

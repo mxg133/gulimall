@@ -38,6 +38,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,7 +57,7 @@ public class MallSearchServiceImpl implements MallSearchService {
     RestHighLevelClient client;
 
     @Autowired
-    ProductFeignService productFeignService
+    ProductFeignService productFeignService;
 
     /**
      * 去es进行检索
@@ -322,27 +324,40 @@ public class MallSearchServiceImpl implements MallSearchService {
         result.setPageNavs(pageNavs);
 
         //6 构建面包屑导航功能
-        List<SearchResult.NavVo> navVos = param.getAttrs().stream().map(attr -> {
-            SearchResult.NavVo navVo = new SearchResult.NavVo();
-            //1 分析每个attrs传过来的查询参数值
-            //attrs=2_5寸:6寸
-            String[] s = attr.split("_");
-            navVo.setNavValue(s[1]);
-            R r = productFeignService.attrInfo(Long.parseLong(s[0]));
-            if (r.getCode() == 0) {
-                //正常返回
-                AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {});
-                navVo.setNavName(data.getAttrName());
-            }else {
-                //如果失败
-                navVo.setNavName(s[0]);
-            }
+        if (param.getAttrs() != null && param.getAttrs().size() > 0) {
+            List<SearchResult.NavVo> navVos = param.getAttrs().stream().map(attr -> {
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                //1 分析每个attrs传过来的查询参数值
+                //attrs=2_5寸:6寸
+                String[] s = attr.split("_");
+                navVo.setNavValue(s[1]);
+                R r = productFeignService.attrInfo(Long.parseLong(s[0]));
+                if (r.getCode() == 0) {
+                    //正常返回
+                    AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {});
+                    navVo.setNavName(data.getAttrName());
+                } else {
+                    //如果失败
+                    navVo.setNavName(s[0]);
+                }
 
-            //2 取消了面包屑以后 我们要跳转到哪个地方
+                //2 取消了面包屑以后 我们要跳转到哪个地方 将请求地址的url里面的当前请求参数置空
+                //拿到所有的查询条件 去掉当前
+                String encode = null;
+                try {
+                    encode = URLEncoder.encode(attr, "UTF-8");
+                    encode = encode.replace("+", "%20");//浏览器和java对空格的编码不一样
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String replace = param.get_queryString().replace("&attrs=" + encode, "");
+                navVo.setLink("http://search.gulimall.com/list.html?" + replace);
+                return navVo;
+            }).collect(Collectors.toList());
+            result.setNavs(navVos);
+        }
 
-            return navVo;
-        }).collect(Collectors.toList());
-        result.setNavs(navVos);
+
         return result;
     }
 }

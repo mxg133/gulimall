@@ -10,7 +10,6 @@ import lombok.Data;
 
 @Data
 public class AttrResponseVo {
-    private static final long serialVersionUID = 1L;
 
     /**
      * 属性id

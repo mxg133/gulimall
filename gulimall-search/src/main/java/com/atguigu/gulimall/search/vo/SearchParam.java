@@ -58,5 +58,5 @@ public class SearchParam {
     /**
      * 原生所有的查询条件
      */
-//    private String _queryString;
+    private String _queryString;
 }

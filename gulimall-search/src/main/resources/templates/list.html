@@ -764,6 +764,15 @@
                 <a href="/static/search/#">游戏手机</a>
             </div>
         </div>
+        <div class="JD_ipone_one c">
+            <!--遍历面包屑功能-->
+            <a  th:each="nav:${result.navs}"
+                th:href="${nav.link}">
+                <span th:text="${nav.navName}"></span>:
+                <span th:text="${nav.navValue == null ? '': nav.navValue}">
+                </span>  x
+            </a>
+        </div>
         <i><img src="/static/search/image/right-@1x.png" alt=""></i>
     </div>
 </div>
@@ -1989,8 +1998,7 @@
         // }else {
         //     location.href = location.href + "?"+name+"="+value;
         // }
-        let c = replaceAndAddParanmVal(location.href,name,value);
-        location.href = c;
+        location.href = replaceAndAddParamVal(location.href,name,value, true);
     }
 
     function searchByKeyword() {
@@ -2009,9 +2017,9 @@
         //没找到
         if (href.indexOf("pageNum") != -1) {
             //替换pageNum的值
-            location.href = replaceAndAddParanmVal(href, "pageNum", pn);
+            location.href = replaceAndAddParamVal(href, "pageNum", pn);
         } else {
-            let c = replaceAndAddParanmVal(location.href,"pageNum",pn,true);
+            let c = replaceAndAddParamVal(location.href,"pageNum",pn,true);
             location.href = c;
             //否则
             // location.href = location.href + "&pageNum=" + pn;
@@ -2021,12 +2029,24 @@
 
     //替换指定传入参数的值,paramName为参数,replaceWith为新值
     //连接转换
-    function replaceAndAddParanmVal(url,paramName,replaceVal,forceAdd) {
-
-        var oUrl = url.toString();
-        //1、如果没有就添加 有就替换
-        if(oUrl.indexOf(paramName)!= -1) {
-            if(forceAdd) {
+    function replaceAndAddParamVal(url,paramName,replaceVal,forceAdd) {
+            var oUrl = url.toString();
+            //1、如果没有就添加 有就替换
+            if(oUrl.indexOf(paramName)!= -1) {
+                if(forceAdd) {
+                    var nUrl = "";
+                    if(oUrl.indexOf("?") != -1) {
+                        nUrl = oUrl + "&" + paramName + "=" + replaceVal;
+                    } else {
+                        nUrl = oUrl + "?" + paramName + "=" + replaceVal;
+                    }
+                    return nUrl;
+                } else {
+                    var re = eval('/(' + paramName + '=)([^&]*)/gi');
+                    var nUrl = oUrl.replace(re, paramName + '=' + replaceVal);
+                    return nUrl;
+                }
+            } else {
                 var nUrl = "";
                 if(oUrl.indexOf("?") != -1) {
                     nUrl = oUrl + "&" + paramName + "=" + replaceVal;
@@ -2034,21 +2054,9 @@
                     nUrl = oUrl + "?" + paramName + "=" + replaceVal;
                 }
                 return nUrl;
-            } else {
-                var re = eval('/(' + paramName + '=)([^&]*)/gi');
-                var nUrl = oUrl.replace(re, paramName + '=' + replaceVal);
-                return nUrl;
             }
-        } else {
-            var nUrl = "";
-            if(oUrl.indexOf("?") != -1) {
-                nUrl = oUrl + "&" + paramName + "=" + replaceVal;
-            } else {
-                nUrl = oUrl + "?" + paramName + "=" + replaceVal;
-            }
-            return nUrl;
+
         }
-    }
 
     $(".sort_a").click(function () {
         //1、当前被点击的变为选中状态
@@ -2062,7 +2070,7 @@
         //当前元素拥有指定样式 desc 降序 否则升序
         sort = $(this).hasClass("desc")?sort+"_desc":sort+"_asc";
         //替换对应连接
-        let href = replaceAndAddParanmVal(location.href,"sort",sort);
+        let href = replaceAndAddParamVal(location.href,"sort",sort);
 
         location.href=href;
 
@@ -2101,13 +2109,13 @@
         var from = $("#skuPriceFrom").val();
         var to = $("#skuPriceTo").val();
         var query = from + "_" + to;
-        location.href = replaceAndAddParanmVal(location.href,"skuPrice",query);
+        location.href = replaceAndAddParamVal(location.href,"skuPrice",query);
     })
 
     //是否有用库存
     $("#showHasStock").change(function() {
         if($(this).prop('checked')) {
-            location.href = replaceAndAddParanmVal(location.href,"hasStock",1)
+            location.href = replaceAndAddParamVal(location.href,"hasStock",1)
         } else {
             //没选中
             var re = eval('/(hasStock=)([^g]*)/gi');

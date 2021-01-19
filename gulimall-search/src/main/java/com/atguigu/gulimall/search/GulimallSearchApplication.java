@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 //开启feign客户度的远程调用功能
 //扫描feign文件夹下的带有@FeignClient注解的接口
-@EnableFeignClients(basePackages = "com.atguigu.gulimall.product.feign")
+@EnableFeignClients(basePackages = "com.atguigu.gulimall.search.feign")
 @EnableDiscoveryClient
 //排除跟数据源有关的配置
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, DruidDataSourceAutoConfigure.class})
