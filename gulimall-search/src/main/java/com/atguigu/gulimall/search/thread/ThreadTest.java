@@ -26,21 +26,38 @@ public class ThreadTest {
 //        }, executor);
 
         //异步编排2 有返回值 supplyAsync()
-        CompletableFuture<Integer> future2 = CompletableFuture.supplyAsync(() -> {
+        //方法完成后的感知
+//        CompletableFuture<Integer> future2 = CompletableFuture.supplyAsync(() -> {
+//            System.out.println("当前线程：" + Thread.currentThread().getId());
+//            int i = 10 / 0;
+//            System.out.println("结果运行：" + i);
+//            return i;
+//        }, executor).whenComplete((result, exception)->{
+//            //虽然能得到异常信息，却不能修改返回数据，类似监听器
+//            System.out.println("异步任务完成了，结果是：" + result + "，异常是：" + exception);
+//        }).exceptionally((throwable -> {
+//            //可以感知异常，同时返回默认数据
+//            return 10;
+//        }));
+//        System.out.println(future2.get());
+
+        //handle()方法执行后的处理(无论成功完成还是失败完成)
+        CompletableFuture<Integer> future3 = CompletableFuture.supplyAsync(() -> {
             System.out.println("当前线程：" + Thread.currentThread().getId());
-            int i = 10 / 0;
+            int i = 10 / 4;
             System.out.println("结果运行：" + i);
             return i;
-        }, executor).whenComplete((result, exception)->{
-            //虽然能得到异常信息，却不能修改返回数据，类似监听器
-            System.out.println("异步任务完成了，结果是：" + result + "，异常是：" + exception);
-        }).exceptionally((throwable -> {
-            //可以感知异常，同时返回默认数据
-            return 10;
-        }));
-        System.out.println(future2.get());
-
-
+        }, executor).handle((result, throwable)->{
+            if (result != null) {
+                return result * 2;
+            }
+            if (throwable != null) {
+                //出现了异常
+                return 0;
+            }
+            return 0;
+        });
+        System.out.println(future3.get());
 
 
 
