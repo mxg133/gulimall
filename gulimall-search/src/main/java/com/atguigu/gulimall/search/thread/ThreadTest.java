@@ -12,9 +12,37 @@ import java.util.concurrent.*;
 public class ThreadTest {
 
     //线程池 每个系统1 - 2个
-    public static ExecutorService service = Executors.newFixedThreadPool(10);
+    public static ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
+
+        System.out.println("开始");
+
+        //异步编排1 无返回值runAsync()
+//        CompletableFuture<Void> future1 = CompletableFuture.runAsync(() -> {
+//            System.out.println("当前线程：" + Thread.currentThread().getId());
+//            int i = 10 / 2;
+//            System.out.println("结果运行：" + i);
+//        }, executor);
+
+        //异步编排2 有返回值 supplyAsync()
+        CompletableFuture<Integer> future2 = CompletableFuture.supplyAsync(() -> {
+            System.out.println("当前线程：" + Thread.currentThread().getId());
+            int i = 10 / 2;
+            System.out.println("结果运行：" + i);
+            return i;
+        }, executor);
+        System.out.println(future2.get());
+
+
+
+
+
+
+        System.out.println("结束");
+    }
+
+    public static void thread(String[] args) throws ExecutionException, InterruptedException {
         System.out.println("开始");
 
         //方法一
@@ -42,7 +70,7 @@ public class ThreadTest {
         //3 可以得到返回值
         //1 2 3 都不能控制资源
         //4 可以控制资源，性能稳定
-        service.execute(new Runable01());
+//        service.execute(new Runable01());
         /**
          * corePoolSize 保留在池中的线程数 即使处于空闲状态 除非设置了allowCoreThreadTimeOut
          *
