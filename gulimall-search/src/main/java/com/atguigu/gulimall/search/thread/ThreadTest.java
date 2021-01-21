@@ -80,16 +80,46 @@ public class ThreadTest {
 //        }, executor);
 
         //thenAcceptAsync() 能接受上一个任务的结果，有返回值
-        CompletableFuture<String> future2_2 = CompletableFuture.supplyAsync(() -> {
-            System.out.println("当前线程：" + Thread.currentThread().getId());
+//        CompletableFuture<String> future2_2 = CompletableFuture.supplyAsync(() -> {
+//            System.out.println("当前线程：" + Thread.currentThread().getId());
+//            int i = 10 / 4;
+//            System.out.println("结果运行：" + i);
+//            return i;
+//        }, executor).thenApplyAsync((result) -> {
+//            System.out.println("任务2启动了" + "上一步执行的结果是：" + result);
+//            return "hello" + result;
+//        }, executor);
+//        System.out.println(future2_2.get());
+
+        //两个任务都完成 然后执行第三个 A + B -> C
+        CompletableFuture<Integer> future3_1 = CompletableFuture.supplyAsync(() -> {
+            System.out.println("任务1开始。当前线程：" + Thread.currentThread().getId());
             int i = 10 / 4;
-            System.out.println("结果运行：" + i);
+            System.out.println("任务1结束。结果运行：" + i);
             return i;
-        }, executor).thenApplyAsync((result) -> {
-            System.out.println("任务2启动了" + "上一步执行的结果是：" + result);
-            return "hello" + result;
         }, executor);
-        System.out.println(future2_2.get());
+        CompletableFuture<String> future3_2 = CompletableFuture.supplyAsync(() -> {
+            System.out.println("任务2开始。当前线程：" + Thread.currentThread().getId());
+            int i = 10 / 4;
+            System.out.println("任务2结束。结果运行：" + i);
+            return "hello";
+        }, executor);
+
+        //runAfterBothAsync()不能感知前两步的执行结果
+//        future3_1.runAfterBothAsync(future3_2, ()->{
+//            System.out.println("任务3开始。");
+//        }, executor);
+
+        //thenAcceptBothAsync()能感知前两步的执行结果
+//        future3_1.thenAcceptBothAsync(future3_2, (f1, f2)->{
+//            System.out.println("任务3开始。之前的结果：f1=" + f1 + "；f2=" + f2);
+//        }, executor);
+
+        //thenCombineAsync()能感知前两步的执行结果， 还能处理前面两个任务的返回值，并生成返回值
+        CompletableFuture<String> future3_3 = future3_1.thenCombineAsync(future3_2, (f1, f2) -> {
+            return f1 + ": " + f2 + "->ww";
+        }, executor);
+        System.out.println(future3_3.get());
 
 
         System.out.println("结束");
