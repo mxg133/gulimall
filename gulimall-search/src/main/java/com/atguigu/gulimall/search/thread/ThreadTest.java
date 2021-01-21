@@ -42,24 +42,54 @@ public class ThreadTest {
 //        System.out.println(future2.get());
 
         //handle()方法执行后的处理(无论成功完成还是失败完成)
-        CompletableFuture<Integer> future3 = CompletableFuture.supplyAsync(() -> {
+//        CompletableFuture<Integer> future2_1 = CompletableFuture.supplyAsync(() -> {
+//            System.out.println("当前线程：" + Thread.currentThread().getId());
+//            int i = 10 / 4;
+//            System.out.println("结果运行：" + i);
+//            return i;
+//        }, executor).handle((result, throwable)->{
+//            if (result != null) {
+//                return result * 2;
+//            }
+//            if (throwable != null) {
+//                //出现了异常
+//                return 0;
+//            }
+//            return 0;
+//        });
+//        System.out.println(future2_1.get());
+
+        //thenRunAsync() 不能获取到上一步的执行结果 无返回值
+//        CompletableFuture.supplyAsync(() -> {
+//            System.out.println("当前线程：" + Thread.currentThread().getId());
+//            int i = 10 / 4;
+//            System.out.println("结果运行：" + i);
+//            return i;
+//        }, executor).thenRunAsync(() -> {
+//            System.out.println("任务2启动了");
+//        }, executor);
+
+        //thenAcceptAsync() 能接受上一个任务的结果，但是无返回值
+//        CompletableFuture.supplyAsync(() -> {
+//            System.out.println("当前线程：" + Thread.currentThread().getId());
+//            int i = 10 / 4;
+//            System.out.println("结果运行：" + i);
+//            return i;
+//        }, executor).thenAcceptAsync((result)->{
+//            System.out.println("任务2启动了" + "上一步执行的结果是：" + result);
+//        }, executor);
+
+        //thenAcceptAsync() 能接受上一个任务的结果，有返回值
+        CompletableFuture<String> future2_2 = CompletableFuture.supplyAsync(() -> {
             System.out.println("当前线程：" + Thread.currentThread().getId());
             int i = 10 / 4;
             System.out.println("结果运行：" + i);
             return i;
-        }, executor).handle((result, throwable)->{
-            if (result != null) {
-                return result * 2;
-            }
-            if (throwable != null) {
-                //出现了异常
-                return 0;
-            }
-            return 0;
-        });
-        System.out.println(future3.get());
-
-
+        }, executor).thenApplyAsync((result) -> {
+            System.out.println("任务2启动了" + "上一步执行的结果是：" + result);
+            return "hello" + result;
+        }, executor);
+        System.out.println(future2_2.get());
 
 
         System.out.println("结束");
