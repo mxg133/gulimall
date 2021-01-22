@@ -41,7 +41,7 @@ public class ThreadTest {
 //        }));
 //        System.out.println(future2.get());
 
-        //handle()方法执行后的处理(无论成功完成还是失败完成)
+        //handle()方法执行后的处理(无论成功完成还是失败完成) 就算有异常 也想要结果
 //        CompletableFuture<Integer> future2_1 = CompletableFuture.supplyAsync(() -> {
 //            System.out.println("当前线程：" + Thread.currentThread().getId());
 //            int i = 10 / 4;
@@ -58,6 +58,11 @@ public class ThreadTest {
 //            return 0;
 //        });
 //        System.out.println(future2_1.get());
+
+        /**
+         * 串行化 A任务完成后 -> B任务执行
+         * 带Async的意思是：再开一个线程； 否则和A线程共用一个线程
+         */
 
         //thenRunAsync() 不能获取到上一步的执行结果 无返回值
 //        CompletableFuture.supplyAsync(() -> {
@@ -91,35 +96,62 @@ public class ThreadTest {
 //        }, executor);
 //        System.out.println(future2_2.get());
 
-        //两个任务都完成 然后执行第三个 A + B -> C
-        CompletableFuture<Integer> future3_1 = CompletableFuture.supplyAsync(() -> {
+        /**
+         * 两个任务组合
+         * 两个任务都完成 然后执行第三个 A + B -> C
+         */
+        CompletableFuture<Object> future3_1 = CompletableFuture.supplyAsync(() -> {
             System.out.println("任务1开始。当前线程：" + Thread.currentThread().getId());
             int i = 10 / 4;
             System.out.println("任务1结束。结果运行：" + i);
             return i;
         }, executor);
-        CompletableFuture<String> future3_2 = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<Object> future3_2 = CompletableFuture.supplyAsync(() -> {
             System.out.println("任务2开始。当前线程：" + Thread.currentThread().getId());
-            int i = 10 / 4;
-            System.out.println("任务2结束。结果运行：" + i);
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("任务2结束...");
             return "hello";
         }, executor);
 
-        //runAfterBothAsync()不能感知前两步的执行结果
+        //runAfterBothAsync()不能感知前两步的执行结果 自己也没有返回值
 //        future3_1.runAfterBothAsync(future3_2, ()->{
 //            System.out.println("任务3开始。");
 //        }, executor);
 
-        //thenAcceptBothAsync()能感知前两步的执行结果
+        //thenAcceptBothAsync()能感知前两步的执行结果 自己没有返回值
 //        future3_1.thenAcceptBothAsync(future3_2, (f1, f2)->{
 //            System.out.println("任务3开始。之前的结果：f1=" + f1 + "；f2=" + f2);
 //        }, executor);
 
-        //thenCombineAsync()能感知前两步的执行结果， 还能处理前面两个任务的返回值，并生成返回值
-        CompletableFuture<String> future3_3 = future3_1.thenCombineAsync(future3_2, (f1, f2) -> {
-            return f1 + ": " + f2 + "->ww";
+        //thenCombineAsync()能感知前两步的执行结果， 还能处理前面两个任务的返回值，并生成返回值 自己有返回值
+//        CompletableFuture<String> future3_3 = future3_1.thenCombineAsync(future3_2, (f1, f2) -> {
+//            return f1 + ": " + f2 + "->ww";
+//        }, executor);
+//        System.out.println(future3_3.get());
+
+        /**
+         * 两个任务 只要有一个完成就行 就能执行第三个任务 A || B = C
+         */
+        //runAfterEitherAsync() 不感知前面任务的结果，自己也没有返回值
+//        future3_1.runAfterEitherAsync(future3_2, () -> {
+//            System.out.println("任务3开始执行。");
+//        }, executor);
+
+        //acceptEitherAsync() 能感知前面任务的结果，自己没有返回值
+//        future3_1.acceptEitherAsync(future3_2, (result) -> {//要求任务1、2的返回类型必须相同
+//            System.out.println("任务3开始执行。" + result);
+//        }, executor);
+
+        //applyToEitherAsync() 能感知前面任务的结果，自己有返回值
+        CompletableFuture<String> future3_4 = future3_1.applyToEitherAsync(future3_2, (result) -> {//要求任务1、2的返回类型必须相同
+            System.out.println("任务3开始执行。" + result);
+            return result.toString() + "哈哈";
         }, executor);
-        System.out.println(future3_3.get());
+        System.out.println(future3_4.get());
 
 
         System.out.println("结束");
