@@ -13,5 +13,30 @@
         <result property="catelogId" column="catelog_id"/>
     </resultMap>
 
+    <!--    resultType 返回集合里面元素的类型 只要有嵌套属性就要封装自定义结果-->
+    <resultMap id="spuItemAttrGroupVo" type="com.atguigu.gulimall.product.vo.SpuItemAttrGroupVo">
+        <result property="groupName" column="attr_group_name"/>
+        <collection property="attrs" ofType="com.atguigu.gulimall.product.vo.Attr">
+            <result property="attrName" column="attr_name"/>
+            <result property="attrValue" column="attr_value"/>
+        </collection>
+    </resultMap>
+    <select id="getAttrGroupWithAttrsBySpuId"
+            resultMap="spuItemAttrGroupVo">
+        SELECT
+            pav.`spu_id`,
+            ag.`attr_group_id`,
+            ag.`attr_group_name`,
+            arr.`attr_id`,
+            attr.`attr_name`,
+            pav.`attr_value`
+        FROM
+            `pms_attr_group` ag
+                LEFT JOIN `pms_attr_attrgroup_relation` arr ON arr.`attr_group_id` = ag.`attr_group_id`
+                LEFT JOIN `pms_attr` attr ON attr.`attr_id` = arr.`attr_id`
+                LEFT JOIN `pms_product_attr_value` pav ON pav.`attr_id` = attr.`attr_id`
+        WHERE ag.catelog_id = #{catalogId} AND pav.`spu_id` = #{spuId}
+    </select>
+
 
 </mapper>

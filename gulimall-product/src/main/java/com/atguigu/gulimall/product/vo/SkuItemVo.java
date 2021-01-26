@@ -4,6 +4,7 @@ import com.atguigu.gulimall.product.entity.SkuImagesEntity;
 import com.atguigu.gulimall.product.entity.SkuInfoEntity;
 import com.atguigu.gulimall.product.entity.SpuInfoDescEntity;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,26 +26,10 @@ public class SkuItemVo {
 
     //3 spu的销售属性组合
     List<SkuItemSaleAttrVo> saleAttr;
-    @Data
-    public static class SkuItemSaleAttrVo {
-        private Long attrId;
-        private String attrName;
-        private List<String> attrValues;
-    }
 
     //4 spu的介绍
     SpuInfoDescEntity desc;
 
     //5 spu的规格参数信息
     private List<SpuItemAttrGroupVo> groupAttrs;
-    @Data
-    public static class SpuItemAttrGroupVo {
-        private String groupName;
-        private List<SpuBaseAttrVo> attrs;
-    }
-    @Data
-    public static class SpuBaseAttrVo {
-        private String attrName;
-        private String attrValues;
-    }
 }
