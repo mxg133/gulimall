@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.gulimall.product.vo.SkuItemVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -96,6 +97,25 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     public List<SkuInfoEntity> getSkuBySpuId(Long spuId) {
         List<SkuInfoEntity> list = this.list(new QueryWrapper<SkuInfoEntity>().eq("spu_id", spuId));
         return list;
+    }
+
+    @Override
+    public SkuItemVo item(Long skuId) {
+
+        //要返回给前端的大对象
+        SkuItemVo skuItemVo = new SkuItemVo();
+
+        //1 sku基本信息获取 pms_sku_info
+
+        //2 sku图片信息 pms_sku_images
+
+        //3 spu的销售属性组合
+
+        //4 spu的介绍
+
+        //5 spu的规格参数信息
+
+        return skuItemVo;
     }
 
 }
