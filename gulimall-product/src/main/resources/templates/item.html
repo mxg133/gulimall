@@ -1274,7 +1274,29 @@
 	<script src="/static/item/js/js.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		$(".sku_attr_value").click(function() {
+			//1、点击元素先添加自定义的属性 为了识别我们是刚刚点击的
+			var skus = new Array();
+			$(this).addClass("clicked");
+			//属性skus以逗号拆分
+			var curr = $(this).attr("skus").split(",");
+			//当前被点击的所有sku组合数据放进去
+			skus.push(curr);
+			//去掉同一行的所有的checked
+			/**
+			 * parent 父类 中查询 拥有class的 然后删除调 checked
+			 */
+			$(this).parent().parent().find(".sku_attr_value").removeClass("checked");
 
+			//2、取出他们的交集 得到skuId 用到的是 filter求交集
+			var filterEle = skus[0]
+			for(var i = 1; i<skus.length; i++) {
+				filterEle = $(filterEle).filter(skus[i]);
+			}
+			//spuId
+			console.log(filterEle[0])
+
+			location.href="http://item.gulimall.com/" + filterEle[0] + ".html";
+			//4、跳转页面
 		})
 
 		$(function(){
