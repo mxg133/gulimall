@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 	<head>
 		<meta charset="UTF-8">
@@ -429,11 +429,11 @@
 
 					<div class="imgbox">
 						<div class="probox">
-							<img class="img1" alt="" src="/static/item/img/59ded626N7c4cb0a3.jpg">
+							<img class="img1" alt="" src="/static/item/img/59ded626N7c4cb0a3.jpg" th:src="${item.info.skuDefaultImg}">
 							<div class="hoverbox"></div>
 						</div>
 						<div class="showbox">
-							<img class="img1" alt="" src="/static/item/img/59ded626N7c4cb0a3.jpg">
+							<img class="img1" alt="" src="/static/item/img/59ded626N7c4cb0a3.jpg" th:src="${item.info.skuDefaultImg}">
 						</div>
 					</div>
 
@@ -441,15 +441,7 @@
 
 						<div class="box-lh-one">
 							<ul>
-								<li><img src="/static/item/img/59ded62eN64a9784c.jpg" /></li>
-								<li><img src="/static/item/img/59ded626Ne3c69b70.jpg" /></li>
-								<li><img src="/static/item/img/59ded626N7c4cb0a3.jpg" /></li>
-								<li><img src="/static/item/img/59ded626Ne3c69b70.jpg" /></li>
-								<li><img src="/static/item/img/59ded62dN7e28abc5 (1).jpg" /></li>
-								<li><img src="/static/item/img/59ded62cN6e9ac17c.jpg" /></li>
-								<li><img src="/static/item/img/59ded620Nfc0ab489.jpg" /></li>
-								<li><img src="/static/item/img/59ded60eN3110f3a8.jpg" /></li>
-								<li><img src="/static/item/img/59ded62dNfed003a8.jpg" /></li>
+								<li th:each="img:${item.images}" th:if="${!#strings.isEmpty(img.imgUrl)}"><img th:src="${img.imgUrl}" /></li>
 							</ul>
 						</div>
 						<div id="left">
@@ -479,11 +471,11 @@
 
 					</div>
 					<div class="box-two">
-						<div class="box-name">
+						<div class="box-name" th:text="${item.info.skuTitle}">
 							华为 HUAWEI Mate 10 6GB+128GB 亮黑色 移动联通电信4G手机 双卡双待
 						</div>
-						<div class="box-hide">预订用户预计11月30日左右陆续发货！麒麟970芯片！AI智能拍照！
-							<a href="/static/item/"><u>华为 HUAWEI Mate 10 Pro 10:08 限时限量抢！</u></a>
+						<div class="box-hide" th:text="${item.info.skuSubtitle}">预订用户预计11月30日左右陆续发货！麒麟970芯片！AI智能拍照！
+							<a href="/static/item/"><u></u></a>
 						</div>
 						<div class="box-yuyue">
 							<div class="yuyue-one">
@@ -506,10 +498,10 @@
 						</div>
 						<div class="box-summary clear">
 							<ul>
-								<li>京东价</li>
+								<li>狗东价</li>
 								<li>
 									<span>￥</span>
-									<span>4499.00</span>
+									<span th:text="${ #numbers.formatDecimal(item.info.price,3,2)}">4499.00</span>
 								</li>
 								<li>
 									预约享资格
@@ -587,7 +579,7 @@
 
 								</li>
 								<li>
-									<span>无货</span>， 此商品暂时售完
+									<span th:text="${item.hasStock?'有货':'无货'}">无货</span>， 此商品暂时售完
 								</li>
 							</ul>
 						</div>
@@ -600,51 +592,19 @@
 							</ul>
 						</div>
 						<div class="box-attr-3">
-							<div class="box-attr clear">
+							<div class="box-attr clear" th:each="attr:${item.saleAttr}">
 								<dl>
-									<dt>选择颜色</dt>
-									<dd>
-										<a href="/static/item/#">
-											<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" /> 摩卡金
+									<!--strings.listSplit 切分
+                                    #list.contains(A,B) 判断A数组中间 是否包含B
+                                    skuId 同时设置一个class 在列表中包含的设置为选中 否则不选中
+                                    -->
+									<dt>选择[[${attr.attrName}]]</dt>
+									<dd th:each="val:${#strings.listSplit(attr.attrValues, ',')}">
+<!--										<a th:attr="skus = ${val.skuIds},class=${#lists.contains(#strings.listSplit(val.skuIds,','),-->
+<!--										item.info.skuId.toString())? 'sku_attr_value checked':'sku_attr_value'}">-->
+										<a>
+											[[${val}]]
 										</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">
-											<img src="/static/item/img/59ded62eN64a9784c.jpg" /> 亮黑色
-										</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">
-											<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" /> 香槟金
-										</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">
-											<img src="/static/item/img/59ded682N99d4efcc.jpg" /> 樱粉金
-										</a>
-									</dd>
-								</dl>
-							</div>
-							<div class="box-attr-2 clear">
-								<dl>
-									<dt>选择版本</dt>
-									<dd>
-										<a href="/static/item/#">标准版</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">套装版</a>
-									</dd>
-								</dl>
-							</div>
-
-							<div class="box-attr-2 clear">
-								<dl>
-									<dt>选择内存</dt>
-									<dd>
-										<a href="/static/item/#">64GB</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">128GB</a>
 									</dd>
 								</dl>
 							</div>
@@ -820,19 +780,19 @@
 				<div class="allquanbushop">
 					<ul class="shopjieshao">
 						<li class="jieshoa" style="background: #e4393c;">
-							<a href="/static/item/##" style="color: white;">商品介绍</a>
+							<a style="color: white;">商品介绍</a>
 						</li>
 						<li class="baozhuang">
-							<a href="/static/item/##">规格与包装</a>
+							<a>规格与包装</a>
 						</li>
 						<li class="baozhang">
-							<a href="/static/item/##">售后保障</a>
+							<a>售后保障</a>
 						</li>
 						<li class="pingjia">
-							<a href="/static/item/##">商品评价(4万+)</a>
+							<a>商品评价(4万+)</a>
 						</li>
 						<li class="shuoming">
-							<a href="/static/item/##">预约说明</a>
+							<a>预约说明</a>
 						</li>
 
 					</ul>
@@ -862,48 +822,48 @@
 						<ul class="xuanxiangka">
 							<li class="jieshoa actives" id="li1">
 								<div class="shanpinsssss">
-									<p>
-										<a href="/static/item/#">品牌:华为（HUAWEI）</a>
-									</p>
-									<table>
-										<tr>
-											<td>
-												<a href="/static/item/##">商品名称：华为Mate 10</a>
-											</td>
-											<td>
-												<a href="/static/item/##">商品毛重：0.58kg</a>
-											</td>
-											<td>
-												<a href="/static/item/##">商品编号：5544038</a>
-											</td>
-											<td>
-												<a href="/static/item/##">商品产地：中国大陆</a>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<a href="/static/item/##">系统：安卓（Android）</a>
-											</td>
-											<td>
-												<a href="/static/item/##">前置摄像头像素：800万-1599万</a>
-											</td>
-											<td>
-												<a href="/static/item/##">后置摄像头像素：2000万及以上，1200万-1999万</a>
-											</td>
-											<td>
-												<a href="/static/item/##">机身内存：128GB</a>
-											</td>
-										</tr>
-										<tr>
-											<td colspan="4">
-												<a href="/static/item/##">全面屏，双卡双待，指纹识别，Type-C，VoLTE，2K屏，拍照神器，支持NFC，商务手机，安全手机，分辨率10</a>
-											</td>
-										</tr>
-									</table>
-									<img class="xiaoguo" src="/static/item/img/5a0d4181Nf70c5ebf.jpg" />
+<!--									<p>-->
+<!--										<a href="/static/item/#">品牌:华为（HUAWEI）</a>-->
+<!--									</p>-->
+<!--									<table>-->
+<!--										<tr>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">商品名称：华为Mate 10</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">商品毛重：0.58kg</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">商品编号：5544038</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">商品产地：中国大陆</a>-->
+<!--											</td>-->
+<!--										</tr>-->
+<!--										<tr>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">系统：安卓（Android）</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">前置摄像头像素：800万-1599万</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">后置摄像头像素：2000万及以上，1200万-1999万</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">机身内存：128GB</a>-->
+<!--											</td>-->
+<!--										</tr>-->
+<!--										<tr>-->
+<!--											<td colspan="4">-->
+<!--												<a href="/static/item/##">全面屏，双卡双待，指纹识别，Type-C，VoLTE，2K屏，拍照神器，支持NFC，商务手机，安全手机，分辨率10</a>-->
+<!--											</td>-->
+<!--										</tr>-->
+<!--									</table>-->
+									<img class="xiaoguo" th:src="${descp}" th:each="descp:${#strings.listSplit(item.desc.decript,',')}" />
 									<div class="guiGebox guiGebox1">
-										<div class="guiGe">
-											<h3>主体</h3>
+										<div class="guiGe" th:each="guige:${item.groupAttrs}">
+											<h3 >主体</h3>
 											<dl>
 												<dt>品牌</dt>
 												<dd>华为(HUAWEI)</dd>
@@ -923,234 +883,7 @@
 												<dd>10月</dd>
 											</dl>
 										</div>
-										<div class="guiGe">
-											<h3>基本信息</h3>
-											<dl>
-												<dt>机身颜色</dt>
-												<dd>亮黑色</dd>
-												<dt>机身长度（mm）</dt>
-												<dd>150.5</dd>
-												<dt>机身宽度（mm）</dt>
-												<dd>77.8</dd>
-												<dt>机身厚度（mm）</dt>
-												<dd>8.2</dd>
-												<dt>机身重量（g）</dt>
-												<dd>约186g（含电池）</dd>
-												<dt>输入方式</dt>
-												<dd>触控</dd>
-												<dt>运营商标志与内容</dt>
-												<dd class="Ptable-tips">
-													<a href="/static/item/#"><i>？</i></a>
-												</dd>
-												<dd>无</dd>
-												<dt>机身材质分类</dt>
-												<dd>金属边框；玻璃后盖</dd>
-												<dt>机身材质工艺</dt>
-												<dd>四曲面玻璃后壳</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>操作系统</h3>
-											<dl>
-												<dt>操作系统</dt>
-												<dd>Android</dd>
-												<dt>操作系统版本</dt>
-												<dd>华为 EMUI 8.0</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>主芯片</h3>
-											<dl>
-												<dt>CPU品牌</dt>
-												<dd>海思（Hisilicon）</dd>
-												<dt>CPU频率</dt>
-												<dd>4*Cortex A73 2.36GHz + 4*Cortex A53 1.8GHz</dd>
-												<dt>CPU核数</dt>
-												<dd>八核</dd>
-												<dt>CPU型号</dt>
-												<dd>麒麟970</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>网络支持</h3>
-											<dl>
-												<dt>双卡机类型</dt>
-												<dd>双卡双待单通</dd>
-												<dt>最大支持SIM卡数量</dt>
-												<dd>2个</dd>
-												<dt>SIM卡类型</dt>
-												<dd class="Ptable-tips">
-													<a href="/static/item/#"><i>？</i></a>
-												</dd>
-												<dd>Nano SIM</dd>
-												<dt>4G网络</dt>
-												<dd class="Ptable-tips">
-													<a href="/static/item/#"><i>？</i></a>
-												</dd>
-												<dd>4G：移动（TD-LTE）；4G：联通（FDD-LTE）；4G：电信（FDD-LTE）；4G：联通（TD-LTE）</dd>
-												<dt>3G/2G网络</dt>
-												<dd>3G：移动（TD-LTE）；4G：联通（WCDMA）；3G：电信（CDMA2000）；2G：移动联通（GSM）+ 电信（CDMA）</dd>
-												<dt>副SIM卡类型</dt>
-												<dd class="Ptable-tips">
-													<a href="/static/item/#"><i>？</i></a>
-												</dd>
-												<dd>副SIM卡与存储卡二选一</dd>
-												<dt>副SIM卡4G网络</dt>
-												<dd class="Ptable-tips">
-													<a href="/static/item/#"><i>？</i></a>
-												</dd>
-												<dd>4G：移动（TD-LTE）；4G：联通（FDD-LTE）；4G：电信（FDD-LTE）；4G：联通（TD-LTE）</dd>
-												<dt>副SIM卡3G/2G网络</dt>
-												<dd>不支持主副卡同时使用电信卡；3G联通（WCDMA）；3G：电信（CDMA2000）；2G：移动联通（GSM）+电信（CDMA）</dd>
-												<dt>网络频率（2G/3G）</dt>
-												<dd>2G：GSM 850/900/1800/1900；2G：CDMA 800；3G：TD-SCDMA 1900/2000；3G：WCDMA 850/900/1900/2100；3G</dd>
-												<dd>CDMA2000；3G：CDMA 800MHz 1X&EVDO ；3G：WCDMA：850/900/1700/1900/2100MHz</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>存储</h3>
-											<dl>
-												<dt>ROM</dt>
-												<dd class="Ptable-tips">
-													<a href="/static/item/#"><i>？</i></a>
-												</dd>
-												<dd>128GB</dd>
-												<dt>RAM</dt>
-												<dd class="Ptable-tips">
-													<a href="/static/item/#"><i>？</i></a>
-												</dd>
-												<dd>6GB</dd>
-												<dt>存储卡</dt>
-												<dd>支持MicroSD（TF）</dd>
-												<dt>最大存储扩展容量</dt>
-												<dd>256GB</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>屏幕</h3>
-											<dl>
-												<dt>主屏幕尺寸（英寸）</dt>
-												<dd>5.9英寸</dd>
-												<dt>分辨率</dt>
-												<dd>2560X1400（Quad HD/2k）</dd>
-												<dt>屏幕材质类型</dt>
-												<dd>TFT</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>前置摄像头</h3>
-											<dl>
-												<dt>前置摄像头</dt>
-												<dd>800万像素</dd>
-												<dt>前摄光圈大小</dt>
-												<dd>f/2.0</dd>
-												<dt>美颜技术</dt>
-												<dd>支持</dd>
-											</dl>
-										</div>
-									<!--nav-->
-										<div class="guiGe">
-											<h3>后置摄像头</h3>
-											<dl>
-												<dt>摄像头数量</dt>
-												<dd class="Ptable-tips">
-													<a href="/static/item/#"><i>？</i></a>
-												</dd>
-												<dd>2个</dd>
-												<dt>后置摄像头</dt>
-												<dd>1200万像素；2000万像素</dd>
-												<dt>摄像头光圈大小</dt>
-												<dd>其他</dd>
-												<dt>闪光灯</dt>
-												<dd>双色温双LED闪光灯</dd>
-												<dt>美颜技术</dt>
-												<dd>支持</dd>
-												<dt>副摄像头光圈大小</dt>
-												<dd>其他</dd>
-												<dt>照片最大分辨率</dt>
-												<dd>5120X3840</dd>
-												<dt>拍照特点</dt>
-												<dd>数码变焦；自动对焦；防抖；美颜；连拍；微距；全景；滤镜；场景模式；HDR；PDAF；夜间拍摄；微信小视频；有声照片；</dd>
-												<dd>水印；美肤录像；全像素双核激光对焦拍摄</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>电池信息</h3>
-											<dl>
-												<dt>电池容量（mAh）</dt>
-												<dd>4000（典型值）</dd>
-												<dt>电池类型</dt>
-												<dd>锂聚合物电池</dd>
-												<dt>电池是否可拆卸</dt>
-												<dd class="Ptable-tips">
-													<a href="/static/item/#"><i>？</i></a>
-												</dd>
-												<dd>否</dd>
-												<dt>充电器</dt>
-												<dd>5V/4.5A</dd>
-												<dt>快速充电</dt>
-												<dd>华为超级快充</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>娱乐功能</h3>
-											<dl>
-												<dt>mic数量</dt>
-												<dd>3个</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>数据接口</h3>
-											<dl>
-												<dt>数据传输接口</dt>
-												<dd>红外；WIFI；NFC；蓝牙；WiFi热点</dd>
-												<dt>NFC/NFC模式</dt>
-												<dd>支持（点对点模式）；支持（读卡器模式）；支持卡模拟</dd>
-												<dt>耳机接口类型</dt>
-												<dd>3.5mm</dd>
-												<dt>充电接口类型</dt>
-												<dd>Type-C</dd>
-												<dt>数据线</dt>
-												<dd>其他</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
-											<h3>手机特性</h3>
-											<dl>
-												<dt>指纹识别</dt>
-												<dd>支持</dd>
-												<dt>语音识别</dt>
-												<dd>支持</dd>
-												<dt>GPS</dt>
-												<dd>支持</dd>
-												<dt>电子罗盘</dt>
-												<dd>支持</dd>
-												<dt>霍尔感应器</dt>
-												<dd>支持</dd>
-												<dt>陀螺仪</dt>
-												<dd>支持</dd>
-												<dt>红外遥控</dt>
-												<dd>支持</dd>
-												<dt>适配VR</dt>
-												<dd>支持</dd>
-												<dt>其他</dt>
-												<dd>呼气灯；多麦降噪技术；光线感应</dd>
-											</dl>
-										</div>
-										<div class="guiGe">
 
-											<h3>辅助功能</h3>
-											<dl>
-												<dt>常用功能</dt>
-												<dd>录音；手势识别；便签；超大字体；SOS功能；重礼感应</dd>
-												<dt>其他1</dt>
-												<dd>智能识屏</dd>
-												<dt>其他特性</dt>
-												<dd>手套模式</dd>
-												<dt>其他2</dt>
-												<dd>单手操作</dd>
-											</dl>
-										</div>
 										<div class="package-list">
 											<h3>包装清单</h3>
 											<p>手机（含内置电池） X 1、5A大电流华为SuperCharge充电器X 1、5A USB数据线 X 1、半入耳式线控耳机 X 1、快速指南X 1、三包凭证 X 1、取卡针 X 1、保护壳 X 1</p>
@@ -1160,333 +893,96 @@
 							</li>
 							<li class="baozhuang actives" id="li2">
 								<div class="guiGebox">
-									<div class="guiGe">
-										<h3>主体</h3>
+									<div class="guiGe" th:each="group:${item.groupAttrs}">
+										<h3 th:text="${group.groupName}">主体</h3>
 										<dl>
-											<dt>品牌</dt>
-											<dd>华为(HUAWEI)</dd>
-											<dt>型号</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>ALP-AL00</dd>
-											<dt>入网型号</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>ALP-AL00</dd>
-											<dt>上市年份</dt>
-											<dd>2017年</dd>
-											<dt>上市时间</dt>
-											<dd>10月</dd>
+											<div th:each="attr:${group.attrs}">
+												<dt th:text="${attr.attrName}">品牌</dt>
+												<dd th:text="${attr.attrValue}">华为(HUAWEI)</dd>
+											</div>
 										</dl>
 									</div>
-									<div class="guiGe">
-										<h3>基本信息</h3>
-										<dl>
-											<dt>机身颜色</dt>
-											<dd>亮黑色</dd>
-											<dt>机身长度（mm）</dt>
-											<dd>150.5</dd>
-											<dt>机身宽度（mm）</dt>
-											<dd>77.8</dd>
-											<dt>机身厚度（mm）</dt>
-											<dd>8.2</dd>
-											<dt>机身重量（g）</dt>
-											<dd>约186g（含电池）</dd>
-											<dt>输入方式</dt>
-											<dd>触控</dd>
-											<dt>运营商标志与内容</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>无</dd>
-											<dt>机身材质分类</dt>
-											<dd>金属边框；玻璃后盖</dd>
-											<dt>机身材质工艺</dt>
-											<dd>四曲面玻璃后壳</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>操作系统</h3>
-										<dl>
-											<dt>操作系统</dt>
-											<dd>Android</dd>
-											<dt>操作系统版本</dt>
-											<dd>华为 EMUI 8.0</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>主芯片</h3>
-										<dl>
-											<dt>CPU品牌</dt>
-											<dd>海思（Hisilicon）</dd>
-											<dt>CPU频率</dt>
-											<dd>4*Cortex A73 2.36GHz + 4*Cortex A53 1.8GHz</dd>
-											<dt>CPU核数</dt>
-											<dd>八核</dd>
-											<dt>CPU型号</dt>
-											<dd>麒麟970</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>网络支持</h3>
-										<dl>
-											<dt>双卡机类型</dt>
-											<dd>双卡双待单通</dd>
-											<dt>最大支持SIM卡数量</dt>
-											<dd>2个</dd>
-											<dt>SIM卡类型</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>Nano SIM</dd>
-											<dt>4G网络</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>4G：移动（TD-LTE）；4G：联通（FDD-LTE）；4G：电信（FDD-LTE）；4G：联通（TD-LTE）</dd>
-											<dt>3G/2G网络</dt>
-											<dd>3G：移动（TD-LTE）；4G：联通（WCDMA）；3G：电信（CDMA2000）；2G：移动联通（GSM）+ 电信（CDMA）</dd>
-											<dt>副SIM卡类型</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>副SIM卡与存储卡二选一</dd>
-											<dt>副SIM卡4G网络</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>4G：移动（TD-LTE）；4G：联通（FDD-LTE）；4G：电信（FDD-LTE）；4G：联通（TD-LTE）</dd>
-											<dt>副SIM卡3G/2G网络</dt>
-											<dd>不支持主副卡同时使用电信卡；3G联通（WCDMA）；3G：电信（CDMA2000）；2G：移动联通（GSM）+电信（CDMA）</dd>
-											<dt>网络频率（2G/3G）</dt>
-											<dd>2G：GSM 850/900/1800/1900；2G：CDMA 800；3G：TD-SCDMA 1900/2000；3G：WCDMA 850/900/1900/2100；3G</dd>
-											<dd>CDMA2000；3G：CDMA 800MHz 1X&EVDO ；3G：WCDMA：850/900/1700/1900/2100MHz</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>存储</h3>
-										<dl>
-											<dt>ROM</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>128GB</dd>
-											<dt>RAM</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>6GB</dd>
-											<dt>存储卡</dt>
-											<dd>支持MicroSD（TF）</dd>
-											<dt>最大存储扩展容量</dt>
-											<dd>256GB</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>屏幕</h3>
-										<dl>
-											<dt>主屏幕尺寸（英寸）</dt>
-											<dd>5.9英寸</dd>
-											<dt>分辨率</dt>
-											<dd>2560X1400（Quad HD/2k）</dd>
-											<dt>屏幕材质类型</dt>
-											<dd>TFT</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>前置摄像头</h3>
-										<dl>
-											<dt>前置摄像头</dt>
-											<dd>800万像素</dd>
-											<dt>前摄光圈大小</dt>
-											<dd>f/2.0</dd>
-											<dt>美颜技术</dt>
-											<dd>支持</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>后置摄像头</h3>
-										<dl>
-											<dt>摄像头数量</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>2个</dd>
-											<dt>后置摄像头</dt>
-											<dd>1200万像素；2000万像素</dd>
-											<dt>摄像头光圈大小</dt>
-											<dd>其他</dd>
-											<dt>闪光灯</dt>
-											<dd>双色温双LED闪光灯</dd>
-											<dt>美颜技术</dt>
-											<dd>支持</dd>
-											<dt>副摄像头光圈大小</dt>
-											<dd>其他</dd>
-											<dt>照片最大分辨率</dt>
-											<dd>5120X3840</dd>
-											<dt>拍照特点</dt>
-											<dd>数码变焦；自动对焦；防抖；美颜；连拍；微距；全景；滤镜；场景模式；HDR；PDAF；夜间拍摄；微信小视频；有声照片；</dd>
-											<dd>水印；美肤录像；全像素双核激光对焦拍摄</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>电池信息</h3>
-										<dl>
-											<dt>电池容量（mAh）</dt>
-											<dd>4000（典型值）</dd>
-											<dt>电池类型</dt>
-											<dd>锂聚合物电池</dd>
-											<dt>电池是否可拆卸</dt>
-											<dd class="Ptable-tips">
-												<a href="/static/item/#"><i>？</i></a>
-											</dd>
-											<dd>否</dd>
-											<dt>充电器</dt>
-											<dd>5V/4.5A</dd>
-											<dt>快速充电</dt>
-											<dd>华为超级快充</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>娱乐功能</h3>
-										<dl>
-											<dt>mic数量</dt>
-											<dd>3个</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>数据接口</h3>
-										<dl>
-											<dt>数据传输接口</dt>
-											<dd>红外；WIFI；NFC；蓝牙；WiFi热点</dd>
-											<dt>NFC/NFC模式</dt>
-											<dd>支持（点对点模式）；支持（读卡器模式）；支持卡模拟</dd>
-											<dt>耳机接口类型</dt>
-											<dd>3.5mm</dd>
-											<dt>充电接口类型</dt>
-											<dd>Type-C</dd>
-											<dt>数据线</dt>
-											<dd>其他</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>手机特性</h3>
-										<dl>
-											<dt>指纹识别</dt>
-											<dd>支持</dd>
-											<dt>语音识别</dt>
-											<dd>支持</dd>
-											<dt>GPS</dt>
-											<dd>支持</dd>
-											<dt>电子罗盘</dt>
-											<dd>支持</dd>
-											<dt>霍尔感应器</dt>
-											<dd>支持</dd>
-											<dt>陀螺仪</dt>
-											<dd>支持</dd>
-											<dt>红外遥控</dt>
-											<dd>支持</dd>
-											<dt>适配VR</dt>
-											<dd>支持</dd>
-											<dt>其他</dt>
-											<dd>呼气灯；多麦降噪技术；光线感应</dd>
-										</dl>
-									</div>
-									<div class="guiGe">
-										<h3>辅助功能</h3>
-										<dl>
-											<dt>常用功能</dt>
-											<dd>录音；手势识别；便签；超大字体；SOS功能；重礼感应</dd>
-											<dt>其他1</dt>
-											<dd>智能识屏</dd>
-											<dt>其他特性</dt>
-											<dd>手套模式</dd>
-											<dt>其他2</dt>
-											<dd>单手操作</dd>
-										</dl>
-									</div>
-									<div class="package-list">
-										<h3>包装清单</h3>
-										<p>手机（含内置电池） X 1、5A大电流华为SuperCharge充电器X 1、5A USB数据线 X 1、半入耳式线控耳机 X 1、快速指南X 1、三包凭证 X 1、取卡针 X 1、保护壳 X 1</p>
-									</div>
+
+									<!--									<div class="package-list">-->
+									<!--										<h3>包装清单</h3>-->
+									<!--										<p>手机（含内置电池） X 1、5A大电流华为SuperCharge充电器X 1、5A USB数据线 X 1、半入耳式线控耳机 X 1、快速指南X 1、三包凭证 X 1、取卡针 X 1、保护壳 X 1</p>-->
+									<!--									</div>-->
 								</div>
 							</li>
 							<!--包装-->
 							<li class="baozhang actives" id="li3">
 								<div class="oBox">
-		<div class="shuoHou">
-			<div class="baoZhang">
-				<h2>售后保障</h2>
-			</div>
-		</div>
-		<!--厂家服务-->
-		<div class="changJia">
-			<div class="lianBao">
+									<div class="shuoHou">
+										<div class="baoZhang">
+											<h2>售后保障</h2>
+										</div>
+									</div>
+									<!--厂家服务-->
+									<div class="changJia">
+										<div class="lianBao">
 				<span class="oImg">
 					<img src="/static/item/img/2017.jpg" alt="" />
 					<h3>厂家服务</h3>
 				</span>
-				<div class="wenZi">
-					本产品全国联保，享受三包服务，质保期为：一年保<br />
-					如因质量问题或故障，凭厂商维修中心或特约维修点的质量检测证明，享受7日内退货，15日内换货，15日以上在保质期内享受免费保修等安保服务！<br />
-					(注：如厂家在商品介绍中有售后保障的说明，则此商品按照厂家说明执行售后保障服务。)您可以查询本品牌在各地售后服务中心的练习方式<a href="/static/item/#">请点击这儿查询...</a><br /><br />
-				</div>
-			</div>
-			<div class="lianBao oCn">
+											<div class="wenZi">
+												本产品全国联保，享受三包服务，质保期为：一年保<br />
+												如因质量问题或故障，凭厂商维修中心或特约维修点的质量检测证明，享受7日内退货，15日内换货，15日以上在保质期内享受免费保修等安保服务！<br />
+												(注：如厂家在商品介绍中有售后保障的说明，则此商品按照厂家说明执行售后保障服务。)您可以查询本品牌在各地售后服务中心的练习方式<a href="/static/item/#">请点击这儿查询...</a><br /><br />
+											</div>
+										</div>
+										<div class="lianBao oCn">
 				<span class="oImg">
 					<img src="/static/item/img/2017.jpg" alt="" />
 					<h3>京东承诺</h3>
 				</span>
-				<div class="wenZi">
-					本产品全国联保，享受三包服务，质保期为：一年保<br />
-					如因质量问题或故障，凭厂商维修中心或特约维修点的质量检测证明，享受7日内退货，15日内换货，15日以上在保质期内享受免费保修等安保服务！<br />
-					(注：如厂家在商品介绍中有售后保障的说明，则此商品按照厂家说明执行售后保障服务。)您可以查询本品牌在各地售后服务中心的练习方式<a href="/static/item/#">请点击这儿查询...</a><br /><br /><br />
-				</div>
-			</div>
+											<div class="wenZi">
+												本产品全国联保，享受三包服务，质保期为：一年保<br />
+												如因质量问题或故障，凭厂商维修中心或特约维修点的质量检测证明，享受7日内退货，15日内换货，15日以上在保质期内享受免费保修等安保服务！<br />
+												(注：如厂家在商品介绍中有售后保障的说明，则此商品按照厂家说明执行售后保障服务。)您可以查询本品牌在各地售后服务中心的练习方式<a href="/static/item/#">请点击这儿查询...</a><br /><br /><br />
+											</div>
+										</div>
 
-			<div class="lianBao ">
+										<div class="lianBao ">
 				<span class="oImg">
 					<img src="/static/item/img/2017.jpg" alt="" />
 					<h3>正品行货</h3>
 				</span>
-				<div class="wenZi hangHuo">
-					京东商城向您保证所售商品均为正品行货，京东自营商品开具机打发票或电子发票。
-				</div>
-			</div>
-			<div class="lianBao quanGuo">
+											<div class="wenZi hangHuo">
+												京东商城向您保证所售商品均为正品行货，京东自营商品开具机打发票或电子发票。
+											</div>
+										</div>
+										<div class="lianBao quanGuo">
 				<span class="oImg">
 					<img src="/static/item/img/2017-1.jpg" alt="" />
 					<h3>全国联保</h3>
 				</span>
-				<div class="wenZi">
-					凭质保证书及京东商城发票，可享受全国联保服务（奢侈品、钟表除外；奢侈品、钟表由京东联系保修，享受法定三包售后服务），与您亲临商场选购的商品享受相同的质量保证。京东商城还为您提供具有竞争力的商品价格和运费政策，请您放心购买！ <br />
+											<div class="wenZi">
+												凭质保证书及京东商城发票，可享受全国联保服务（奢侈品、钟表除外；奢侈品、钟表由京东联系保修，享受法定三包售后服务），与您亲临商场选购的商品享受相同的质量保证。京东商城还为您提供具有竞争力的商品价格和运费政策，请您放心购买！ <br />
 
-注：因厂家会在没有任何提前通知的情况下更改产品包装、产地或者一些附件，本司不能确保客户收到的货物与商城图片、产地、附件说明完全一致。只能确保为原厂正货！并且保证与当时市场上同样主流新品一致。若本商城没有及时更新，请大家谅解！
-				</div>
-			</div>
-				<!--权利声明-->
-			<div class="quanLi">
-				<h4>权利声明:</h4>
-				<div class="jingDong">
-					京东上的所有商品信息、客户评价、商品咨询、网友讨论等内容，是京东重要的经营资源，未经许可，禁止非法转载使用。<br />
-	<span class="oZhu">注</span>：本站商品信息均来自于合作方，其真实性、准确性和合法性由信息拥有者（合作方）负责。本站不提供任何保证，并不承担任何法律责任。
-				</div>
-			</div>
-			<div class="quanLi jiaGe">
-				<h4>价格说明:</h4>
-				<div class="jingDong">
-					<span class="oZhu">京东价</span>：京东价为商品的销售价，是您最终决定是否购买商品的依据。<br />
-					<span class="oZhu">划线价</span>：商品展示的划横线价格为参考价，该价格可能是品牌专柜标价、商品吊牌价或由品牌供应商提供的正品零售价（如厂商指导价、建议零售价等）或该商品在京东平台上曾经展示过的销售价；由于地区、时间的差异性和市场行情波动，品牌专柜标价、商品吊牌价等可能会与您购物时展示的不一致，该价格仅供您参考。<br />
-					<span class="oZhu">折扣</span>：如无特殊说明，折扣指销售商在原价、或划线价（如品牌专柜标价、商品吊牌价、厂商指导价、厂商建议零售价）等某一价格基础上计算出的优惠比例或优惠金额；如有疑问，您可在购买前联系销售商进行咨询。<br />
-					<span class="oZhu">异常问题</span>：商品促销信息以商品详情页“促销”栏中的信息为准；商品的具体售价以订单结算页价格为准；如您发现活动商品售价或促销信息有异常，建议购买前先联系销售商咨询。
-				</div>
-			</div>
-		</div>
+												注：因厂家会在没有任何提前通知的情况下更改产品包装、产地或者一些附件，本司不能确保客户收到的货物与商城图片、产地、附件说明完全一致。只能确保为原厂正货！并且保证与当时市场上同样主流新品一致。若本商城没有及时更新，请大家谅解！
+											</div>
+										</div>
+										<!--权利声明-->
+										<div class="quanLi">
+											<h4>权利声明:</h4>
+											<div class="jingDong">
+												京东上的所有商品信息、客户评价、商品咨询、网友讨论等内容，是京东重要的经营资源，未经许可，禁止非法转载使用。<br />
+												<span class="oZhu">注</span>：本站商品信息均来自于合作方，其真实性、准确性和合法性由信息拥有者（合作方）负责。本站不提供任何保证，并不承担任何法律责任。
+											</div>
+										</div>
+										<div class="quanLi jiaGe">
+											<h4>价格说明:</h4>
+											<div class="jingDong">
+												<span class="oZhu">京东价</span>：京东价为商品的销售价，是您最终决定是否购买商品的依据。<br />
+												<span class="oZhu">划线价</span>：商品展示的划横线价格为参考价，该价格可能是品牌专柜标价、商品吊牌价或由品牌供应商提供的正品零售价（如厂商指导价、建议零售价等）或该商品在京东平台上曾经展示过的销售价；由于地区、时间的差异性和市场行情波动，品牌专柜标价、商品吊牌价等可能会与您购物时展示的不一致，该价格仅供您参考。<br />
+												<span class="oZhu">折扣</span>：如无特殊说明，折扣指销售商在原价、或划线价（如品牌专柜标价、商品吊牌价、厂商指导价、厂商建议零售价）等某一价格基础上计算出的优惠比例或优惠金额；如有疑问，您可在购买前联系销售商进行咨询。<br />
+												<span class="oZhu">异常问题</span>：商品促销信息以商品详情页“促销”栏中的信息为准；商品的具体售价以订单结算页价格为准；如您发现活动商品售价或促销信息有异常，建议购买前先联系销售商咨询。
+											</div>
+										</div>
+									</div>
 
 
-	</div>
+								</div>
 							</li>
 							<!--评价-->
 							<li class="PINgjia actives" id="li4">
@@ -1552,19 +1048,20 @@
 										</li>
 									</ul>
 								</div>
-								</li>
-								<li class="shuoming actives" id="li5"></li>
+							</li>
+
+							<li class="shuoming actives" id="li5"></li>
 						</ul>
 					</div>
 				</div>
 			</div>
-		</div>
+</div>
 		<div class="headera">
 			<div class="Logo-tu">
-				<span><img src="/static/item/img/service_items_1.png"/></span>
+				<!--<span><img src="/static/item/img/service_items_1.png"/></span>
 				<span><img src="/static/item/img/service_items_2.png"/></span>
 				<span><img src="/static/item/img/service_items_3.png"/></span>
-				<span><img src="/static/item/img/service_items_4.png"/></span>
+				<span><img src="/static/item/img/service_items_4.png"/></span>-->
 			</div>
 			<div class="table">
 				<dl>
