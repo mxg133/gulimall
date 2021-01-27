@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.product.vo;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -9,9 +10,10 @@ import java.util.List;
  * @date 2021-01-26 4:56 下午
  * @description
  */
+@ToString
 @Data
 public class SkuItemSaleAttrVo {
     private Long attrId;
     private String attrName;
-    private List<String> attrValues;
+    private String attrValues;
 }

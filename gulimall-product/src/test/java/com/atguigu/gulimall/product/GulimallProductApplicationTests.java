@@ -1,9 +1,11 @@
 package com.atguigu.gulimall.product;
 
 import com.atguigu.gulimall.product.dao.AttrGroupDao;
+import com.atguigu.gulimall.product.dao.SkuSaleAttrValueDao;
 import com.atguigu.gulimall.product.entity.BrandEntity;
 import com.atguigu.gulimall.product.service.BrandService;
 import com.atguigu.gulimall.product.service.CategoryService;
+import com.atguigu.gulimall.product.vo.SkuItemSaleAttrVo;
 import com.atguigu.gulimall.product.vo.SkuItemVo;
 import com.atguigu.gulimall.product.vo.SpuItemAttrGroupVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -39,6 +41,15 @@ public class GulimallProductApplicationTests {
 
     @Autowired
     AttrGroupDao attrGroupDao;
+
+    @Autowired
+    SkuSaleAttrValueDao skuSaleAttrValueDao;
+
+    @Test
+    public void testGetSaleAttrBySpuId(){
+        List<SkuItemSaleAttrVo> attrVos = skuSaleAttrValueDao.getSaleAttrBySpuId(5L);
+        System.out.println(attrVos);
+    }
 
     @Test
     public void testGetAttrGroupWithAttrsBySpuId(){
