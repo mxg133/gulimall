@@ -587,7 +587,7 @@
 							<ul class="box-ul">
 								<li></li>
 								<li>
-									由<span>京东</span> 发货，并提供售后服务
+									由<span>狗东</span> 发货，并提供售后服务
 								</li>
 							</ul>
 						</div>
@@ -599,11 +599,10 @@
                                     skuId 同时设置一个class 在列表中包含的设置为选中 否则不选中
                                     -->
 									<dt>选择[[${attr.attrName}]]</dt>
-									<dd th:each="val:${#strings.listSplit(attr.attrValues, ',')}">
-<!--										<a th:attr="skus = ${val.skuIds},class=${#lists.contains(#strings.listSplit(val.skuIds,','),-->
-<!--										item.info.skuId.toString())? 'sku_attr_value checked':'sku_attr_value'}">-->
-										<a>
-											[[${val}]]
+									<dd th:each="vals:${(attr.attrValues)}">
+										<a th:attr="skus=${vals.skuIds},class=${#lists.contains(#strings.listSplit(vals.skuIds,','),
+										item.info.skuId.toString())? 'sku_attr_value checked':'sku_attr_value'}">
+											[[${vals.attrValue}]]
 										</a>
 									</dd>
 								</dl>
@@ -1274,6 +1273,36 @@
 	<script src="/static/item/js/jquery1.9.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/item/js/js.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
+		$(".sku_attr_value").click(function() {
+
+		})
+
+		$(function(){
+			//页面初始化 给父类id设置样式
+			$(".sku_attr_value").parent().css({"border":"solid 1px #CCC"});
+			//class里面有对应样式的父类设置样式 checked 表示选中
+			$("a[class = 'sku_attr_value checked']").parent().css({"border":"1px solid red"});
+		})
+
+		// $("#addToCartA").click(function(){
+		// 	let num = $("#numInput").val();
+		// 	console.log(num);
+		// 	let skuId = $(this).attr("skuId");
+		// 	location.href = "http://cart.gulimall.com/addToCart?skuId=" + skuId +"&num=" + num;
+		// 	return false;
+		// })
+		// $("#seckillA").click(function() {
+		// 	var isLogin = [[${session.loginUser != null}]]
+		// 	if(isLogin) {
+		// 		var killId = $(this).attr("sessionid") + "_" + $(this).attr("skuid");
+		// 		var key =$(this).attr("code");
+		// 		var num = $("#numInput").val();
+		// 		location.href ="http://seckill.gulimall.com/kill?killId=" + killId+"&key=" +key +"&num=" + num+"";
+		// 		return false
+		// 	} else {
+		// 		alert("秒杀前请先登录");
+		// 	}
+		// })
 	</script>
 
 </html>
