@@ -4979,7 +4979,7 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 
 			</div>
 			<div class="dibu">
-				<a href="/static/reg/https://www.jd.com/"><button class="quxiao">取消</button></a>
+				<a href="http://3.cn"><button class="quxiao">取消去狗东</button></a>
 				<button class="ty">同意并继续</button>
 			</div>
 		</div>
@@ -5001,11 +5001,11 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 
 
 		<header>
-			<a href="/static/reg/https://www.jd.com/?cu=true&utm_source=haosou-pinzhuan&utm_medium=cpc&utm_campaign=t_288551095_haosoupinzhuan&utm_term=0a875d61c5fe47d8bc48679132932d23_0_2702c6f4ae1c4cd191c1ee4398e2e21b" class="logo"><img src="/static/reg/img/logo1.jpg" alt=""></a>
+			<a href="http://gulimall.com" class="logo"><img src="/static/reg/img/logo1.jpg" alt=""></a>
 			<div class="desc">欢迎注册</div>
 			<div class="dfg">
 				<span>已有账号？</span>
-				<a href="/static/reg/">请登录</a>
+				<a href="http://auth.gulimall.com/login.html">请登录</a>
 			</div>
 		</header>
 		<section>
@@ -5047,10 +5047,7 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 					<label for="username" class="other_label">验 证 码
 			<input maxlength="20" type="text" placeholder="请输入验证码" class="caa">
 			</label>
-					<span id="code"></span>
-					<div class="tips">
-
-					</div>
+					<a id="sendCode"> 发送验证码 </a>
 				</div>
 				<div class="arguement">
 					<input type="checkbox" id="xieyi"> 阅读并同意
@@ -5302,6 +5299,35 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 			$(".cuo").click(function() {
 				$(".zong").hide();
 			});
+
+			//短信验证码功能
+			$("#sendCode").click(function() {
+				if($(this).hasClass("disabled")) {
+					//正在倒计时
+				} else {
+					$.get("/sms/sendcode?phone="+ $("#phoneNum").val(),function(data){
+						if(data.code != 0) {
+							alert(data.msg)
+						}
+					});
+					//给指定手机号发送短信
+					timeoutChangeStyle()
+				}
+			})
+			var num = 10;
+			function timeoutChangeStyle() {
+				$("#sendCode").attr("class","disabled");
+				if(num == 0) {
+					$("#sendCode").text("重新发送验证码");
+					num = 10;
+					$("#sendCode").attr("class","")
+				} else {
+					var str = num + "s后重新发送";
+					$("#sendCode").text(str);
+					setTimeout("timeoutChangeStyle()",1000)
+				}
+				num --;
+			}
 		</script>
 	</body>
 
