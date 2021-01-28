@@ -12,5 +12,12 @@ spring:
       oss:
         endpoint: oss-cn-beijing.aliyuncs.com
         bucket: gulimall-hello-3
+      #阿里云短信服务
+      sms:
+        host: https://smssend.shumaidata.com
+        path: /sms/send
+        templateId: M09DD535F4
+        appcode:
+
   application:
     name: gulimall-third-party

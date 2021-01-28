@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  * @date 2021-01-27 4:12 下午
  * @description
  */
+//跟配置文件绑定
 @ConfigurationProperties(prefix = "gulimall.thread")
 @Component
 @Data
