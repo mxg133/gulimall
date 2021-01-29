@@ -6,10 +6,8 @@ import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.auth.feign.ThirdPartyFeignService;
 import com.atguigu.gulimall.auth.vo.UserRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -90,7 +88,32 @@ public class LoginRegController {
         }
 
         //没问题 真正的注册， 调用远程服务注册
+        //1 校验验证码
+        String code = vo.getCode();
+        String redisCode = stringRedisTemplate.opsForValue().get(AuthServiceConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
+        if (!StringUtils.isEmpty(redisCode)) {
+            //说明redis存了验证码
+            if (code.equals(redisCode.split("_")[0])) {
+                //说明redis验证码 = 前端传过来的 可以远程注册
+                //先删除验证码 令牌机制
+                stringRedisTemplate.delete(AuthServiceConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
 
+            }else {
+                //说明验证码不对
+                Map<String, String> errors = new HashMap<>();
+                errors.put("code", "验证码匹配不上");
+                redirectAttributes.addFlashAttribute("errors", errors);
+                return "redirect:http://auth.gulimall.com/reg.html";
+            }
+        }else {
+            //说明验证码没了，过期了
+            Map<String, String> errors = new HashMap<>();
+            errors.put("code", "redis没有验证码");
+            redirectAttributes.addFlashAttribute("errors", errors);
+            return "redirect:http://auth.gulimall.com/reg.html";
+        }
+
+        //2
 
         //注册成功后回到首页，或者回到登录页
         return "redirect:http://auth.gulimall.com/login.html";
