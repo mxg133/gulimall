@@ -13,7 +13,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 /**
  * @author 孟享广
  * @date 2021-01-13 10:05 上午
- * @description
+ * @description  整合Spring Cache 的相关配置
  */
 
 //绑定配置文件的配置

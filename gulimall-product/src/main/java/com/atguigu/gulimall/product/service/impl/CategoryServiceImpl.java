@@ -93,7 +93,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     //存储同一类型的数据，都可以指定成同一个分区 分区名默认就是缓存的前缀
-    //失效模式 删除category区下所有的数据
+    //失效模式 删除category区下【所有】的数据
     @CacheEvict(value = "category", allEntries = true)
     //同时进行多种缓存操作 组合删除
 //    @Caching(evict = {
@@ -101,7 +101,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 //            @CacheEvict(value = "category", key = "'getLevel1Catrgorys'"),
 //            @CacheEvict(value = "category", key = "'getCatalogJson'")
 //    })
-    //双写模式
+    //双写模式 修改后再放入缓存
 //    @CachePut
     @Transactional
     //级联更新 所有数据
@@ -116,20 +116,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     /**
-     * 表示这个东西是结果是需要缓存的，如果缓存中有，方法不调用；否则调用方法，放入缓存
-     * 每一个需要缓存的数据我们都要来指定要放在哪个名字的缓存里【缓存的分区(按照业务类型区分)】
+     * @Cacheable 表示这个东西是结果是需要缓存的，如果缓存中有，方法不调用；否则调用方法，放入缓存
+     * value 每一个需要缓存的数据我们都要来指定要放在哪个名字的缓存里【缓存的分区(按照业务类型区分)】
      * 3)、默认行为
      *   1）、如果缓存中有 方法不用调用
-     *   2）、 key默认生成 缓存的名字simplekey 自动生成的key值
+     *   2）、 key默认生成 缓存的名字::simplekey 自动生成的key值
      *   3）、缓存的value值 默认使用java虚拟化机制 将序列化的数据存到redis
      *   4）、默认过期时间为-1
      *
      *  自定义
-     *   1）、指定生成的缓存使用的key key的属性指定接受一个spel表达式
-     *       spel表达式地址
-     *   2)、指定缓存的数据存活时间 配置文件中修改ttl
-     *   3）、将数据修改为json格式-
-     */ //sync = true解决缓存击穿
+     *   1）、指定生成的缓存使用的key key的属性指定接受一个SpEL表达式
+     *       SpEL表达式地址
+     *   2)、指定缓存的数据存活时间 配置文件中修改TTL
+     *   3）、将数据修改为json格式
+     */ //sync = true解决缓存击穿 默认是false
     @Cacheable(value = {"category"}, key = "#root.method.name", sync = true)
     @Override
     public List<CategoryEntity> getLevel1Catrgorys() {

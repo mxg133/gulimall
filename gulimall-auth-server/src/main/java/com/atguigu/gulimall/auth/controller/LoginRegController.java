@@ -4,16 +4,24 @@ import com.atguigu.common.constant.AuthServiceConstant;
 import com.atguigu.common.exception.BizCodeEnume;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.auth.feign.ThirdPartyFeignService;
+import com.atguigu.gulimall.auth.vo.UserRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author 孟享广
@@ -55,6 +63,39 @@ public class LoginRegController {
 
         return R.ok();
     }
+
+    /**
+     * TODO 重定向携带数据 利用session原理 将数据放在session中 只要跳转到下一个页面取出数据后 session中的数据就会删除
+     *  分布式session问题
+     *  RedirectAttributes携带数据
+     * @Valid BindingResult result 都是JSR303校验
+     * RedirectAttributes 重定向携带数据 代替Model
+     */
+    @PostMapping("/regist")
+    public String regist(@Valid UserRegistVo vo, BindingResult result, RedirectAttributes redirectAttributes) {
+
+        //有问题
+        if (result.hasErrors()) {
+//            Map<String, String> errors1 = result.getFieldErrors().stream().collect(Collectors.toMap(fieldError -> {
+//                return fieldError.getField();//key
+//            }, fieldError -> {
+//                return fieldError.getDefaultMessage();//value
+//            }));
+            Map<String, String> errors = result.getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+
+          //model.addAttribute("errors", errors);
+            redirectAttributes.addFlashAttribute("errors", errors);
+            //后端校验出错，转发到注册页
+            return "redirect:http://auth.gulimall.com/reg.html";
+        }
+
+        //没问题 真正的注册， 调用远程服务注册
+
+
+        //注册成功后回到首页，或者回到登录页
+        return "redirect:http://auth.gulimall.com/login.html";
+    }
+
 
     /**
      * 下面两个空方法仅仅是发送一个请求【直接】跳转一个页面

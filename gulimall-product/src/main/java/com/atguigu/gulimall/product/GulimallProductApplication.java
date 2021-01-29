@@ -76,10 +76,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *           2)配置使用redis作为缓存
  *           spring.cache.type=redis
  *       3）、测试使用缓存
- *          @Cacheable 触发将数据保存到缓存操作
- *          @CacheEvict 触发将数据从缓存删除的操作
- *          @CachePut 不影响方法执行更新操作
- *          @Caching 组合以上多个操作
+ *          @Cacheable 保存 触发将数据保存到缓存操作
+ *          @CacheEvict 删除 触发将数据从缓存删除的操作
+ *          @CachePut 更新 不影响方法执行更新操作
+ *          @Caching 组合 组合以上多个操作
  *          @CacheConfig 在类级别共享缓存的相同配置
  *       1)、开启缓存功能
  *           @EnableCaching
