@@ -1,10 +1,14 @@
 package com.atguigu.gulimall.auth.controller;
 
+import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.constant.AuthServiceConstant;
 import com.atguigu.common.exception.BizCodeEnume;
 import com.atguigu.common.utils.R;
+import com.atguigu.gulimall.auth.feign.MemberFeignService;
 import com.atguigu.gulimall.auth.feign.ThirdPartyFeignService;
+import com.atguigu.gulimall.auth.vo.MemberRegistVo;
 import com.atguigu.gulimall.auth.vo.UserRegistVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -35,6 +39,9 @@ public class LoginRegController {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    MemberFeignService memberFeignService;
+
     @ResponseBody
     @GetMapping("/sms/sendcode")
     public R sendCode(@RequestParam("phone") String phone) {
@@ -53,9 +60,10 @@ public class LoginRegController {
 
         //2 验证码再次校验 存kry-phone,value-code sms:code:13344445555->123456
         //取1-6位 作为验证码
-        String code = UUID.randomUUID().toString().substring(0, 5) + "_" + System.currentTimeMillis();
+        String code = UUID.randomUUID().toString().substring(0, 5);
+        String substring = code + "_" + System.currentTimeMillis();
         //redis缓存验证码
-        stringRedisTemplate.opsForValue().set(AuthServiceConstant.SMS_CODE_CACHE_PREFIX+phone, code, 10, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set(AuthServiceConstant.SMS_CODE_CACHE_PREFIX+phone, substring, 10, TimeUnit.MINUTES);
 
         thirdPartyFeignService.sendCode(phone, code);
 
@@ -97,6 +105,20 @@ public class LoginRegController {
                 //说明redis验证码 = 前端传过来的 可以远程注册
                 //先删除验证码 令牌机制
                 stringRedisTemplate.delete(AuthServiceConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
+                //远程注册
+                MemberRegistVo memberRegistVo = new MemberRegistVo();
+                BeanUtils.copyProperties(vo, memberRegistVo);
+                R r = memberFeignService.regist(memberRegistVo);
+                if (r.getCode() == 0) {
+                    //注册成功后回到首页，或者回到登录页
+                    return "redirect:http://auth.gulimall.com/login.html";
+                }else {
+                    //出现异常 或者 失败
+                    Map<String, String> errors = new HashMap<>();
+                    errors.put("msg", r.getData(new TypeReference<String>(){}));
+                    redirectAttributes.addFlashAttribute("errors", errors);
+                    return "redirect:http://auth.gulimall.com/reg.html";
+                }
 
             }else {
                 //说明验证码不对
@@ -112,11 +134,6 @@ public class LoginRegController {
             redirectAttributes.addFlashAttribute("errors", errors);
             return "redirect:http://auth.gulimall.com/reg.html";
         }
-
-        //2
-
-        //注册成功后回到首页，或者回到登录页
-        return "redirect:http://auth.gulimall.com/login.html";
     }
 
 

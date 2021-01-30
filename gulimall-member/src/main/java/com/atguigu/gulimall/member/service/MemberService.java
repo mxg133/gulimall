@@ -20,7 +20,7 @@ public interface MemberService extends IService<MemberEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    void regist(MemberRegistVo vo);
+    void regist(MemberRegistVo vo) throws PhoneExistException, UsernameExistException;
 
     void checkPhoneUnique(String phone) throws PhoneExistException;
 

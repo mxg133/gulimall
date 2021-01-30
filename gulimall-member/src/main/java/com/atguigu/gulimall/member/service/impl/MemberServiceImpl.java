@@ -37,8 +37,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
     }
 
     @Override
-    public void regist(MemberRegistVo vo) {
-
+    public void regist(MemberRegistVo vo) throws PhoneExistException, UsernameExistException {
+        MemberDao memberDao = this.baseMapper;
         //要保存的大对象
         MemberEntity entity = new MemberEntity();
 
@@ -50,19 +50,21 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         entity.setUsername(vo.getUserName());
         entity.setMobile(vo.getPhone());
 
-        //密码需要加密蹲存储 MD5
+        //密码需要加密蹲存储 MD5 密码加密处理
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encode = passwordEncoder.encode(vo.getPassword());
-        entity.setPassword("encode");
+        entity.setPassword(encode);
 
         //初始化默认数据，会员等级
         MemberLevelEntity levelEntity = memberLevelDao.getDefaultLevel();
-        entity.setLevelId(levelEntity.getId());
+        if (levelEntity != null) {
+            entity.setLevelId(levelEntity.getId());
+        }
 
         //其他默认信息
 
-        //把这个大对象保存到member数据库
-        this.baseMapper.insert(entity);
+        //把这个大对象保存到数据库MemberEntity表中
+        memberDao.insert(entity);
     }
 
     //异常机制
