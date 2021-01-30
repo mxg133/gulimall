@@ -7,6 +7,7 @@ import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.auth.feign.MemberFeignService;
 import com.atguigu.gulimall.auth.feign.ThirdPartyFeignService;
 import com.atguigu.gulimall.auth.vo.MemberRegistVo;
+import com.atguigu.gulimall.auth.vo.UserLoginVo;
 import com.atguigu.gulimall.auth.vo.UserRegistVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,7 +116,7 @@ public class LoginRegController {
                 }else {
                     //出现异常 或者 失败
                     Map<String, String> errors = new HashMap<>();
-                    errors.put("msg", r.getData(new TypeReference<String>(){}));
+                    errors.put("msg", r.getData("msg", new TypeReference<String>(){}));//R错误消息都在msg里
                     redirectAttributes.addFlashAttribute("errors", errors);
                     return "redirect:http://auth.gulimall.com/reg.html";
                 }
@@ -136,6 +137,23 @@ public class LoginRegController {
         }
     }
 
+    @PostMapping("/login")
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes) {
+
+        //远程登录
+        R r = memberFeignService.login(vo);
+        if (r.getCode() == 0) {
+            //远程登录成功
+            //TODO 登录成功后的处理
+            return "redirect:http://gulimall.com";
+        }else {
+            //远程登录失败
+            Map<String, String> errors = new HashMap<>();
+            errors.put("msg", r.getData("msg", new TypeReference<String>(){}));
+            redirectAttributes.addFlashAttribute("errors", errors);
+            return "redirect:http://auth.gulimall.com/login.html";
+        }
+    }
 
     /**
      * 下面两个空方法仅仅是发送一个请求【直接】跳转一个页面
