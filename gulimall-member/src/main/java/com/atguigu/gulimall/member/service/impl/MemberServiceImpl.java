@@ -137,6 +137,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         //1 是否是 首次登录？ 根据uid查一下有没有oldEntity
         MemberEntity oldEntity = memberDao.selectOne(new QueryWrapper<MemberEntity>().eq("social_uid", uid));
         if (oldEntity != null) {
+            System.out.println("weibo社交登录中...非首次登录本站");
             //不是首次登录，登录！
             //更新为新的newEntity
             MemberEntity newEntity = new MemberEntity();
@@ -151,6 +152,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
             return oldEntity;
         } else {
             //是首次登录 注册！
+            System.out.println("weibo社交登录中...首次登录本站");
             MemberEntity newEntity = new MemberEntity();
             try {
                 //查出当前用户的社交账号的信息 昵称 性别等
@@ -159,7 +161,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
                 map.put("access_token", vo.getAccess_token());
                 map.put("uid", vo.getUid());
                 //获取微博个人信息
-                HttpResponse response = HttpUtils.doGet("https://api.weibo.com", "/2/show.json", "get", new HashMap<String, String>(), map);
+                HttpResponse response = HttpUtils.doGet("https://api.weibo.com", "/2/users/show.json", "get", new HashMap<String, String>(), map);
                 if (response.getStatusLine().getStatusCode() == 200) {
                     //查询成功
                     String json = EntityUtils.toString(response.getEntity());

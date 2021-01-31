@@ -41,7 +41,7 @@ public class MemberController {
         MemberEntity entity = memberService.login(vo);
         if (entity != null) {
             //登录成功
-            return R.ok();
+            return R.ok().setData(entity);//真正返回的数据
         }
         //登录失败
         return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode(), BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());

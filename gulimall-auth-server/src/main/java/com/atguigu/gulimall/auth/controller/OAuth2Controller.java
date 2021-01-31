@@ -1,10 +1,16 @@
 package com.atguigu.gulimall.auth.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.HttpUtils;
+import com.atguigu.common.utils.R;
+import com.atguigu.gulimall.auth.feign.MemberFeignService;
+import com.atguigu.gulimall.auth.vo.MemberResVo;
 import com.atguigu.gulimall.auth.vo.SocialUser;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,8 +23,12 @@ import java.util.Map;
  * @date 2021-01-31 2:03 下午
  * @description 处理社交登录请求
  */
+@Slf4j
 @Controller
 public class OAuth2Controller {
+
+    @Autowired
+    MemberFeignService memberFeignService;
 
     @GetMapping("/oauth2.0/weibo/success")
     public String weibo(@RequestParam("code") String code) throws Exception {
@@ -30,7 +40,7 @@ public class OAuth2Controller {
         map.put("redirect_uri", "http://auth.gulimall.com/oauth2.0/weibo/success");
         map.put("code", code);
         //1 根据 code 换取 access_token 能获取则成功
-        HttpResponse response = HttpUtils.doPost("api.weibo.com", "/oauth2/access_token", "post", null, null, map);
+        HttpResponse response = HttpUtils.doPost("https://api.weibo.com", "/oauth2/access_token", "post", new HashMap<>(), map, new HashMap<>());
 
         //处理返回的 response 这个 json
         if (response.getStatusLine().getStatusCode() == 200) {
@@ -41,10 +51,17 @@ public class OAuth2Controller {
             //1） 第一次用 微博 进行 社交登录=>注册，进行一对一绑定注册到远程服务的数据库
             //2） 多次用 微博 进行 社交登录=>登录
             //由远程服务来做判断
+            R r = memberFeignService.oauthLogin(socialUser);
+            if (r.getCode() == 0) {
+                MemberResVo memberResVo = r.getData("data", new TypeReference<MemberResVo>(){});
+                log.info("社交登录成功，用户信息为：{}" + memberResVo.toString());
+                //登录成功 -> 跳转首页
+                return "redirect:http://gulimall.com";
+            }else {
+                //失败 重新登录
+                return "redirect:http://auth.gulimall.com/login.html";
+            }
 
-
-            //2 登录成功 -> 跳转首页
-            return "redirect:http://gulimall.com";
         }else {
             //没有获取了access_token 登录失败 返回到登录页
             return "redirect:http://auth.gulimall.com/login.html";
