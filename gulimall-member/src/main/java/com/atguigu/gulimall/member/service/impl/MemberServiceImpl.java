@@ -1,15 +1,24 @@
 package com.atguigu.gulimall.member.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.atguigu.common.utils.HttpUtils;
 import com.atguigu.gulimall.member.dao.MemberLevelDao;
 import com.atguigu.gulimall.member.entity.MemberLevelEntity;
 import com.atguigu.gulimall.member.exception.PhoneExistException;
 import com.atguigu.gulimall.member.exception.UsernameExistException;
 import com.atguigu.gulimall.member.vo.MemberLoginVo;
 import com.atguigu.gulimall.member.vo.MemberRegistVo;
+import com.atguigu.gulimall.member.vo.SocialUser;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -101,7 +110,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         if (entity == null) {
             //登录失败，数据库没有这个用户
             return null;
-        }else {
+        } else {
             //数据库有这个用户
             //1 获取到数据库中的password
             String passwordDb = entity.getPassword();
@@ -111,10 +120,63 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
             if (matches) {
                 //密码比对成功，登录成功
                 return entity;
-            }else {
+            } else {
                 //用户存在，密码不对，登录失败
                 return null;
             }
+        }
+    }
+
+    //社交
+    @Override
+    public MemberEntity login(SocialUser vo) {
+
+        MemberDao memberDao = this.baseMapper;
+        //登录+注册
+        String uid = vo.getUid();
+        //1 是否是 首次登录？ 根据uid查一下有没有oldEntity
+        MemberEntity oldEntity = memberDao.selectOne(new QueryWrapper<MemberEntity>().eq("social_uid", uid));
+        if (oldEntity != null) {
+            //不是首次登录，登录！
+            //更新为新的newEntity
+            MemberEntity newEntity = new MemberEntity();
+            newEntity.setId(oldEntity.getId());
+            newEntity.setAccessToken(vo.getAccess_token());
+            newEntity.setExpiresIn(vo.getExpires_in());
+
+            memberDao.updateById(newEntity);
+
+            oldEntity.setAccessToken(vo.getAccess_token());
+            oldEntity.setExpiresIn(vo.getExpires_in());
+            return oldEntity;
+        } else {
+            //是首次登录 注册！
+            MemberEntity newEntity = new MemberEntity();
+            try {
+                //查出当前用户的社交账号的信息 昵称 性别等
+                //https://api.weibo.com/2/users/show.json?access_token=2.00VOvasH4wwiOBb964b1351acSii1D&uid=7219651783
+                HashMap<String, String> map = new HashMap<>();
+                map.put("access_token", vo.getAccess_token());
+                map.put("uid", vo.getUid());
+                //获取微博个人信息
+                HttpResponse response = HttpUtils.doGet("https://api.weibo.com", "/2/show.json", "get", new HashMap<String, String>(), map);
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    //查询成功
+                    String json = EntityUtils.toString(response.getEntity());
+                    JSONObject jsonObject = JSON.parseObject(json);
+                    String name = jsonObject.getString("name");//微博昵称
+                    String gender = jsonObject.getString("gender");//微博性别
+                    //....
+                    newEntity.setNickname(name);
+                    newEntity.setGender("m".equals(gender) ? 1 : 0);
+                    //....
+                }
+            } catch (Exception e) {}
+            newEntity.setSocialUid(vo.getUid());//防止下一次登录再次注册
+            newEntity.setAccessToken(vo.getAccess_token());
+            newEntity.setExpiresIn(vo.getExpires_in());
+            memberDao.insert(newEntity);
+            return newEntity;
         }
     }
 }
