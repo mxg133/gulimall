@@ -1,4 +1,4 @@
-package com.atguigu.gulimall.auth.vo;
+package com.atguigu.common.vo;
 
 import lombok.Data;
 import lombok.ToString;
@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @ToString
 @Data
-public class MemberResVo {
+public class MemberResVo implements Serializable {
 
 	/**
 	 * id

@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.HttpUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.vo.MemberResVo;
 import com.atguigu.gulimall.auth.feign.MemberFeignService;
-import com.atguigu.gulimall.auth.vo.MemberResVo;
 import com.atguigu.gulimall.auth.vo.SocialUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -62,6 +61,8 @@ public class OAuth2Controller {
                 //以后浏览器访问哪个网站就会带上这个网站的cookie
                 //子域之间：gulimall.com auth.guliamll.com member.gulimall.com
                 //发卡发的时候(指定域名为父域名)，即使是子系统发的卡，也能让父系统使用
+                //TODO 1 默认发的令牌 session=asdfg 作用域是当前域：解决子域session共享问题
+                //TODO 2 希望使用json序列化对象到redis中
                 session.setAttribute("loginUser", memberResVo);
 //                servletResponse.addCookie(new Cookie("JSESSIONID", "dada").setDomain());
                 //登录成功 -> 跳转首页

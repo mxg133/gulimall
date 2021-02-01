@@ -1,5 +1,9 @@
 server:
   port: 20000
+#    整合Spring Session 过期时间
+  servlet:
+    session:
+      timeout: 30m
 spring:
 #      Nacos 注册中心
   cloud:
@@ -17,7 +21,9 @@ spring:
   redis:
     host: 10.211.55.3
     port: 6379
-
+#    整合Spring Session 指定session是存到redis里
+  session:
+    store-type: redis
 #logging:
 #  level:
 #    #上线后，可以降低日志级别
