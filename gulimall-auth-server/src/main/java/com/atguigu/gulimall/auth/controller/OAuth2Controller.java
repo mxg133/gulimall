@@ -15,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +34,7 @@ public class OAuth2Controller {
     MemberFeignService memberFeignService;
 
     @GetMapping("/oauth2.0/weibo/success")
-    public String weibo(@RequestParam("code") String code, HttpSession session) throws Exception {
+    public String weibo(@RequestParam("code") String code, HttpSession session, HttpServletResponse servletResponse) throws Exception {
 
         Map<String, String> map = new HashMap<>();
         map.put("client_id", "1133714539");
@@ -56,8 +58,13 @@ public class OAuth2Controller {
             if (r.getCode() == 0) {
                 MemberResVo memberResVo = r.getData("data", new TypeReference<MemberResVo>(){});
                 log.info("社交登录成功，用户信息为：{}" + memberResVo.toString());
-                //登录成功 -> 跳转首页
+                //1 第一次使用SESSION 命令浏览器保存JSESSIONID的cookie
+                //以后浏览器访问哪个网站就会带上这个网站的cookie
+                //子域之间：gulimall.com auth.guliamll.com member.gulimall.com
+                //发卡发的时候(指定域名为父域名)，即使是子系统发的卡，也能让父系统使用
                 session.setAttribute("loginUser", memberResVo);
+//                servletResponse.addCookie(new Cookie("JSESSIONID", "dada").setDomain());
+                //登录成功 -> 跳转首页
                 return "redirect:http://gulimall.com";
             }else {
                 //失败 重新登录
