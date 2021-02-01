@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class OAuth2Controller {
     MemberFeignService memberFeignService;
 
     @GetMapping("/oauth2.0/weibo/success")
-    public String weibo(@RequestParam("code") String code) throws Exception {
+    public String weibo(@RequestParam("code") String code, HttpSession session) throws Exception {
 
         Map<String, String> map = new HashMap<>();
         map.put("client_id", "1133714539");
@@ -56,6 +57,7 @@ public class OAuth2Controller {
                 MemberResVo memberResVo = r.getData("data", new TypeReference<MemberResVo>(){});
                 log.info("社交登录成功，用户信息为：{}" + memberResVo.toString());
                 //登录成功 -> 跳转首页
+                session.setAttribute("loginUser", memberResVo);
                 return "redirect:http://gulimall.com";
             }else {
                 //失败 重新登录
