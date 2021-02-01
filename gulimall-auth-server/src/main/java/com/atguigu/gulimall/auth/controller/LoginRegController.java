@@ -4,6 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.constant.AuthServiceConstant;
 import com.atguigu.common.exception.BizCodeEnume;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.vo.MemberResVo;
 import com.atguigu.gulimall.auth.feign.MemberFeignService;
 import com.atguigu.gulimall.auth.feign.ThirdPartyFeignService;
 import com.atguigu.gulimall.auth.vo.MemberRegistVo;
@@ -19,6 +20,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -138,13 +140,14 @@ public class LoginRegController {
     }
 
     @PostMapping("/login")
-    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes) {
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session) {
 
         //远程登录
         R r = memberFeignService.login(vo);
         if (r.getCode() == 0) {
-            //远程登录成功
-            //TODO 登录成功后的处理
+            //远程登录成功，将远程服务返回的entity放入session中
+            MemberResVo memberResVo = r.getData("data", new TypeReference<MemberResVo>(){});
+            session.setAttribute(AuthServiceConstant.LOGIN_USER, memberResVo);
             return "redirect:http://gulimall.com";
         }else {
             //远程登录失败
@@ -156,6 +159,24 @@ public class LoginRegController {
     }
 
     /**
+     * 处理已经登录的用户，误操作到登录页面
+     */
+    @GetMapping("/login.html")
+    public String loginPage(HttpSession session) {
+
+        //判断用户是否已经登录
+        Object attribute = session.getAttribute(AuthServiceConstant.LOGIN_USER);
+        if (attribute == null) {
+            //没有登录过 可以跳转到登录页面
+            return "login";
+        }else {
+            //已经登录，禁止跳转到登录页，跳转首页即可
+            return "redirect:http://gulimall.com";
+        }
+    }
+
+    /**
+     * ！！！！后来代码优化 见本文的->loginPage()
      * 下面两个空方法仅仅是发送一个请求【直接】跳转一个页面
      * 这样不太好 不要写空方法 去GulimallWebConfig.class
      * 使用 SpringMVC ViewController 将请求和页面映射过来

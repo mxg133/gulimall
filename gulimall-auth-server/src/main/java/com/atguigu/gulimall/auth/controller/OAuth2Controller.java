@@ -2,6 +2,7 @@ package com.atguigu.gulimall.auth.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.constant.AuthServiceConstant;
 import com.atguigu.common.utils.HttpUtils;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResVo;
@@ -37,8 +38,8 @@ public class OAuth2Controller {
     public String weibo(@RequestParam("code") String code, HttpSession session) throws Exception {
 
         Map<String, String> map = new HashMap<>();
-        map.put("client_id", "1133714539");
-        map.put("client_secret", "f22eb330342e7f8797a7dbe173bd9424");
+        map.put("client_id", "4027135126");//和login.html的要保持一致
+        map.put("client_secret", "");
         map.put("grant_type", "authorization_code");
         map.put("redirect_uri", "http://auth.gulimall.com/oauth2.0/weibo/success");
         map.put("code", code);
@@ -64,7 +65,8 @@ public class OAuth2Controller {
                 //发卡发的时候(指定域名为父域名)，即使是子系统发的卡，也能让父系统使用
                 //TODO 1 默认发的令牌 session=asdfg 作用域是当前域：解决子域session共享问题
                 //TODO 2 希望使用json序列化对象到redis中
-                session.setAttribute("loginUser", memberResVo);
+                //远程登录成功，将远程服务返回的entity放入session中
+                session.setAttribute(AuthServiceConstant.LOGIN_USER, memberResVo);
 //                servletResponse.addCookie(new Cookie("JSESSIONID", "dada").setDomain());
                 //登录成功 -> 跳转首页
                 return "redirect:http://gulimall.com";

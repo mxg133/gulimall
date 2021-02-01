@@ -41,7 +41,7 @@ public class MemberController {
         MemberEntity entity = memberService.login(vo);
         if (entity != null) {
             //登录成功
-            return R.ok().setData(entity);//真正返回的数据
+            return R.ok().setData(entity);//给远程调用我的服务返回->真正返回的数据 远程调用者要把这个entity放入session的
         }
         //登录失败
         return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode(), BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());
@@ -54,7 +54,7 @@ public class MemberController {
         MemberEntity entity = memberService.login(vo);
         if (entity != null) {
             //登录成功
-            return R.ok();
+            return R.ok().setData(entity);//给远程调用我的服务返回->真正返回的数据 远程调用者要把这个entity放入session的
         }
         //登录失败
         return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode(), BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());

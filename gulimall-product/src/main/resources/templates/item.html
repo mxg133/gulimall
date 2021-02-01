@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<meta charset="UTF-8">
@@ -57,8 +57,11 @@
 							</li>
 						</ul>
 						<ul class="header_ul_right">
-							<li style="border: 0;"><a href="/static/item/../登录页面\index.html" class="aa">你好，请登录</a></li>
-							<li><a href="/static/item/../注册页面\index.html" style="color: red;">免费注册</a> |</li>
+							<li style="border: 0;">
+								<a href="http://auth.gulimall/login.html" th:if="${session.loginUser==null}" class="aa">你好，请登录</a></li>
+								<a th:else class="aa" style="width: 100px">你好，[[${session.loginUser.nickname}]]</a>
+							</li>
+							<li th:if="${session.loginUser==null}"><a href="http://auth.gulimall/reg.html" style="color: red;">免费注册</a> |</li>
 							<li><a href="/static/item/javascript:;" class="aa">我的订单</a> |</li>
 							<li class="jingdong"><a href="/static/item/javascript:;">我的京东</a><span class="glyphicon glyphicon-menu-down">|</span>
 								<ol class="jingdong_ol">

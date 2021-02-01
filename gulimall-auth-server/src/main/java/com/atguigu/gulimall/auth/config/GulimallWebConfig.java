@@ -15,7 +15,7 @@ public class GulimallWebConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
 
-        registry.addViewController("/login.html").setViewName("login");
+//        registry.addViewController("/login.html").setViewName("login");
         registry.addViewController("/reg.html").setViewName("reg");
     }
 }

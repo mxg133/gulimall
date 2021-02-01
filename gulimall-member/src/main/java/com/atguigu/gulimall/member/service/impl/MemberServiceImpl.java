@@ -72,6 +72,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         }
 
         //其他默认信息
+        entity.setNickname(vo.getUserName());
 
         //把这个大对象保存到数据库MemberEntity表中
         memberDao.insert(entity);

@@ -10,6 +10,13 @@ spring:
   thymeleaf:
     cache: false
 #    cache: true
+  #    配置Redis缓存
+  redis:
+    host: 10.211.55.3
+    port: 6379
+  #    整合Spring Session 指定session是存到redis里
+  session:
+    store-type: redis
 logging:
   level:
     com.atguigu.gulimall: debug

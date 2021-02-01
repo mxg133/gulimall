@@ -66,10 +66,11 @@
         </b>
         <ul>
             <li>
-                <a href="http://auth.gulimall.com/login.html" class="li_2">你好，请登录</a>
+                <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}" class="li_2">您好:请登录 </a>
+                <a th:if="${session.loginUser != null}" class="li_2">亲爱的:[[${session.loginUser.nickname}]]</a>
             </li>
             <li>
-                <a href="http://auth.gulimall.com/reg.html">免费注册</a>
+                <a href="http://auth.gulimall.com/reg.html" th:if="${session.loginUser == null}" >免费注册</a>
             </li>
             <span>|</span>
             <li>
