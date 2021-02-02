@@ -1,0 +1,5 @@
+server:
+  port: 8081
+sso:
+  server:
+    url: http://ssoserver.com:8080/login.html
