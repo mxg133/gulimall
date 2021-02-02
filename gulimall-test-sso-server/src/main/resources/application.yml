@@ -1,2 +1,6 @@
 server:
   port: 8080
+spring:
+  redis:
+    host: 10.211.55.3
+    port: 6379

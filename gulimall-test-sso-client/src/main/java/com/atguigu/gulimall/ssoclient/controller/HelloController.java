@@ -2,7 +2,9 @@ package com.atguigu.gulimall.ssoclient.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
@@ -34,18 +36,28 @@ public class HelloController {
 
     /**
      * 需要登录，才能访问
+     * 需要感知 ssoserver 登录成功跳回来的
+     * required 非必须带有这个参数 登录成功才有
      */
     @GetMapping("/employees")
-    public String employees(Map<String, List<String>> map, HttpSession session) {
+    public String employees(Map<String, List<String>> map, @RequestParam(value = "token", required = false) String token, HttpSession session) {
 
         //判断是否登录
+        if (!StringUtils.isEmpty(token)) {
+            //TODO 去ssosercer获取当前token真正对应的用户信息
+            session.setAttribute("loginUser", "zhangsan");
+        }
+
+        //先到这里！
         Object loginUser = session.getAttribute("loginUser");
         if (loginUser == null) {
             //没登录，去登录服务器
+            System.out.println("没登录，去登录服务器");
             //跳转以后 使用查询参数表示是我这里请求的
             return "redirect:" + ssoServerUrl + "?redirect_url=http://client1.com:8081/employees";
         }else {
             //登录了
+            System.out.println("登录了");
             List<String> emps = new ArrayList<>();
             emps.add("高佳好");
             emps.add("刘艺璇");
