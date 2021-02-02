@@ -41,14 +41,13 @@ public class HelloController {
      * 需要感知 ssoserver 登录成功跳回来的
      * required 非必须带有这个参数 登录成功才有
      */
-    @GetMapping("/employees")
+    @GetMapping("/boss")
     public String employees(Map<String, List<String>> map, @RequestParam(value = "token", required = false) String token, HttpSession session) {
 
         //判断是否登录
         if (!StringUtils.isEmpty(token)) {
             //TODO 去ssosercer获取当前token真正对应的用户信息 发请求的代码
             RestTemplate restTemplate = new RestTemplate();
-            //给远端的登录服务发userInfo请求，要用户信息
             ResponseEntity<String> forEntity = restTemplate.getForEntity("http://ssoserver.com:8080/userInfo?token=" + token, String.class);
             //session真正的用户
             String body = forEntity.getBody();
@@ -61,13 +60,13 @@ public class HelloController {
             //没登录，去登录服务器
             System.out.println("没登录，去登录服务器");
             //跳转以后 使用查询参数表示是我这里请求的
-            return "redirect:" + ssoServerUrl + "?redirect_url=http://client1.com:8081/employees";
+            return "redirect:" + ssoServerUrl + "?redirect_url=http://client2.com:8082/boss";
         }else {
             //登录了
             System.out.println("登录了");
             List<String> emps = new ArrayList<>();
-            emps.add("高佳好");
-            emps.add("刘艺璇");
+            emps.add("高佳好2");
+            emps.add("刘艺璇2");
             map.put("emps", emps);
             return "list";
         }
