@@ -19,15 +19,16 @@
         <div class="hd_wrap_top">
         <ul class="hd_wrap_left">
         <li class="hd_home"><i class="glyphicon glyphicon-home"></i>
-        <a href="/javascript:;">谷粒商城首页</a>
+        <a href="http://gulimall.com">谷粒商城首页</a>
         </li>
 
         </ul>
 
         <ul class="hd_wrap_right">
         <li class="forel">
-        <a href="/javascript:;" class="link_login">你好,请登录</a>&nbsp;
-    <a href="/javascript:;" class="link_regist">免费注册</a>
+            <a class="link_login" th:if="${session.loginUser!=null}">欢迎您: [[${session.loginUser == null ?'':session.loginUser.nickname}]]</a>
+            <a class="link_login" href="http://auth.gulimall.com/login.html" th:if="${session.loginUser==null}">请登录</a>
+            <a class="link_regist" th:if="${session.loginUser == null}" href="http://auth.gulimall.com/reg.html">免费注册</a>
         </li>
         <li class="spacer"></li>
 
@@ -88,8 +89,8 @@
         </div>
         <div class="clr"></div>
         <div class="bg_shop">
-        <a class="btn-tobback" th:href="'http://item.gmall.com:8084/'+${skuInfo?.id}+'.html'">查看商品详情</a>
-        <a class="btn-addtocart"  href="http://cart.gmall.com:8087/cartList" id="GotoShoppingCart"><b></b>去购物车结算</a>
+        <a class="btn-tobback" href="http://item.gulimall.com/1.html">查看商品详情</a>
+        <a class="btn-addtocart"  href="http://cart.gulimall.com/cart.html" id="GotoShoppingCart"><b></b>去购物车结算</a>
    </div>
     </div>
     </div>

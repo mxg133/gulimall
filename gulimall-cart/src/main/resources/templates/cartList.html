@@ -17,14 +17,18 @@
 
 					<ul class="header-left">
 						<li>
-
 							<a href="http://gulimall.com">首页</a>
 						</li>
 
 					</ul>
 					<ul class="header-right">
-						<li><a href="/static/cart./登录页面\index.html" style="color: red;">你好，请登录</a></li>
-						<li><a href="/static/cart./注册页面\index.html">免费注册</a></li>
+						<li>
+							<a style="color: red;" th:if="${session.loginUser!=null}">欢迎您: [[${session.loginUser == null ?'':session.loginUser.nickname}]]</a>
+							<a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser==null}">欢迎您 ，请登录</a>
+						</li>
+						<li>
+							<a th:if="${session.loginUser == null}" href="http://auth.gulimall.com/reg.html">免费注册</a>
+						</li>
 						<li class="spacer"></li>
 						<li><a href="">我的订单</a></li>
 						<li class="spacer"></li>
@@ -44,8 +48,8 @@
 			<div class="one_sousuo">
 				<div class="one_search_top">
 					<div class="one_top_left">
-						<a href="/static/cart./" class="one_left_logo"><img src="img/logo1.jpg"></a>
-						<a href="#" class="one_left_link">购物车</a>
+						<a href="http://gulimall.com" class="one_left_logo"><img src="img/logo1.jpg"></a>
+						<a href="#" class="http://cart.gulimall.com/cart.html">购物车</a>
 					</div>
 					<div class="one_top_right">
 						<input type="text" class="one_right_txt" placeholder="" onfocus="this.placeholder=''" onblur="this.placeholder='' ">

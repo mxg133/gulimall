@@ -28,4 +28,13 @@ public class CartController {
 
         return "cartList";
     }
+
+    /**
+     * 点击加入购物车后，跳转至成功页面
+     */
+    @GetMapping("/addToCart")
+    public String addToCart() {
+
+        return "success";
+    }
 }
