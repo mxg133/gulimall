@@ -596,7 +596,7 @@
 		})
 		//选中当前商品背景变色
 		$(".check").each(function(index) {
-			$(".check").eq(index).click(function() {
+			$(".check").eq(cartList).click(function() {
 				if ($(this).is(":checked")) {
 					$(this).parent().parent().parent().css("background", "#fff4e8");
 					$(this).parent().parent().parent().parent().children("div:last-child").css("background", "#fff4e8")
@@ -761,9 +761,9 @@
 					return
 				}
 				toggle = false
-				index++;
-				if (index > $('.fade li').length - 1) {
-					index = 0;
+				cartList++;
+				if (cartList > $('.fade li').length - 1) {
+					cartList = 0;
 				}
 
 			});
@@ -774,12 +774,12 @@
 					return
 				}
 				toggle = false
-				index--;
-				if (index < 0) {
-					index = $('.fade li').length - 1;
+				cartList--;
+				if (cartList < 0) {
+					cartList = $('.fade li').length - 1;
 				}
-				$('.pagination ul li').eq(index).addClass('active').siblings().removeClass('active')
-				$(".slider>ul>li").eq(index).fadeIn(500, function() {
+				$('.pagination ul li').eq(cartList).addClass('active').siblings().removeClass('active')
+				$(".slider>ul>li").eq(cartList).fadeIn(500, function() {
 					toggle = true
 				}).siblings("li").fadeOut(500);
 			});
