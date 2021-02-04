@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -48,36 +49,50 @@ public class CartServiceImpl implements CartService {
         //获取到我们要操作的购物车
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
 
-        //2 商品添加到购物车 要返回的大对象
-        CartItem cartItem = new CartItem();
+        //先判断是新增商品，还是仅仅是增加数量
+        String result = (String) cartOps.get(skuId.toString());
+        if (StringUtils.isEmpty(result)) {
+            //说明购物车没有此商品，新增商品类型
+            //2 要存入Redis的大对象 要返回的大对象
+            CartItem cartItem = new CartItem();
+            //1 远程查询当前要操作的商品信息 获得真正的sku商品信息 并封装
+            CompletableFuture<Void> getSkuInfoTask = CompletableFuture.runAsync(() -> {
+                R r = productFeignService.getSkuInfo(skuId);
+                SkuInfoVo skuInfo = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
+                });
 
-        //1 远程查询当前要操作的商品信息 获得真正的sku商品信息 并封装
-        CompletableFuture<Void> getSkuInfoTask = CompletableFuture.runAsync(() -> {
-            R r = productFeignService.getSkuInfo(skuId);
-            SkuInfoVo skuInfo = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
-            });
+                cartItem.setCheck(true);
+                cartItem.setCount(num);
+                cartItem.setImage(skuInfo.getSkuDefaultImg());
+                cartItem.setTitle(skuInfo.getSkuTitle());
+                cartItem.setSkuId(skuId);
+                cartItem.setPrice(skuInfo.getPrice());
+            }, executor);
 
-            cartItem.setCheck(true);
-            cartItem.setCount(num);
-            cartItem.setImage(skuInfo.getSkuDefaultImg());
-            cartItem.setTitle(skuInfo.getSkuTitle());
-            cartItem.setSkuId(skuId);
-            cartItem.setPrice(skuInfo.getPrice());
-        }, executor);
+            //3 远程查询sku属性的组合信息
+            CompletableFuture<Void> getSkuSaleAttrValuesTask = CompletableFuture.runAsync(() -> {
+                List<String> attrValues = productFeignService.getSkuSaleAttrValues(skuId);
+                cartItem.setSkuAttr(attrValues);
+            }, executor);
 
-        //3 远程查询sku属性的组合信息
-        CompletableFuture<Void> getSkuSaleAttrValuesTask = CompletableFuture.runAsync(() -> {
-            List<String> attrValues = productFeignService.getSkuSaleAttrValues(skuId);
-            cartItem.setSkuAttr(attrValues);
-        }, executor);
+            CompletableFuture.allOf(getSkuInfoTask, getSkuSaleAttrValuesTask).get();
 
-        CompletableFuture.allOf(getSkuInfoTask, getSkuSaleAttrValuesTask).get();
+            //操作Redis 每次执行本方法，都put一下
+            String s = JSON.toJSONString(cartItem);
+            cartOps.put(skuId.toString(), s);
 
-        //操作Redis 每次执行本方法，都put一下
-        String s = JSON.toJSONString(cartItem);
-        cartOps.put(skuId.toString(), s);
+            return cartItem;
+        } else {
+            //说明是仅仅增加数量
+            //2 要存入Redis的大对象 要返回的大对象
+            CartItem cartItem = JSON.parseObject(result, CartItem.class);
+            cartItem.setCount(cartItem.getCount() + num);
 
-        return cartItem;
+            //操作Redis 每次执行本方法，都put一下
+            String s = JSON.toJSONString(cartItem);
+            cartOps.put(skuId.toString(), s);
+            return cartItem;
+        }
     }
 
     /**
