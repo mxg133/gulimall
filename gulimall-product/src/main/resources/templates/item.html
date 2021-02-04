@@ -614,9 +614,8 @@
 
 						<div class="box-btns clear">
 							<div class="box-btns-one">
-								<input type="text" name="" id="" value="1" />
+								<input type="text" name="" id="numInput" value="1" />
 								<div class="box-btns-one1">
-
 									<div>
 										<button id="jia">
 									+
@@ -627,13 +626,12 @@
 										-
 									</button>
 									</div>
-
 								</div>
 							</div>
 							<div class="box-btns-two">
-								<a href="http://cart.gulimall.com/addToCart">
-									加入购物车
-								</a>
+                                <a href="#" id="addToCartA" th:attr="skuId = ${item.info.skuId}">
+                                    加入购物车
+                                </a>
 							</div>
 							<div class="box-btns-three">
 								<img src="/static/item/img/e4ed3606843f664591ff1f68f7fda12d.png" alt="" /> 分享
@@ -1309,13 +1307,13 @@
 			$("a[class = 'sku_attr_value checked']").parent().css({"border":"1px solid red"});
 		})
 
-		// $("#addToCartA").click(function(){
-		// 	let num = $("#numInput").val();
-		// 	console.log(num);
-		// 	let skuId = $(this).attr("skuId");
-		// 	location.href = "http://cart.gulimall.com/addToCart?skuId=" + skuId +"&num=" + num;
-		// 	return false;
-		// })
+		$("#addToCartA").click(function(){
+			let num = $("#numInput").val();
+			console.log(num);
+			let skuId = $(this).attr("skuId");
+			location.href = "http://cart.gulimall.com/addToCart?skuId=" + skuId +"&num=" + num;
+			return false;
+		})
 		// $("#seckillA").click(function() {
 		// 	var isLogin = [[${session.loginUser != null}]]
 		// 	if(isLogin) {

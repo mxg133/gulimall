@@ -18,12 +18,11 @@
     <div class="alert-info">
         <div class="hd_wrap_top">
         <ul class="hd_wrap_left">
-        <li class="hd_home"><i class="glyphicon glyphicon-home"></i>
-        <a href="http://gulimall.com">谷粒商城首页</a>
+        <li class="hd_home">
+            <i class="glyphicon glyphicon-home"></i>
+            <a href="http://gulimall.com">谷粒商城首页</a>
         </li>
-
         </ul>
-
         <ul class="hd_wrap_right">
         <li class="forel">
             <a class="link_login" th:if="${session.loginUser!=null}">欢迎您: [[${session.loginUser == null ?'':session.loginUser.nickname}]]</a>
@@ -35,11 +34,7 @@
         <li>
         <a href="/javascript:;">我的订单</a>
         </li>
-
-
-
         </ul>
-
         </div>
       </div>
 
@@ -72,13 +67,13 @@
         <h3 class="ftx-02">商品已成功加入购物车</h3></div>
     <div class="p-item">
         <div class="p-img">
-        <a href="/javascript:;" target="_blank"><img style="height: 60px;width:60px;"  th:src="${skuInfo?.skuDefaultImg}" src="/img/shop1.jpg"></a>
+            <a  href="/static/cart//javascript:;" target="_blank"><img style="height: 60px;width:60px;" th:src="${item.image}"></a>
         </div>
         <div class="p-info">
         <div class="p-name">
-        <a th:href="'http://item.gmall.com/'+${skuInfo?.id}+'.html'"  th:text="${skuInfo?.skuName}"  >TCL 55A950C 55英寸32核人工智能 HDR曲面超薄4K电视金属机身（枪色）</a>
+            <a th:href="'http://item.gulimall.com/'+${item.skuId} +'.html'" th:text="${item.title}">TCL 55A950C 55英寸32核人工智能 HDR曲面超薄4K电视金属机身（枪色）</a>
     </div>
-    <div class="p-extra"> <span class="txt" th:text="'数量：'+${skuNum}" >  数量：1</span></div>
+            <div class="p-extra"> <span class="txt" th:text="'数量：'+${item.count}">  数量：1</span></div>
     </div>
     <div class="clr"></div>
         </div>
@@ -89,7 +84,7 @@
         </div>
         <div class="clr"></div>
         <div class="bg_shop">
-        <a class="btn-tobback" href="http://item.gulimall.com/1.html">查看商品详情</a>
+        <a class="btn-tobback" th:href="'http://item.gulimall.com/'+${item.skuId} +'.html'">查看商品详情</a>
         <a class="btn-addtocart"  href="http://cart.gulimall.com/cart.html" id="GotoShoppingCart"><b></b>去购物车结算</a>
    </div>
     </div>

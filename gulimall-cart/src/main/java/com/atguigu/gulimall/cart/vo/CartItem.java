@@ -10,7 +10,7 @@ import java.util.List;
  * @date 2021-02-03 12:33 下午
  * @description 购物车里的每一个购物项
  * @Data 不用的原因
- *  需要计算的属性必须重新get()的方法，这样才能保证每一次属性都会进行重新计算
+ * 需要计算的属性必须重新get()的方法，这样才能保证每一次属性都会进行重新计算
  */
 //为什么不用@Data 因为要自定义一个方法getTotalPrice()
 //@Data
@@ -90,7 +90,7 @@ public class CartItem {
      */
     public BigDecimal getTotalPrice() {
 
-        return this.price.multiply(new BigDecimal(this.count+""));
+        return this.price.multiply(new BigDecimal(this.count + ""));
     }
 
     public void setTotalPrice(BigDecimal totalPrice) {
