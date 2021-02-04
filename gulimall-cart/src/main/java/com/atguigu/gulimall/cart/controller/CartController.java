@@ -2,13 +2,13 @@ package com.atguigu.gulimall.cart.controller;
 
 import com.atguigu.gulimall.cart.interceptor.CartInterceptor;
 import com.atguigu.gulimall.cart.service.CartService;
+import com.atguigu.gulimall.cart.vo.Cart;
 import com.atguigu.gulimall.cart.vo.CartItem;
 import com.atguigu.gulimall.cart.vo.UserInfoTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
@@ -31,12 +31,13 @@ public class CartController {
      * 浏览器保存以后，每次访问都会带上这个cookie
      */
     @GetMapping("/cart.html")
-    public String cartListPage() {
+    public String cartListPage(Map<String, Cart> map) throws ExecutionException, InterruptedException {
 
         //1 快速得到用户信息，id user-key
-        UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
-        System.out.println(userInfoTo);
+//        UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
 
+        Cart cart = cartService.getCart();
+        map.put("cart", cart);
 
         return "cartList";
     }

@@ -25,6 +25,10 @@ public class Cart {
     //优惠价格
     private BigDecimal reduce = new BigDecimal("0.00");
 
+    public void setItems(List<CartItem> items) {
+        this.items = items;
+    }
+
     public List<CartItem> getItems() {
         return items;
     }
