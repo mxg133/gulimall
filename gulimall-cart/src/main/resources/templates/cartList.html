@@ -112,7 +112,8 @@
                                 </p>
 
                             </li>
-                            <li style="font-weight:bold"><p class="zj" >￥[[${#numbers.formatDecimal(item.totalPrice,3,2)}]]</p></li>
+                            <li style="font-weight:bold"><p class="zj">
+                                ￥[[${#numbers.formatDecimal(item.totalPrice,3,2)}]]</p></li>
                             <li>
                                 <p class="deleteItemBtn" th:attr="skuId=${item.skuId}">删除</p>
                             </li>
@@ -141,7 +142,8 @@
             </div>
             <div>
                 <ol>
-                    <li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥[[${#numbers.formatDecimal(cart.totalAmount,3,2)}]]</span></li>
+                    <li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥[[${#numbers.formatDecimal(cart.totalAmount,3,2)}]]</span>
+                    </li>
                     <li>优惠价格:[[${#numbers.formatDecimal(cart.reduce,1,2)}]]</li>
                 </ol>
             </div>
@@ -760,5 +762,25 @@
     }).mouseout(function () {
         $(this).children("p").children("img").attr("src", "img/one_mian_gwc1.png")
     })
+    $(".itemCheck").click(function () {
+        //拿到skuId以及chencked是否选中
+        let skuId = $(this).attr("skuId");
+        let check = $(this).prop("checked");
+        location.href = "http://cart.gulimall.com/checkItem?skuId=" + skuId + "&check=" + (check ? 1 : 0)
+    })
+    // $(".countOpsBtn").click(function(){
+    //     //1、获取skuId
+    //     let skuId = $(this).parent().attr("skuId");
+    //     var num = $(this).parent().find(".countOpsNum").text();
+    //     location.href="http://cart.gulimall.com/countItem?skuId=" + skuId + "&num=" + num;
+    // })
+    //
+    // var deleteSkuId = 0;
+    // function deleteItem() {
+    //     location.href = "http://cart.gulimall.com/deleteItem?skuId=" + deleteSkuId;
+    // }
+    // $(".deleteItemBtn").click(function(){
+    //     deleteSkuId = $(this).attr("skuId");
+    // })
 </script>
 </html>
