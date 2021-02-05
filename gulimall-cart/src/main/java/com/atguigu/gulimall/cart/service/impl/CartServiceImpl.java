@@ -97,6 +97,9 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    /**
+     * 获取购物车的一个购物项
+     */
     @Override
     public CartItem getCartItem(Long skuId) {
 
@@ -169,7 +172,7 @@ public class CartServiceImpl implements CartService {
     }
 
     /**
-     * 获取购物车里的购物项目
+     * 获取购物车里的所有购物项目
      */
     private List<CartItem> getCartItems(String cartKey) {
         BoundHashOperations<String, Object, Object> hashOps = redisTemplate.boundHashOps(cartKey);
@@ -201,9 +204,26 @@ public class CartServiceImpl implements CartService {
     @Override
     public void checkItem(Long skuId, Integer check) {
 
+        //获取到我们要操作的购物车
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        //获取购物车的一个购物项
         CartItem cartItem = getCartItem(skuId);
         cartItem.setCheck(check == 1 ? true : false);
+        String str = JSON.toJSONString(cartItem);
+        cartOps.put(skuId.toString(), str);
+    }
+
+    /**
+     * 修改购物项目的数量
+     */
+    @Override
+    public void changeItemCount(Long skuId, Integer num) {
+
+        //获取到我们要操作的购物车
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        //获取购物车的一个购物项
+        CartItem cartItem = getCartItem(skuId);
+        cartItem.setCount(num);
         String str = JSON.toJSONString(cartItem);
         cartOps.put(skuId.toString(), str);
     }

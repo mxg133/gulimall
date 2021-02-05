@@ -762,19 +762,23 @@
     }).mouseout(function () {
         $(this).children("p").children("img").attr("src", "img/one_mian_gwc1.png")
     })
+
+    //勾选购物项目
     $(".itemCheck").click(function () {
         //拿到skuId以及chencked是否选中
         let skuId = $(this).attr("skuId");
         let check = $(this).prop("checked");
         location.href = "http://cart.gulimall.com/checkItem?skuId=" + skuId + "&check=" + (check ? 1 : 0)
     })
-    // $(".countOpsBtn").click(function(){
-    //     //1、获取skuId
-    //     let skuId = $(this).parent().attr("skuId");
-    //     var num = $(this).parent().find(".countOpsNum").text();
-    //     location.href="http://cart.gulimall.com/countItem?skuId=" + skuId + "&num=" + num;
-    // })
-    //
+
+    //修改购物项目的数量
+    $(".countOpsBtn").click(function(){
+        //1、获取skuId
+        let skuId = $(this).parent().attr("skuId");
+        var num = $(this).parent().find(".countOpsNum").text();
+        location.href="http://cart.gulimall.com/countItem?skuId=" + skuId + "&num=" + num;
+    })
+
     // var deleteSkuId = 0;
     // function deleteItem() {
     //     location.href = "http://cart.gulimall.com/deleteItem?skuId=" + deleteSkuId;
