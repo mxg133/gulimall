@@ -8,11 +8,22 @@ spring:
       url: jdbc:mysql://10.211.55.3:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
       username: root
       password: root
+#  配置rabbitmq
+  rabbitmq:
+    host: 10.211.55.3
+    port: 5672
+    virtual-host: /
 
 mybatis-plus:
-#  搞死Mybatis Plus 扫描哪里
+#  告诉Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml
 #  主键自增！
   global-config:
     db-config:
       id-type: auto
+
+#logging:
+#  level:
+#    #上线后，可以降低日志级别
+#    #    com.atguigu.gulimall: debuug
+#    com.atguigu.gulimall: error

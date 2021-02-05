@@ -1,13 +1,19 @@
 package com.atguigu.gulimall.order;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@SpringBootTest
-class GulimallOrderApplicationTests {
+@Slf4j
+public class GulimallOrderApplicationTests {
+
+    @Autowired
+    AmqpAdmin amqpAdmin;
 
     @Test
-    void contextLoads() {
+    public void creatExchange() {
+
     }
 
 }
