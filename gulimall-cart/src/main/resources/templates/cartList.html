@@ -21,17 +21,15 @@
             </ul>
             <ul class="header-right">
                 <li>
-                    <a style="color: red;" th:if="${session.loginUser!=null}">亲爱的: [[${session.loginUser == null
-                        ?'':session.loginUser.nickname}]]</a>
-                    <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser==null}">欢迎您 ，请登录</a>
+                    <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}" class="li_2">您好:请登录</a>
+                    <a th:if="${session.loginUser != null}" class="li_2">亲爱的:[[${session.loginUser.nickname}]]</a>
                 </li>
                 <li>
-                    <a th:if="${session.loginUser == null}" href="http://auth.gulimall.com/reg.html">免费注册</a>
+                    <a href="http://auth.gulimall.com/reg.html" th:if="${session.loginUser == null}">免费注册</a>
                 </li>
                 <li class="spacer"></li>
                 <li><a href="">我的订单</a></li>
                 <li class="spacer"></li>
-
             </ul>
             <div style="clear: both;"></div>
         </div>
@@ -43,7 +41,7 @@
         <div class="one_search_top">
             <div class="one_top_left">
                 <a href="http://gulimall.com" class="one_left_logo"><img src="/static/cart/img/logo1.jpg"></a>
-                <a href="#" class="http://cart.gulimall.com/cart.html">购物车</a>
+                <a href="http://cart.gulimall.com/cart.html" class="http://cart.gulimall.com/cart.html">购物车</a>
             </div>
             <div class="one_top_right">
                 <input type="text" class="one_right_txt" placeholder="" onfocus="this.placeholder=''"
@@ -88,7 +86,7 @@
                             <li><input type="checkbox"
                                        th:checked="${item.check}"
                                        class="itemCheck"
-                                       th:attr="skuId=${item.skuId}" ></li>
+                                       th:attr="skuId=${item.skuId}"></li>
                             <li>
                                 <dt><img th:src="${item.image}" alt=""></dt>
                                 <dd style="width:300px;">
@@ -168,7 +166,7 @@
         </dl>
     </div>
     <div>
-        <button type="button">删除</button>
+        <button type="button" onclick="deleteItem()">删除</button>
 
     </div>
 </div>
@@ -772,19 +770,22 @@
     })
 
     //修改购物项目的数量
-    $(".countOpsBtn").click(function(){
+    $(".countOpsBtn").click(function () {
         //1、获取skuId
         let skuId = $(this).parent().attr("skuId");
         var num = $(this).parent().find(".countOpsNum").text();
-        location.href="http://cart.gulimall.com/countItem?skuId=" + skuId + "&num=" + num;
+        location.href = "http://cart.gulimall.com/countItem?skuId=" + skuId + "&num=" + num;
     })
 
-    // var deleteSkuId = 0;
-    // function deleteItem() {
-    //     location.href = "http://cart.gulimall.com/deleteItem?skuId=" + deleteSkuId;
-    // }
-    // $(".deleteItemBtn").click(function(){
-    //     deleteSkuId = $(this).attr("skuId");
-    // })
+    //删除购物车里的某一项
+    var deleteSkuId = 0;
+
+    function deleteItem() {
+        location.href = "http://cart.gulimall.com/deleteItem?skuId=" + deleteSkuId;
+    }
+
+    $(".deleteItemBtn").click(function () {
+        deleteSkuId = $(this).attr("skuId");
+    })
 </script>
 </html>

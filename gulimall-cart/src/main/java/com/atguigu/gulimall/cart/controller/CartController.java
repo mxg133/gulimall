@@ -24,6 +24,16 @@ public class CartController {
     CartService cartService;
 
     /**
+     * 删除购物车里的某一项
+     */
+    @GetMapping("/deleteItem")
+    public String deleteItem(@RequestParam("skuId") Long skuId) {
+
+        cartService.deleteItem(skuId);
+        return "redirect:http://cart.gulimall.com/cart.html";
+    }
+
+    /**
      * 修改购物项目的数量
      */
     @GetMapping("/countItem")
