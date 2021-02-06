@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.order;
 
+import com.atguigu.gulimall.order.entity.OrderReturnReasonEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,9 +8,12 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Date;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -19,9 +23,31 @@ public class GulimallOrderApplicationTests {
     @Autowired
     AmqpAdmin amqpAdmin;
 
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+    /**
+     * 发送消息
+     *  如果发送的消息是对象，我们会使用序列化机制，将对象发送出去
+     *  所以要求对象必须实现Serializable
+     */
+    @Test
+    public void sendMessage() {
+
+        OrderReturnReasonEntity reasonEntity = new OrderReturnReasonEntity();
+        reasonEntity.setId(1L);
+        reasonEntity.setCreateTime(new Date());
+        reasonEntity.setName("哈哈");
+        //发送消息
+        String msg = "hello Wrold";
+        rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity);
+        log.info("消息发送完成");
+    }
+
+
     /**
      * 创建 Exchange
-     *      hello-java-exchange
+     * hello-java-exchange
      */
     @Test
     public void creatExchange() {
@@ -34,7 +60,7 @@ public class GulimallOrderApplicationTests {
 
     /**
      * 创建 Queue
-     *       hello-java-queue
+     * hello-java-queue
      */
     @Test
     public void creatQueue() {
@@ -47,7 +73,7 @@ public class GulimallOrderApplicationTests {
 
     /**
      * 创建 Binging
-     *      hello.java
+     * hello.java
      */
     @Test
     public void creatBinging() {
