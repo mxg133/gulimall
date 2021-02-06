@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.order;
 
+import com.atguigu.gulimall.order.entity.OrderEntity;
 import com.atguigu.gulimall.order.entity.OrderReturnReasonEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -28,20 +30,28 @@ public class GulimallOrderApplicationTests {
 
     /**
      * 发送消息
-     *  如果发送的消息是对象，我们会使用序列化机制，将对象发送出去
-     *  所以要求对象必须实现Serializable
+     * 如果发送的消息是对象，我们会使用序列化机制，将对象发送出去
+     * 所以要求对象必须实现Serializable
      */
     @Test
     public void sendMessage() {
 
-        OrderReturnReasonEntity reasonEntity = new OrderReturnReasonEntity();
-        reasonEntity.setId(1L);
-        reasonEntity.setCreateTime(new Date());
-        reasonEntity.setName("哈哈");
         //发送消息
-        String msg = "hello Wrold";
-        rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity);
-        log.info("消息发送完成");
+        String msg = "hello World";
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                OrderReturnReasonEntity reasonEntity = new OrderReturnReasonEntity();
+                reasonEntity.setId(1L);
+                reasonEntity.setCreateTime(new Date());
+                reasonEntity.setName("哈哈" + i);
+                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity);
+            }else {
+                OrderEntity orderEntity = new OrderEntity();
+                orderEntity.setOrderSn(UUID.randomUUID().toString());
+                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderEntity);
+            }
+            log.info("消息发送完成");
+        }
     }
 
 
