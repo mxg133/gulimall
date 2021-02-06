@@ -3,6 +3,7 @@ package com.atguigu.gulimall.order.controller;
 import com.atguigu.gulimall.order.entity.OrderEntity;
 import com.atguigu.gulimall.order.entity.OrderReturnReasonEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,11 +36,13 @@ public class RabbitController {
                 reasonEntity.setId(1L);
                 reasonEntity.setCreateTime(new Date());
                 reasonEntity.setName("哈哈" + i);
-                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity);
+                //new CorrelationData(UUID.randomUUID().toString())消息的唯一id
+                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity, new CorrelationData(UUID.randomUUID().toString()));
             }else {
                 OrderEntity orderEntity = new OrderEntity();
                 orderEntity.setOrderSn(UUID.randomUUID().toString());
-                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderEntity);
+                //模拟失败
+                rabbitTemplate.convertAndSend("hello-java-exchange", "hello222.java", orderEntity, new CorrelationData(UUID.randomUUID().toString()));
             }
             log.info("消息发送完成");
         }

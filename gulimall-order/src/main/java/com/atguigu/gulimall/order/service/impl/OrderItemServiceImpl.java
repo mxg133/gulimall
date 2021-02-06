@@ -20,7 +20,7 @@ import com.atguigu.gulimall.order.entity.OrderItemEntity;
 import com.atguigu.gulimall.order.service.OrderItemService;
 
 //这个类能接受hello-java-queue消息
-@RabbitListener(queues = {"hello-java-queue"})
+//@RabbitListener(queues = {"hello-java-queue"})
 @Service("orderItemService")
 public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEntity> implements OrderItemService {
 
@@ -50,7 +50,7 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEnt
      */
 //    @RabbitListener(queues = {"hello-java-queue"})
     //这个类的这个方法才能接受hello-java-queue消息
-    @RabbitHandler
+//    @RabbitHandler
     public void receiveMessage(Message message, OrderReturnReasonEntity content, Channel channel) throws InterruptedException {
 
         //拿到消息体
@@ -62,7 +62,7 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEnt
 //        Thread.sleep(3000);
     }
 
-    @RabbitHandler
+//    @RabbitHandler
     public void receiveMessage2(OrderEntity content) throws InterruptedException {
 
         System.out.println("接收到消息:" + content);

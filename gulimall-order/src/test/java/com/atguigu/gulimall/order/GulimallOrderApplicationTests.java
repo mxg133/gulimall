@@ -9,6 +9,7 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +33,7 @@ public class GulimallOrderApplicationTests {
      * 发送消息
      * 如果发送的消息是对象，我们会使用序列化机制，将对象发送出去
      * 所以要求对象必须实现Serializable
+     *  请看RabbitController
      */
     @Test
     public void sendMessage() {
@@ -44,11 +46,13 @@ public class GulimallOrderApplicationTests {
                 reasonEntity.setId(1L);
                 reasonEntity.setCreateTime(new Date());
                 reasonEntity.setName("哈哈" + i);
-                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity);
+                //new CorrelationData(UUID.randomUUID().toString())消息的唯一id
+                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity, new CorrelationData(UUID.randomUUID().toString()));
             }else {
                 OrderEntity orderEntity = new OrderEntity();
                 orderEntity.setOrderSn(UUID.randomUUID().toString());
-                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderEntity);
+                //模拟失败
+                rabbitTemplate.convertAndSend("hello-java-exchange", "hello222.java", orderEntity, new CorrelationData(UUID.randomUUID().toString()));
             }
             log.info("消息发送完成");
         }
