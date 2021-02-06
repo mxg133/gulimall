@@ -20,6 +20,10 @@ spring:
     template:
       #抵达队列，以异步模式优先回调组合ReturnCallback
       mandatory: true
+    listener:
+      simple:
+        #手动ack消息 手动确认收货 手动确认模式 防止消息丢失
+        acknowledge-mode: manual
 mybatis-plus:
   #告诉Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml

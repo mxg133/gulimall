@@ -24,6 +24,7 @@ public class MyRabbitConfig {
 
     @Bean
     public MessageConverter messageConverter() {
+
         return new Jackson2JsonMessageConverter();
     }
 
@@ -53,7 +54,7 @@ public class MyRabbitConfig {
             @Override
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {
                 //服务器收到了
-                System.out.println("confirm....correlationData[" + correlationData + "]==>ack[" + ack + "]cause>>>" + cause);
+                System.out.println("消息抵达服务器confirm....correlationData[" + correlationData + "]==>ack[" + ack + "]cause>>>" + cause);
             }
         });
 

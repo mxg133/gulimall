@@ -38,12 +38,13 @@ public class RabbitController {
                 reasonEntity.setName("哈哈" + i);
                 //new CorrelationData(UUID.randomUUID().toString())消息的唯一id
                 rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity, new CorrelationData(UUID.randomUUID().toString()));
-            }else {
-                OrderEntity orderEntity = new OrderEntity();
-                orderEntity.setOrderSn(UUID.randomUUID().toString());
-                //模拟失败
-                rabbitTemplate.convertAndSend("hello-java-exchange", "hello222.java", orderEntity, new CorrelationData(UUID.randomUUID().toString()));
             }
+//            }else {
+//                OrderEntity orderEntity = new OrderEntity();
+//                orderEntity.setOrderSn(UUID.randomUUID().toString());
+//                //模拟失败
+//                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderEntity, new CorrelationData(UUID.randomUUID().toString()));
+//            }
             log.info("消息发送完成");
         }
 
