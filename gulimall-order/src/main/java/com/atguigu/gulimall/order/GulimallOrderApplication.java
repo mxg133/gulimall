@@ -7,6 +7,13 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
+ * 使用 RabbitMQ 消息队列
+ * 1 引入依赖
+ *      spring-boot-starter-amqp
+ * 2 配置文件 配置host port virtual-host
+ * 3 加注解
+ *      @EnableRabbit
+ *
  *  本地事务失效问题
  *  同一个对象内事务互调默认方法 原因 绕过了代理对象 事务使用代理对象来控制
  *  解决：使用代理对象调用事务方法
