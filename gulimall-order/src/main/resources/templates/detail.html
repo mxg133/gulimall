@@ -131,14 +131,15 @@
                 </li>
             </ul>
             <ul class="header_ul_right">
-                <li style="border: 0;">
-                    <a href="/static/order/detail/denglu.html" class="aa">你好，请登录</a>
+                <li style="width: 100px">
+                    <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}" class="li_2">您好:请登录</a>
+                    <a th:if="${session.loginUser != null}" class="li_2">亲爱的:[[${session.loginUser.nickname}]]</a>
+                </li>
+                <li th:if="${session.loginUser == null}">
+                    <a href="http://auth.gulimall.com/reg.html">免费注册</a>
                 </li>
                 <li>
-                    <a href="/static/order/detail/javascript:;" style="color: red;">免费注册</a> |
-                </li>
-                <li>
-                    <a href="/static/order/detail/javascript:;" class="aa">我的订单</a> |
+                    <a href="http://order.gulimall.com/list.html" class="aa">我的订单</a> |
                 </li>
                 <li class="jingdong" style="width:95px;">
                     <a href="/static/order/detail/javascript:;">我的谷粒商城</a><span class="glyphicon glyphicon-menu-down">|</span>
@@ -403,13 +404,13 @@
         <div class="nav_min">
             <div class="nav_top">
                 <div class="nav_top_one">
-                    <a href="/static/order/detail/javascript:;"><img src="/static/order/detail/img/logo1.jpg"/></a>
+                    <a href="http://gulimall.com"><img src="/static/order/detail/img/logo1.jpg"/></a>
                 </div>
                 <div class="nav_top_two"><input type="text"/>
                     <button>搜索</button>
                 </div>
                 <div class="nav_top_three">
-                    <a href="/static/order/detail/../JD_Shop/One_JDshop.html">我的购物车</a><span
+                    <a href="http://cart.gulimall.com/cart.html">我的购物车</a><span
                         class="glyphicon glyphicon-shopping-cart"></span>
                     <div class="nav_top_three_1">
                         <img src="/static/order/detail/img/44.png"/>购物车还没有商品，赶紧选购吧！

@@ -1,6 +1,5 @@
-package com.atguigu.gulimall.product.config;
+package com.atguigu.gulimall.order.config;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
