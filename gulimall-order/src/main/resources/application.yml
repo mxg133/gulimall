@@ -8,6 +8,15 @@ spring:
       url: jdbc:mysql://10.211.55.3:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
       username: root
       password: root
+  #Nacos 注册中心
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  #关闭thymeleaf缓存 开发期间就能看到实时效果；上线以后就要打开缓存了(效果不大)
+  thymeleaf:
+    cache: false
+  #    cache: true
   #配置rabbitmq
   rabbitmq:
     host: 10.211.55.3
@@ -24,6 +33,7 @@ spring:
       simple:
         #手动ack消息 手动确认收货 手动确认模式 防止消息丢失
         acknowledge-mode: manual
+
 mybatis-plus:
   #告诉Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml
