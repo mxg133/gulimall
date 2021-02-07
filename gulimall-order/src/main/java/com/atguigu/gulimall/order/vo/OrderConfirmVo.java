@@ -1,6 +1,8 @@
 package com.atguigu.gulimall.order.vo;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,9 +26,24 @@ public class OrderConfirmVo {
     //优惠券 积分
     private Integer integration;
 
+    //订单的防重令牌
+    String orderToken;
+
     //订单总额 需要计算
-    BigDecimal total;
+    public BigDecimal getTotal() {
+        BigDecimal sum = new BigDecimal("0");
+        if (items != null) {
+            for (OrderItemVo item : items) {
+                BigDecimal multiply = item.getPrice().multiply(new BigDecimal(item.getCount().toString()));
+                sum = sum.add(multiply);
+            }
+        }
+        return sum;
+    }
 
     //应付价格 需要计算
-    BigDecimal payPrice;
+    public BigDecimal getPayPrice() {
+
+        return getTotal();
+    }
 }

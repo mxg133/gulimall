@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.order.config;
 
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -16,6 +17,8 @@ import javax.annotation.PostConstruct;
  * @date 2021-02-06 11:47 上午
  * @description
  */
+//开启RabbitMQ消息队列
+@EnableRabbit
 @Configuration
 public class MyRabbitConfig {
 

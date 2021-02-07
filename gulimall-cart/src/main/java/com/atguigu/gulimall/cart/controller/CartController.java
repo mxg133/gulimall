@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -22,6 +23,15 @@ public class CartController {
 
     @Autowired
     CartService cartService;
+
+    /**
+     * 给远程gulimall-order调用
+     */
+    @GetMapping("/currentUserItems")
+    public List<CartItem> currentUserItems() {
+        List<CartItem> items = cartService.getUserItems();
+        return items;
+    }
 
     /**
      * 删除购物车里的某一项
