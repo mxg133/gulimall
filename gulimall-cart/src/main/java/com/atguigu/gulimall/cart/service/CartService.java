@@ -26,5 +26,5 @@ public interface CartService {
 
     void deleteItem(Long skuId);
 
-    List<CartItem> getUserItems();
+    List<CartItem> getUserCartItems();
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -27,9 +28,10 @@ public class CartController {
     /**
      * 给远程gulimall-order调用
      */
+    @ResponseBody
     @GetMapping("/currentUserItems")
     public List<CartItem> currentUserItems() {
-        List<CartItem> items = cartService.getUserItems();
+        List<CartItem> items = cartService.getUserCartItems();
         return items;
     }
 
