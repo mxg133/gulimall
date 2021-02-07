@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.order.service.impl;
 
+import com.atguigu.gulimall.order.vo.OrderConfirmVo;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -24,6 +25,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 去结算
+     * 给订单确认ye返回数据
+     */
+    @Override
+    public OrderConfirmVo confirmOrder() {
+
+        //要返回的大对象
+        OrderConfirmVo confirmVo = new OrderConfirmVo();
+
+
+        return null;
     }
 
 }

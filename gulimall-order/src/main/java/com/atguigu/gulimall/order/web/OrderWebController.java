@@ -1,7 +1,12 @@
 package com.atguigu.gulimall.order.web;
 
+import com.atguigu.gulimall.order.service.OrderService;
+import com.atguigu.gulimall.order.vo.OrderConfirmVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.Map;
 
 /**
  * @author 孟享广
@@ -11,9 +16,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class OrderWebController {
 
-    @GetMapping("/toTrade")
-    public String toTrade() {
+    @Autowired
+    OrderService orderService;
 
+    /**
+     * 去结算
+     * 给订单确认ye返回数据
+     */
+    @GetMapping("/toTrade")
+    public String toTrade(Map<String, OrderConfirmVo> map) {
+
+        OrderConfirmVo confirmVo = orderService.confirmOrder();
+        map.put("orderConfirmData", confirmVo);
         return "confirm";
     }
+
+    /**
+     * 展示订单确认页 数据
+     */
+
 }
