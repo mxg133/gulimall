@@ -58,6 +58,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         //1 远程查询大对象的第一个属性 收货地址列表
         List<MemberAddressVo> address = memberFeignService.getAddress(memberResVo.getId());
         confirmVo.setAddress(address);
+        //Feign在远程调用之前要构造请求，调用很多的拦截器
 
         //2 远程查询大对象的第二个属性 所有购物项
         List<OrderItemVo> items = cartFeignService.currentUserItems();
