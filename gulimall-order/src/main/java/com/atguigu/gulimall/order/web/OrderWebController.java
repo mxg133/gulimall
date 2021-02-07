@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author 孟享广
@@ -24,7 +25,7 @@ public class OrderWebController {
      * 给订单确认ye返回数据
      */
     @GetMapping("/toTrade")
-    public String toTrade(Map<String, OrderConfirmVo> map) {
+    public String toTrade(Map<String, OrderConfirmVo> map) throws ExecutionException, InterruptedException {
 
         OrderConfirmVo confirmVo = orderService.confirmOrder();
         map.put("orderConfirmData", confirmVo);
