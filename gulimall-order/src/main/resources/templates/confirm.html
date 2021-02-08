@@ -741,8 +741,9 @@
     </div>
 
     <div class="yfze">
-        <p class="yfze_a"><span class="z">应付总额：</span><span class="hq"> $ <b id="payPriceEle">[[${#numbers.formatDecimal(orderConfirmData.payPrice,1,2)}]]</b></span></p>
-<!--        <p class="yfze_b">寄送至：<span id="recieveAddressEle"></span>  收货人： <span id="recieveEle"></span></p>-->
+        <p class="yfze_a"><span class="z">应付总额：</span><span class="hq"> $ <b id="payPriceEle">[[${#numbers.formatDecimal(orderConfirmData.payPrice,1,2)}]]</b></span>
+        </p>
+        <p class="yfze_b">寄送至：<span id="receiveAddressEle"></span> 收货人： <span id="receiveEle"></span></p>
     </div>
     <button class="tijiao">提交订单</button>
 </div>
@@ -1002,16 +1003,16 @@
         // $("#addIdInput").val(addrId);
         $.get("http://gulimall.com/api/ware/wareinfo/fare?addrId=" + addrId, function (data) {
             console.log(data)
-            $("#fareEle").text(data.data);
+            $("#fareEle").text(data.data.fare);
             var total = [[${orderConfirmData.total}]];
             // //设置运费
-            let number = total * 1 + data.data * 1;
+            let number = total * 1 + data.data.fare * 1;
             $("#payPriceEle").text(number)
             // //应付总额
             // $("#payPriceInput").val(number)
             // 设置收货人
-            // $("#recieveAddressEle").text(data.data.address.province + " " + data.data.address.city + " " + data.data.address.region + " " + data.data.address.detailAddress)
-            // $("#recieveEle").text(data.data.address.name);
+            $("#receiveAddressEle").text(data.data.address.province + " " + data.data.address.city + " " + data.data.address.region + " " + data.data.address.detailAddress)
+            $("#receiveEle").text(data.data.address.name);
         })
     }
 </script>

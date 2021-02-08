@@ -3,6 +3,7 @@ package com.atguigu.gulimall.ware.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.ware.feign.MemberFeignService;
+import com.atguigu.gulimall.ware.vo.FareVo;
 import com.atguigu.gulimall.ware.vo.MemberAddressVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,10 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
      * 根据用户的收货地址计算运费
      */
     @Override
-    public BigDecimal getFare(Long addrId) {
+    public FareVo getFare(Long addrId) {
+
+        //要返回的大对象
+        FareVo fareVo = new FareVo();
 
         //远程查询用户地址信息
         R r = memberFeignService.addrInfo(addrId);
@@ -58,11 +62,17 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
         });
 
         if (data != null) {
+            //FareVo第1个属性
+            fareVo.setAddress(data);
             //简单处理 手机号末位当作运费
             String phone = data.getPhone();
             //123456789 9
             String substring = phone.substring(phone.length() - 1, phone.length());
-            return new BigDecimal(substring);
+            BigDecimal fare = new BigDecimal(substring);
+            //FareVo第2个属性
+            fareVo.setFare(fare);
+
+            return fareVo;
         }
         return null;
     }
