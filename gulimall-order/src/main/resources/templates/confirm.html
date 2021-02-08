@@ -440,7 +440,7 @@
 
 <!--logo图片-->
 <div class="top-1">
-    <img src="/static/order/confirm/img/logo1.jpg" class="img1"/><span>结算页</span>
+    <img src="/static/order/confirm/img/logo1.jpg" class="img1"/><span>结算页</span><a href="http://cart.gulimall.com/cart.html">去购物车</a>
     <!--右侧绿色-->
     <img src="/static/order/confirm/img/08.png" class="img2"/>
 </div>
@@ -673,7 +673,8 @@
                 <p>[[${item.title}]]
                     <span style="color: red;">单价：$[[${#numbers.formatDecimal(item.price,1,2)}]]</span>
                     <span> x[[${item.count}]] 个 </span>
-                    <span>[[${item.hasStock?"有货":"无货"}]]</span>
+                    <span th:if="${orderConfirmData.stocks[item.skuId]}">有货</span>
+                    <span th:if="${!orderConfirmData.stocks[item.skuId]}">无货</span>
                 </p>
                 <p>
                     <span>0.095kg</span>

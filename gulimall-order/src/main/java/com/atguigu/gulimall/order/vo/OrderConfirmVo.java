@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 孟享广
@@ -26,6 +27,8 @@ public class OrderConfirmVo {
 
     //订单的防重令牌
     String orderToken;
+
+    Map<Long, Boolean> stocks;
 
     //总件数
     public Integer getCount() {
@@ -50,7 +53,7 @@ public class OrderConfirmVo {
         return sum;
     }
 
-    private BigDecimal payPrice;
+//    private BigDecimal payPrice;
     //应付价格 需要计算
     public BigDecimal getPayPrice() {
 

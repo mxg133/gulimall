@@ -1,12 +1,16 @@
 package com.atguigu.gulimall.order.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResVo;
 import com.atguigu.gulimall.order.feign.CartFeignService;
 import com.atguigu.gulimall.order.feign.MemberFeignService;
+import com.atguigu.gulimall.order.feign.WareFeignService;
 import com.atguigu.gulimall.order.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimall.order.vo.MemberAddressVo;
 import com.atguigu.gulimall.order.vo.OrderConfirmVo;
 import com.atguigu.gulimall.order.vo.OrderItemVo;
+import com.atguigu.gulimall.order.vo.SkuStockVo;
 import feign.RequestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -41,6 +46,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     ThreadPoolExecutor executor;
+
+    @Autowired
+    WareFeignService wareFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -83,6 +91,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             //2 远程查询大对象的第二个属性 所有购物项
             List<OrderItemVo> items = cartFeignService.currentUserItems();
             confirmVo.setItems(items);
+        }, executor).thenRunAsync(() -> {
+            List<OrderItemVo> items = confirmVo.getItems();
+            List<Long> ids = items.stream().map((item) -> {
+                return item.getSkuId();
+            }).collect(Collectors.toList());
+            //远程查看库存
+            R r = wareFeignService.getSkuHasStock(ids);
+            List<SkuStockVo> skuStockVos = r.getData(new TypeReference<List<SkuStockVo>>() {
+            });
+            if (skuStockVos != null) {
+                Map<Long, Boolean> booleanMap = skuStockVos.stream().collect(Collectors.toMap(SkuStockVo::getSkuId, SkuStockVo::getHasStock));
+                confirmVo.setStocks(booleanMap);
+            }
         }, executor);
 
         //3 远程查询用户积分
