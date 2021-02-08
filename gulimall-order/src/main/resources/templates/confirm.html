@@ -440,7 +440,8 @@
 
 <!--logo图片-->
 <div class="top-1">
-    <img src="/static/order/confirm/img/logo1.jpg" class="img1"/><span>结算页</span><a href="http://cart.gulimall.com/cart.html">去购物车</a>
+    <a href="http://gulimall.com"><img src="/static/order/confirm/img/logo1.jpg" class="img1"/></a><span>结算页</span><a
+        href="http://cart.gulimall.com/cart.html">去购物车</a>
     <!--右侧绿色-->
     <img src="/static/order/confirm/img/08.png" class="img2"/>
 </div>
@@ -726,7 +727,7 @@
         </p>
         <p class="qian_y">
             <span>运费： </span>
-            <span class="rmb"> &nbsp ￥0.00</span>
+            <span class="rmb"> &nbsp ￥<b id="fareEle"></b></span>
         </p>
         <p class="qian_y">
             <span>服务费： </span>
@@ -740,8 +741,8 @@
     </div>
 
     <div class="yfze">
-        <p class="yfze_a"><span class="z">应付总额：</span><span class="hq" th:text="${#numbers.formatDecimal(orderConfirmData.payPrice,1,2)}">￥28.90</span></p>
-        <p class="yfze_b">寄送至： 北京 朝阳区 三环到四环之间 朝阳北路复兴国际大厦23层麦田房产 IT-中心研发二部 收货人：赵存权 188****5052</p>
+        <p class="yfze_a"><span class="z">应付总额：</span><span class="hq"> $ <b id="payPriceEle">[[${#numbers.formatDecimal(orderConfirmData.payPrice,1,2)}]]</b></span></p>
+<!--        <p class="yfze_b">寄送至：<span id="recieveAddressEle"></span>  收货人： <span id="recieveEle"></span></p>-->
     </div>
     <button class="tijiao">提交订单</button>
 </div>
@@ -976,9 +977,43 @@
         }, function () {
             $('.h-r-1').css('display', 'none')
         })
+
+        highlight();
+        let addrId = $(".addr-item p[def='1']").attr("addrId");
+        getFare(addrId);
     })
 
 
+    function highlight() {
+        $(".addr-item p").css({"border": "2px solid gray"})
+        $(".addr-item p[def='1']").css({"border": "2px solid red"})
+    }
+
+    $(".addr-item p").click(function () {
+        $(".addr-item p").attr("def", "0");
+        $(this).attr("def", "1");
+        highlight();
+        //发送ajax请求计算运费
+        var addrId = $(this).attr("addrId");
+        getFare(addrId);
+    })
+
+    function getFare(addrId) {
+        // $("#addIdInput").val(addrId);
+        $.get("http://gulimall.com/api/ware/wareinfo/fare?addrId=" + addrId, function (data) {
+            console.log(data)
+            $("#fareEle").text(data.data);
+            var total = [[${orderConfirmData.total}]];
+            // //设置运费
+            let number = total * 1 + data.data * 1;
+            $("#payPriceEle").text(number)
+            // //应付总额
+            // $("#payPriceInput").val(number)
+            // 设置收货人
+            // $("#recieveAddressEle").text(data.data.address.province + " " + data.data.address.city + " " + data.data.address.region + " " + data.data.address.detailAddress)
+            // $("#recieveEle").text(data.data.address.name);
+        })
+    }
 </script>
 </body>
 
