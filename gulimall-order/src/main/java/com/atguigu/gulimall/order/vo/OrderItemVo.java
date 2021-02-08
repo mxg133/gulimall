@@ -23,4 +23,7 @@ public class OrderItemVo {
     private Integer count;
     //总价
     private BigDecimal totalPrice;
+
+    //TODO 是否有货
+    private boolean hasStock;
 }
