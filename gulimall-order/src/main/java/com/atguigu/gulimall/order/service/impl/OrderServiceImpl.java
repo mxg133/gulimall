@@ -4,16 +4,20 @@ import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResVo;
 import com.atguigu.gulimall.order.constant.OrderConstant;
+import com.atguigu.gulimall.order.entity.OrderItemEntity;
 import com.atguigu.gulimall.order.feign.CartFeignService;
 import com.atguigu.gulimall.order.feign.MemberFeignService;
 import com.atguigu.gulimall.order.feign.WareFeignService;
 import com.atguigu.gulimall.order.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimall.order.vo.*;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +40,11 @@ import com.atguigu.gulimall.order.service.OrderService;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-
 @Service("orderService")
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
+
+    //共享前端页面传过来的vo
+    ThreadLocal<OrderSubmitVo> confirmVoThreadLocal = new ThreadLocal<>();
 
     @Autowired
     MemberFeignService memberFeignService;
@@ -132,6 +138,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
 
+        //共享前端页面传过来的vo
+        confirmVoThreadLocal.set(vo);
+
         //要返回到大对象
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
         //登录的用户
@@ -145,12 +154,77 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 Arrays.asList(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberResVo.getId()),
                 orderToken);
         if (result == 0) {
-            //令牌验证失败
+            //令牌验证失败 非0失败码
+            responseVo.setCode(1);
             return responseVo;
         } else {
             //令牌验证成功 -> 执行业务代码
             //下单 去创建订单 验证令牌 验证价格 锁库存
+            OrderCreatTo orderCreatTo = creatOrder();
+
             return responseVo;
         }
     }
+
+    private OrderCreatTo creatOrder() {
+
+
+        OrderCreatTo orderCreatTo = new OrderCreatTo();
+
+        //orderCreatTo 第1个大属性OrderEntity order
+        //生成一个订单号
+        String orderSn = IdWorker.getTimeId();
+        OrderEntity order = buildOrderEntity(orderSn);
+        orderCreatTo.setOrder(order);
+
+        //orderCreatTo 第2个大属性List<OrderItemEntity> items
+        List<OrderItemEntity> orderItems = buildList_OrderItemEntity();
+        orderCreatTo.setItems(orderItems);
+
+
+        //orderCreatTo 第3个大属性BigDecimal payPrice;
+        //orderCreatTo 第4个大属性BigDecimal fare;
+        return orderCreatTo;
+    }
+
+    private OrderEntity buildOrderEntity(String orderSn) {
+
+        OrderEntity order = new OrderEntity();
+        order.setOrderSn(orderSn);
+        //共享前端页面传过来的vo
+        OrderSubmitVo vo = confirmVoThreadLocal.get();
+        //获取收货地址
+        R r = wareFeignService.getFare(vo.getAddrId());
+        FareVo fareVo = r.getData(new TypeReference<FareVo>() {
+        });
+        order.setFreightAmount(fareVo.getFare());
+        order.setReceiverCity(fareVo.getAddress().getCity());
+        order.setReceiverDetailAddress(fareVo.getAddress().getDetailAddress());
+        order.setReceiverName(fareVo.getAddress().getName());
+        order.setReceiverPhone(fareVo.getAddress().getPhone());
+        order.setReceiverPostCode(fareVo.getAddress().getPostCode());
+        order.setReceiverProvince(fareVo.getAddress().getProvince());
+        order.setReceiverRegion(fareVo.getAddress().getRegion());
+        return order;
+    }
+
+    private List<OrderItemEntity> buildList_OrderItemEntity() {
+
+        List<OrderItemVo> orderItemVos = cartFeignService.currentUserItems();
+        if (orderItemVos != null && orderItemVos.size() > 0) {
+            List<OrderItemEntity> collect = orderItemVos.stream().map((item) -> {
+                return buildOrderItemEntity(item);
+            }).collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    private OrderItemEntity buildOrderItemEntity(OrderItemVo item) {
+
+        OrderItemEntity orderItemEntity = new OrderItemEntity();
+
+        return orderItemEntity;
+    }
+
+
 }

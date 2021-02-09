@@ -17,7 +17,7 @@ public class OrderSubmitVo {
 
     private Long addrId;
     //支付方式
-    private Integer patType;
+    private Integer payType;
 
     //无需提交购买的商品，去购物车在获取一遍
 
