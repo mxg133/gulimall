@@ -8,14 +8,13 @@ import com.atguigu.gulimall.order.feign.CartFeignService;
 import com.atguigu.gulimall.order.feign.MemberFeignService;
 import com.atguigu.gulimall.order.feign.WareFeignService;
 import com.atguigu.gulimall.order.interceptor.LoginUserInterceptor;
-import com.atguigu.gulimall.order.vo.MemberAddressVo;
-import com.atguigu.gulimall.order.vo.OrderConfirmVo;
-import com.atguigu.gulimall.order.vo.OrderItemVo;
-import com.atguigu.gulimall.order.vo.SkuStockVo;
+import com.atguigu.gulimall.order.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -130,4 +129,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return confirmVo;
     }
 
+    @Override
+    public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
+
+        //要返回到大对象
+        SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
+        //登录的用户
+        MemberResVo memberResVo = LoginUserInterceptor.loginUser.get();
+        //1、首先验证令牌
+        //0失败 - 1成功 ｜ 不存在0 存在 删除？1：0
+        String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+        String orderToken = vo.getOrderToken();
+        //原子验证令牌 和 删除令牌
+        Long result = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class),
+                Arrays.asList(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberResVo.getId()),
+                orderToken);
+        if (result == 0) {
+            //令牌验证失败
+            return responseVo;
+        } else {
+            //令牌验证成功 -> 执行业务代码
+            //下单 去创建订单 验证令牌 验证价格 锁库存
+            return responseVo;
+        }
+    }
 }

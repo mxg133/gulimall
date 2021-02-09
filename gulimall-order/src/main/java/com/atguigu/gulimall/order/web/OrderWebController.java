@@ -3,12 +3,11 @@ package com.atguigu.gulimall.order.web;
 import com.atguigu.gulimall.order.service.OrderService;
 import com.atguigu.gulimall.order.vo.OrderConfirmVo;
 import com.atguigu.gulimall.order.vo.OrderSubmitVo;
+import com.atguigu.gulimall.order.vo.SubmitOrderResponseVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -41,16 +40,17 @@ public class OrderWebController {
      * 提交订单 去支付
      */
     @PostMapping("/submitOrder")
-    public String submitOrder(OrderSubmitVo vo) {
+    public String submitOrder(OrderSubmitVo vo, Map<String, SubmitOrderResponseVo> map) {
 
-        //
+        SubmitOrderResponseVo responseVo = orderService.submitOrder(vo);
 
-        //下单成功来到支付选择页
-
-        //下单失败，回到订单确认页重新提交订单信息
-
-        System.out.println("订单提交的数据"+vo);
-        return "";
+        if (responseVo.getCode() == 0) {
+            //说明下单成功 来到支付选择页
+            map.put("responseVo", responseVo);
+            return "pay";
+        }else {
+            //说明下单失败 返回确认页 回到订单确认页重新提交订单信息
+            return "redirect:http://order.gulimall.com/toTrade";
+        }
     }
-
 }
