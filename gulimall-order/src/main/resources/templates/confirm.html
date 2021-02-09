@@ -745,7 +745,13 @@
         </p>
         <p class="yfze_b">寄送至：<span id="receiveAddressEle"></span> 收货人： <span id="receiveEle"></span></p>
     </div>
-    <button class="tijiao">提交订单</button>
+    <!--提交数据 从隐藏表单域中提取  还回去购物车 查询选中的商品一同提交-->
+    <form action="http://order.gulimall.com/submitOrder" method="post">
+        <input id="addIdInput" type="hidden" name="addrId"/>
+        <input id="payPriceInput" type="hidden" name="payPrice"/>
+        <input type="hidden" name="orderToken" th:value="${orderConfirmData.orderToken}"/>
+        <button class="tijiao" type="submit">提交订单</button>
+    </form>
 </div>
 </div>
 
@@ -1000,16 +1006,17 @@
     })
 
     function getFare(addrId) {
-        // $("#addIdInput").val(addrId);
+        //给表单回填选择的地址
+        $("#addIdInput").val(addrId);
         $.get("http://gulimall.com/api/ware/wareinfo/fare?addrId=" + addrId, function (data) {
             console.log(data)
             $("#fareEle").text(data.data.fare);
             var total = [[${orderConfirmData.total}]];
-            // //设置运费
+            // 设置运费
             let number = total * 1 + data.data.fare * 1;
             $("#payPriceEle").text(number)
-            // //应付总额
-            // $("#payPriceInput").val(number)
+            // 应付总额
+            $("#payPriceInput").val(number)
             // 设置收货人
             $("#receiveAddressEle").text(data.data.address.province + " " + data.data.address.city + " " + data.data.address.region + " " + data.data.address.detailAddress)
             $("#receiveEle").text(data.data.address.name);
