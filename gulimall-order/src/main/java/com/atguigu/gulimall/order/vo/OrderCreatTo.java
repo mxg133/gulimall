@@ -17,7 +17,7 @@ public class OrderCreatTo {
 
     private OrderEntity order;
 
-    private List<OrderItemEntity> items;
+    private List<OrderItemEntity> orderItems;
 
     private BigDecimal payPrice;
 
