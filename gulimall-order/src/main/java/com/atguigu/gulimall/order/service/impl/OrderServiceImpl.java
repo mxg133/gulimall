@@ -5,6 +5,7 @@ import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResVo;
 import com.atguigu.gulimall.order.constant.OrderConstant;
 import com.atguigu.gulimall.order.entity.OrderItemEntity;
+import com.atguigu.gulimall.order.enume.OrderStatusEnum;
 import com.atguigu.gulimall.order.feign.CartFeignService;
 import com.atguigu.gulimall.order.feign.MemberFeignService;
 import com.atguigu.gulimall.order.feign.ProductFeignService;
@@ -166,6 +167,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             //令牌验证成功 -> 执行业务代码
             //下单 去创建订单 验证令牌 验证价格 锁库存
             OrderCreatTo orderCreatTo = creatOrder();
+            BigDecimal payAmount = orderCreatTo.getOrder().getPayAmount();
+            BigDecimal payPrice = vo.getPayPrice();
+            //金额对比
+            if (Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01) {
+
+            }else {
+                responseVo.setCode(2);
+                return responseVo;
+            }
 
             return responseVo;
         }
@@ -186,8 +196,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         List<OrderItemEntity> orderItems = buildList_OrderItemEntity(orderSn);
         orderCreatTo.setItems(orderItems);
 
-
         //orderCreatTo 第3个大属性BigDecimal payPrice;
+        computePrice(order, orderItems);
         //orderCreatTo 第4个大属性BigDecimal fare;
         return orderCreatTo;
     }
@@ -210,6 +220,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         order.setReceiverPostCode(fareVo.getAddress().getPostCode());
         order.setReceiverProvince(fareVo.getAddress().getProvince());
         order.setReceiverRegion(fareVo.getAddress().getRegion());
+        order.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        order.setAutoConfirmDay(7);
         return order;
     }
 
@@ -253,10 +265,53 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderItemEntity.setSkuQuantity(item.getCount());
         //OrderItemEntity的1个属性 优惠信息
         //OrderItemEntity的1个属性 积分信息
-        orderItemEntity.setGiftGrowth(item.getPrice().intValue());
-        orderItemEntity.setGiftIntegration(item.getPrice().intValue());
+        orderItemEntity.setGiftGrowth(item.getPrice().multiply(new BigDecimal(item.getCount().toString())).intValue());
+        orderItemEntity.setGiftIntegration(item.getPrice().multiply(new BigDecimal(item.getCount().toString())).intValue());
+        //OrderItemEntity的1个属性 金额
+        orderItemEntity.setPromotionAmount(new BigDecimal("0"));
+        orderItemEntity.setCouponAmount(new BigDecimal("0"));
+        orderItemEntity.setIntegrationAmount(new BigDecimal("0"));
+        BigDecimal orign = orderItemEntity.getSkuPrice().multiply(new BigDecimal(orderItemEntity.getSkuQuantity()));
+        BigDecimal subtract = orign.subtract(orderItemEntity.getCouponAmount()).subtract(orderItemEntity.getPromotionAmount()).subtract(orderItemEntity.getIntegrationAmount());
+        orderItemEntity.setRealAmount(subtract);
         return orderItemEntity;
     }
 
+    private void computePrice(OrderEntity order, List<OrderItemEntity> orderItems) {
 
+        //总价格
+        BigDecimal total = new BigDecimal("0.0");
+        //优惠卷
+        BigDecimal coupon = new BigDecimal("0.0");
+        //积分
+        BigDecimal interation = new BigDecimal("0.0");
+        //打折
+        BigDecimal promotion = new BigDecimal("0.0");
+        //赠送积分
+        BigDecimal gift = new BigDecimal("0.0");
+        //赠送成长值
+        BigDecimal growth = new BigDecimal("0.0");
+        //订单的总额，叠加每一个订单项的总额信息
+        for (OrderItemEntity orderItem : orderItems) {
+            coupon = coupon.add(orderItem.getCouponAmount());
+            interation = interation.add(orderItem.getIntegrationAmount());
+            promotion = promotion.add(orderItem.getPromotionAmount());
+            total = total.add(orderItem.getRealAmount());
+            gift = gift.add(new BigDecimal(orderItem.getGiftIntegration().toString()));
+            growth = growth.add(new BigDecimal(orderItem.getGiftGrowth().toString()));
+        }
+        //1、订单价格相关
+        order.setTotalAmount(total);
+        //应付金额 + 运费金额
+        order.setPayAmount(total.add(order.getFreightAmount()));
+        //优惠信息
+        order.setPromotionAmount(promotion);
+        order.setIntegrationAmount(interation);
+        order.setCouponAmount(coupon);
+        //设置积分信息
+        order.setGrowth(growth.intValue());
+        order.setIntegration(gift.intValue());
+        //未删除
+        order.setDeleteStatus(0);
+    }
 }
