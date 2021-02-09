@@ -25,6 +25,6 @@ public interface WareFeignService {
     /**
      * 根据用户的收货地址计算运费
      */
-    @GetMapping("ware/wareinfo/fare")
+    @GetMapping("/ware/wareinfo/fare")
     R getFare(@RequestParam("addrId") Long addrId);
 }

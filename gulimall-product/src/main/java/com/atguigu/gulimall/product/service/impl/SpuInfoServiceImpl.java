@@ -333,4 +333,13 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }
     }
 
+    @Override
+    public SpuInfoEntity getSpuInfoBuSkuId(Long id) {
+
+        SkuInfoEntity byId = skuInfoService.getById(id);
+        Long spuId = byId.getSpuId();
+        SpuInfoEntity entity = getById(spuId);
+        return entity;
+    }
+
 }
