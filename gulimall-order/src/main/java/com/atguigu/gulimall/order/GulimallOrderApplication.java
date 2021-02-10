@@ -20,6 +20,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  *      1）、引入aop-starter; spring-boot-starter-aop 引入aspectj
  *      2）、@EnableAspectjAutoProxy(exposeProxy = true) 开启 aspectj 动态代理功能 以后所有动态代理都是aspectj
  *
+ * 解决数据一致性问题
+ *  Raft算法 http://thesecretlivesofdata.com/raft/
+ *
  *     seata 要控制分布式事务
  *     1）、每一个微服务必须创建uodo_log
  *     2)、安装事务协调器 seata-server https://github.com/seata.seata/releases
@@ -30,7 +33,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  *              file.conf
  *          3、所有想要用到分布式事务的微服务使用seata DataSourceProxy
  */
-//开启aspectj动态代理功能(对外暴露代理对象)
+//开启aspectj动态代理功能(对外暴露代理对象) 本地事物
 @EnableAspectJAutoProxy(exposeProxy = true)
 //开启feign客户度的远程调用功能
 //扫描feign文件夹下的带有@FeignClient注解的接口
