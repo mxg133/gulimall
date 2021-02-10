@@ -22,6 +22,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  *
  * 解决数据一致性问题
  *  Raft算法 http://thesecretlivesofdata.com/raft/
+ *          BASE理论
+ *              使用AP
+ *              舍弃CP强一致(本地数据库就是)， 使用最终一致即可
  *
  *     seata 要控制分布式事务
  *     1）、每一个微服务必须创建uodo_log
