@@ -203,7 +203,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     responseVo.setOrder(orderCreatTo.getOrder());
                     //TODO 5 远程扣减积分
                     //库存成功了，但是网络原因超时了，订单回滚，库存不回滚
-//                    int i = 1 / 0;//模拟积分系统异常
+                    int i = 1 / 0;//模拟积分系统异常
                     return responseVo;
                 } else {
                     //锁定失败
