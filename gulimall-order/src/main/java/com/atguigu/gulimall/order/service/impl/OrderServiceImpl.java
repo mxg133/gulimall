@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.exception.NoStockException;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResVo;
 import com.atguigu.gulimall.order.constant.OrderConstant;
@@ -156,6 +157,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
         //登录的用户
         MemberResVo memberResVo = LoginUserInterceptor.loginUser.get();
+        responseVo.setCode(0);
         //1、首先验证令牌
         //0失败 - 1成功 ｜ 不存在0 存在 删除？1：0
         String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
@@ -189,18 +191,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     return orderItemVo;
                 }).collect(Collectors.toList());
                 wareSkuLockVo.setLocks(collect);
+                //TODO 远程锁库存 非常严重
                 R r = wareFeignService.orderLockStock(wareSkuLockVo);
                 if (r.getCode() == 0) {
                     //锁成功
-
+                    responseVo.setOrder(orderCreatTo.getOrder());
+                    return responseVo;
                 }else {
                     //锁定失败
+                        responseVo.setCode(3);
+//                        throw new NoStockException();
+                        return responseVo;
+
                 }
             }else {
                 responseVo.setCode(2);
                 return responseVo;
             }
-            return responseVo;
         }
     }
 
@@ -217,7 +224,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
     private OrderCreatTo creatOrder() {
-
 
         OrderCreatTo orderCreatTo = new OrderCreatTo();
 
