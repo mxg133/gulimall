@@ -26,6 +26,14 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  *              使用AP
  *              舍弃CP强一致(本地数据库就是)， 使用最终一致即可
  *
+ *  分布式事物几种解决方案
+ *      1 2PC模式 二级提交协议
+ *      2 柔性事物 TCC事务补偿型方案
+ *          刚性事务：遵循ACID原则，强一致性原则
+ *          柔性事务：遵循BASE理论，最终一致性
+ *      3 柔性事务 最大努力通知型方案
+ *      4 柔性事务 可靠消息+最终一致性方案（异步确保型）‍️
+ *
  *     seata 要控制分布式事务
  *     1）、每一个微服务必须创建uodo_log
  *     2)、安装事务协调器 seata-server https://github.com/seata.seata/releases
