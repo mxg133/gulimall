@@ -145,6 +145,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     /**
      * 提交订单 去支付
+     *
+     * @Transactional 是一种本地事物，在分布式系统中，只能控制住自己的回滚，控制不了其他服务的回滚
+     * 分布式事物 最大的原因是 网络问题+分布式机器。
      */
     @Transactional
     @Override
@@ -173,6 +176,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         } else {
             //令牌验证成功 -> 执行业务代码
             //下单 去创建订单 验证令牌 验证价格 锁库存
+            //TODO 3 保存订单
             OrderCreatTo orderCreatTo = creatOrder();
             BigDecimal payAmount = orderCreatTo.getOrder().getPayAmount();
             BigDecimal payPrice = vo.getPayPrice();
@@ -191,20 +195,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     return orderItemVo;
                 }).collect(Collectors.toList());
                 wareSkuLockVo.setLocks(collect);
-                //TODO 远程锁库存 非常严重
+                //TODO 4 远程锁库存 非常严重
                 R r = wareFeignService.orderLockStock(wareSkuLockVo);
                 if (r.getCode() == 0) {
                     //锁成功
                     responseVo.setOrder(orderCreatTo.getOrder());
+                    //TODO 5 远程扣减积分
+                    //库存成功了，但是网络原因超时了，订单回滚，库存不回滚
+//                    int i = 1 / 0;//模拟积分系统异常
                     return responseVo;
-                }else {
+                } else {
                     //锁定失败
-                        responseVo.setCode(3);
-//                        throw new NoStockException();
-                        return responseVo;
-
+                    String msg1 = (String) r.get("msg");
+                    throw new NoStockException(msg1);
                 }
-            }else {
+            } else {
                 responseVo.setCode(2);
                 return responseVo;
             }

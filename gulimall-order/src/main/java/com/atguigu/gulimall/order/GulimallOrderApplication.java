@@ -13,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * 3 加注解
  *      @EnableRabbit
  *
- *  本地事务失效问题
+ *  @Transactional 本地事务失效问题
  *  同一个对象内事务互调默认方法 原因 绕过了代理对象 事务使用代理对象来控制
  *  解决：使用代理对象调用事务方法
  *      1）、引入aop-starter; spring-boot-starter-aop 引入aspectj

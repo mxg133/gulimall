@@ -18,7 +18,7 @@ public class NoStockException extends RuntimeException {
         super(SkuId + ":没有足够的库存");
     }
 
-    public NoStockException() {
-        super("没有足够的库存");
+    public NoStockException(String msg1) {
+        super(msg1);
     }
 }
