@@ -34,20 +34,30 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  *      3 柔性事务 最大努力通知型方案
  *      4 柔性事务 可靠消息+最终一致性方案（异步确保型）‍️
  *
- *     seata 要控制分布式事务
- *     1）、每一个微服务必须创建uodo_log
- *     2)、安装事务协调器 seata-server https://github.com/seata.seata/releases
- *     3)、整合
- *          1、导入依赖 spring-cloud-starter-alibaba-seata ｜ seata-all-0.7.1
- *          2、解压并启动seata-server：(TC)
- *              registry.conf 注册中心配置 修改registry type=nacos
- *              file.conf
- *          3、所有想要用到分布式事务的微服务使用seata DataSourceProxy
- *          4、每个服务都导入
- *              registry.conf
- *              file.conf 设置：vgroup_mapping.gulimall-order-fescar-service-group = "default"
- *         5、 大事务：@GlobalTransactional
- *             远程小事务：@Transactional
+ * seata 要控制分布式事务 【不用】
+ *   1）、每一个微服务必须创建uodo_log
+ *   2)、安装事务协调器 seata-server https://github.com/seata.seata/releases
+ *   3)、整合
+ *        1、导入依赖 spring-cloud-starter-alibaba-seata ｜ seata-all-0.7.1
+ *        2、解压并启动seata-server：(TC)
+ *            registry.conf 注册中心配置 修改registry type=nacos
+ *            file.conf
+ *        3、所有想要用到分布式事务的微服务使用seata DataSourceProxy
+ *        4、每个服务都导入
+ *            registry.conf
+ *            file.conf 设置：vgroup_mapping.gulimall-order-fescar-service-group = "default"
+ *       5、 大事务：@GlobalTransactional
+ *           远程小事务：@Transactional
+ *
+ * RabbitMQ延时队列 用
+ *  TTL 消息存活时间 队列和消息可以一设置TTL
+ *      死信：1 被消费者拒收，且不让回归队列，直接丢弃
+ *           2 过了时间
+ *           3 队列限制满了，老消息被丢弃
+ *  延时队列实现-1 【用】
+ *      设置【队列】过期时间 实现延时队列
+ *  延时队列实现-2 【不用】
+ *      设置【消息】过期时间 实现延时队列
  */
 //开启aspectj动态代理功能(对外暴露代理对象) 本地事物
 @EnableAspectJAutoProxy(exposeProxy = true)
