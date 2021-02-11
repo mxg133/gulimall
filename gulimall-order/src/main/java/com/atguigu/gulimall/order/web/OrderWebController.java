@@ -39,7 +39,7 @@ public class OrderWebController {
     }
 
     /**
-     * 提交订单 去支付
+     * 提交下订单 去支付
      */
     @PostMapping("/submitOrder")
     public String submitOrder(OrderSubmitVo vo, Map<String, SubmitOrderResponseVo> map, RedirectAttributes redirectAttributes) {
