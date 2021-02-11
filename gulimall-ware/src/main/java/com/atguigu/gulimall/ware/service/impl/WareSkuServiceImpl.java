@@ -63,11 +63,6 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     @Autowired
     OrderFeignService orderFeignService;
 
-    private void unLockStock(Long skuId, Long wareId, Integer num, Long taskDetailId) {
-
-        wareSkuDao.unLockStock(skuId, wareId, num);
-    }
-
     @Override
     // wareId: 123,//仓库id
     // skuId: 123//商品id
@@ -142,7 +137,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
      * 为某个订单锁定库存
      * rollbackFor 代表这是一定要回滚的
      * RuntimeException 也是回滚的。
-     *
+     * <p>
      * 库存解锁的场景
      * 1 下订单成功，订单过期，没有支付被系统自动取消/被用户手动取消
      * 2 下订单成功，库存锁定成功，接下来的业务调用失败，导致订单回滚。之前锁定的库存就要自动解锁
@@ -217,13 +212,12 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     public void unLockStock(StockLockedTo to) {
 
         StockDetailTo detailTo = to.getDetailTo();
-        Long skuId = detailTo.getSkuId();
         Long detailId = detailTo.getId();
         //查询数据库的锁库存的消息
         //有 证明 库存锁定OK
         //没有。库存锁定失败,库存回滚 无需解锁
-        WareOrderTaskDetailEntity byId = wareOrderTaskDetailService.getById(detailId);
-        if (byId != null) {
+        WareOrderTaskDetailEntity orderTaskDetailEntity = wareOrderTaskDetailService.getById(detailId);
+        if (orderTaskDetailEntity != null) {
             //解锁 库存没毛病
             //库存工作单的id
             Long id = to.getId();
@@ -237,14 +231,29 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 });
                 if (orderVo == null || orderVo.getStatus() == 4) {
                     //订单不存在||订单取消 解锁库存
-                    unLockStock(detailTo.getSkuId(), detailTo.getWareId(), detailTo.getSkuNum(), detailId);
+                    if (orderTaskDetailEntity.getLockStatus() == 1) {
+                        //当前工作单详情，状态为1(已锁定)
+                        unLockStock(detailTo.getSkuId(), detailTo.getWareId(), detailTo.getSkuNum(), detailId);
+                    }
                 }
             } else {
                 //消息拒绝重新放入队列，让别人继续消费解锁
+                throw new RuntimeException("远程服务失败");
             }
         } else {
             //无需解锁 库存服务自己出现问题
         }
+    }
+
+    private void unLockStock(Long skuId, Long wareId, Integer num, Long taskDetailId) {
+
+        //库存恢复
+        wareSkuDao.unLockStock(skuId, wareId, num);
+        //更新库存工作单的状态
+        WareOrderTaskDetailEntity entity = new WareOrderTaskDetailEntity();
+        entity.setId(taskDetailId);
+        entity.setLockStatus(2);//变为已解锁
+        wareOrderTaskDetailService.updateById(entity);
     }
 
     @Data

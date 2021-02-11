@@ -2,7 +2,6 @@ package com.atguigu.gulimall.ware.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -27,10 +26,10 @@ public class MyRabbitConfig {
     RabbitTemplate rabbitTemplate;
 
     //没有这个方法， 不能创建RabbitMQ的东西
-    @RabbitListener(queues = "stock.release.stock.queue")
-    public void handle(Message message) {
-
-    }
+//    @RabbitListener(queues = "stock.release.stock.queue")
+//    public void handle(Message message) {
+//
+//    }
 
     @Bean
     public MessageConverter messageConverter() {
