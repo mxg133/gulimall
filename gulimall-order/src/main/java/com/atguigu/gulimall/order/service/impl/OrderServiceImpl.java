@@ -15,7 +15,6 @@ import com.atguigu.gulimall.order.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimall.order.service.OrderItemService;
 import com.atguigu.gulimall.order.vo.*;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -152,7 +151,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * (isolation = Isolation.REPEATABLE_READ) MySql默认隔离级别 - 可重复读
      */
     //分布式事务 全局事务
-    @GlobalTransactional
+    //@GlobalTransactional 不用
     @Transactional
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
@@ -199,7 +198,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     return orderItemVo;
                 }).collect(Collectors.toList());
                 wareSkuLockVo.setLocks(collect);
-                //TODO 4 远程锁库存 非常严重
+                /**
+                 * TODO 4 远程锁库存 非常严重
+                 * 库存成功了，但是网络原因超时了，订单可以回滚，库存不能回滚
+                 * 为了保证高并发，库存需要自己回滚。 这样可以采用发消息给库存服务
+                 * 库存服务本身也可以使用自动解锁模式 使用消息队列完成  使用延时队列
+                 */
                 R r = wareFeignService.orderLockStock(wareSkuLockVo);
                 if (r.getCode() == 0) {
                     //锁成功

@@ -100,11 +100,11 @@
             <version>9.3.7.v20160115</version>
         </dependency>
 
-<!--        引入seata 控制分布式事务-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
-        </dependency>
+<!--        引入seata 控制分布式事务 不用-->
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>-->
+<!--        </dependency>-->
     </dependencies>
 
 <!--    引入spring cloud alibaba的相关依赖就不用写版本号了-->
