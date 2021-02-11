@@ -42,7 +42,6 @@ import com.atguigu.gulimall.ware.service.WareSkuService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-@RabbitListener(queues = "stock.release.stock.queue")
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
@@ -63,49 +62,6 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
     @Autowired
     OrderFeignService orderFeignService;
-
-    /**
-     * 库存解锁的场景
-     *  1 下订单成功，订单过期，没有支付被系统自动取消/被用户手动取消
-     *  2 下订单成功，库存锁定成功，接下来的业务调用失败，导致订单回滚。之前锁定的库存就要自动解锁
-     */
-    @RabbitHandler
-    public void handleStockLockedRelease(StockLockedTo to, Message message, Channel channel) throws IOException {
-
-        System.out.println("收到解锁库存的消息");
-        StockDetailTo detailTo = to.getDetailTo();
-        Long skuId = detailTo.getSkuId();
-        Long detailId = detailTo.getId();
-        //查询数据库的锁库存的消息
-        //有 证明 库存锁定OK
-        //没有。库存锁定失败,库存回滚 无需解锁
-        WareOrderTaskDetailEntity byId = wareOrderTaskDetailService.getById(detailId);
-        if (byId != null) {
-            //解锁 库存没毛病
-            //库存工作单的id
-            Long id = to.getId();
-            WareOrderTaskEntity taskEntity = wareOrderTaskService.getById(id);
-            String orderSn = taskEntity.getOrderSn();
-            //查询订单状态 订单应该是取消的状态
-            R r = orderFeignService.getOrderStatus(orderSn);
-            if (r.getCode() == 0) {
-                //ok
-                OrderVo orderVo = r.getData(new TypeReference<OrderVo>() {
-                });
-                if (orderVo == null || orderVo.getStatus() == 4) {
-                    //订单不存在||订单取消 解锁库存
-                    unLockStock(detailTo.getSkuId(), detailTo.getWareId(), detailTo.getSkuNum(), detailId);
-                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                }
-            }else {
-                //消息拒绝重新放入队列，让别人继续消费解锁
-                channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
-            }
-        }else {
-            //无需解锁 库存服务自己出现问题
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-        }
-    }
 
     private void unLockStock(Long skuId, Long wareId, Integer num, Long taskDetailId) {
 
@@ -188,8 +144,8 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
      * RuntimeException 也是回滚的。
      *
      * 库存解锁的场景
-     *  1 下订单成功，订单过期，没有支付被系统自动取消/被用户手动取消
-     *  2 下订单成功，库存锁定成功，接下来的业务调用失败，导致订单回滚。之前锁定的库存就要自动解锁
+     * 1 下订单成功，订单过期，没有支付被系统自动取消/被用户手动取消
+     * 2 下订单成功，库存锁定成功，接下来的业务调用失败，导致订单回滚。之前锁定的库存就要自动解锁
      */
 //    @Transactional(rollbackFor = NoStockException.class)
     @Transactional
@@ -244,7 +200,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                     stockLockedTo.setDetailTo(stockDetailTo);
                     rabbitTemplate.convertAndSend("stock-event-exchange", "stock.locked", stockLockedTo);
                     break;//没必要查别的仓库了
-                }else {
+                } else {
                     //当前仓库失败锁失败
                 }
             }
@@ -255,6 +211,40 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         }
         //3 代码能够到这里，全部商品锁定成功
         return true;
+    }
+
+    @Override
+    public void unLockStock(StockLockedTo to) {
+
+        StockDetailTo detailTo = to.getDetailTo();
+        Long skuId = detailTo.getSkuId();
+        Long detailId = detailTo.getId();
+        //查询数据库的锁库存的消息
+        //有 证明 库存锁定OK
+        //没有。库存锁定失败,库存回滚 无需解锁
+        WareOrderTaskDetailEntity byId = wareOrderTaskDetailService.getById(detailId);
+        if (byId != null) {
+            //解锁 库存没毛病
+            //库存工作单的id
+            Long id = to.getId();
+            WareOrderTaskEntity taskEntity = wareOrderTaskService.getById(id);
+            String orderSn = taskEntity.getOrderSn();
+            //查询订单状态 订单应该是取消的状态
+            R r = orderFeignService.getOrderStatus(orderSn);
+            if (r.getCode() == 0) {
+                //ok
+                OrderVo orderVo = r.getData(new TypeReference<OrderVo>() {
+                });
+                if (orderVo == null || orderVo.getStatus() == 4) {
+                    //订单不存在||订单取消 解锁库存
+                    unLockStock(detailTo.getSkuId(), detailTo.getWareId(), detailTo.getSkuNum(), detailId);
+                }
+            } else {
+                //消息拒绝重新放入队列，让别人继续消费解锁
+            }
+        } else {
+            //无需解锁 库存服务自己出现问题
+        }
     }
 
     @Data
