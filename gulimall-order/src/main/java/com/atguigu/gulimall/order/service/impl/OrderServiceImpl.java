@@ -224,6 +224,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }
     }
 
+    /**
+     * 按照订单号查询订单
+     */
+    @Override
+    public OrderEntity getOrderByOrderSn(String orderSn) {
+
+        OrderEntity entity = this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
+        return entity;
+    }
+
     //保存到数据库
     private void saveOrder(OrderCreatTo orderCreatTo) {
 
