@@ -1,7 +1,6 @@
 package com.atguigu.gulimall.order.config;
 
 import com.atguigu.gulimall.order.entity.OrderEntity;
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -58,6 +57,7 @@ public class MyMQConfig {
     @Bean
     public Binding orderCreateOrderBinding() {
 
+        //和延时队列绑定
         return new Binding("order.delay.queue",
                 Binding.DestinationType.QUEUE,
                 "order-event-exchange",
@@ -68,10 +68,12 @@ public class MyMQConfig {
     @Bean
     public Binding orderReleaseOrderBinding() {
 
+        //和普通队列绑定
         return new Binding("order.release.order.queue",
                 Binding.DestinationType.QUEUE,
                 "order-event-exchange",
-                "order.release.order", new HashMap<>());
+                "order.release.order",
+                new HashMap<>());
     }
 
 //    @Bean

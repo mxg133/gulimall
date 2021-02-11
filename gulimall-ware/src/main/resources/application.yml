@@ -8,17 +8,34 @@ spring:
       url: jdbc:mysql://10.211.55.3:3306/gulimall_wms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
       username: root
       password: root
-
   cloud:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+#    alibaba:
+#      seata:
+#        tx-service-group: gulimall-ware-fescar-service-group
   application:
     name: gulimall-ware
 #    时间格式化
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
-
+  #配置rabbitmq
+  rabbitmq:
+    host: 10.211.55.3
+    port: 5672
+    virtual-host: /
+    #开启发送端确认 发送的过程中
+    publisher-confirms: true
+    #开启发送端确认 抵达队列
+    publisher-returns: true
+    template:
+      #抵达队列，以异步模式优先回调组合ReturnCallback
+      mandatory: true
+    listener:
+      simple:
+        #手动ack消息 手动确认收货 手动确认模式 防止消息丢失
+        acknowledge-mode: manual
 
 mybatis-plus:
 #  搞死Mybatis Plus 扫描哪里
