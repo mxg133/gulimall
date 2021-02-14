@@ -1,14 +1,8 @@
 package com.atguigu.gulimall.ware.listener;
 
-import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.to.mq.OrderTo;
-import com.atguigu.common.to.mq.StockDetailTo;
 import com.atguigu.common.to.mq.StockLockedTo;
-import com.atguigu.common.utils.R;
-import com.atguigu.gulimall.ware.entity.WareOrderTaskDetailEntity;
-import com.atguigu.gulimall.ware.entity.WareOrderTaskEntity;
 import com.atguigu.gulimall.ware.service.WareSkuService;
-import com.atguigu.gulimall.ware.vo.OrderVo;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -24,7 +18,7 @@ import java.io.IOException;
  * @description
  */
 @Service
-@RabbitListener(queues = "stock.release.stock.queue")
+//@RabbitListener(queues = "stock.release.stock.queue")
 public class StockReleaseListener {
 
     @Autowired
@@ -35,11 +29,14 @@ public class StockReleaseListener {
      * 1 下订单成功，订单过期，没有支付被系统自动取消/被用户手动取消
      * 2 下订单成功，库存锁定成功，接下来的业务调用失败，导致订单回滚。之前锁定的库存就要自动解锁
      */
-    @RabbitHandler
+//    @RabbitHandler
+    @RabbitListener(queues = "stock.release.stock.queue")
     public void handleStockLockedRelease(StockLockedTo to, Message message, Channel channel) throws IOException {
 
         System.out.println("收到解锁消息...");
         try {
+            //当前消息是否第二次及以后(重新)派发过来了 (做法过于暴力)
+//            Boolean redelivered = message.getMessageProperties().getRedelivered();
             wareSkuService.unLockStock(to);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
@@ -47,7 +44,8 @@ public class StockReleaseListener {
         }
     }
 
-    @RabbitListener
+//    @RabbitListener
+    @RabbitListener(queues = "stock.release.stock.queue")
     public void handleOrderCloseRelease(OrderTo orderTo, Message message, Channel channel) throws IOException {
 
         System.out.println("收到订单关闭，准备解锁库存消息...");

@@ -249,7 +249,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public void closeOrder(OrderEntity entity) {
 
         //先来查询当前这个订单的最新状态
-        OrderEntity orderEntity = this.getById(entity);
+        OrderEntity orderEntity = this.getById(entity.getId());
         //需要关单的状态是：代付款 0
         if (orderEntity.getStatus() == OrderStatusEnum.CREATE_NEW.getCode()) {
             //关单
@@ -260,7 +260,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             //发给MQ一个
             OrderTo orderTo = new OrderTo();
             BeanUtils.copyProperties(orderEntity, orderTo);
-            rabbitTemplate.convertAndSend("order-event-exchange", "order.release.order", orderTo);
+            rabbitTemplate.convertAndSend("order-event-exchange", "order.release.other", orderTo);
+//            try {
+//                //TODO 保证消息100%发送出去，每一个消息都做好日志记录 (给数据库保存每一个消息的详细信息)
+//                //TODO 定期扫描数据库 将失败的消息再发送一遍
+//                rabbitTemplate.convertAndSend("order-event-exchange", "order.release.order", orderTo);
+//            } catch (Exception e) {
+//                //TODO 将没发送出去的想消息进行重复发送 while
+//            }
         }
     }
 

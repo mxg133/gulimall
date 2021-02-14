@@ -1,8 +1,8 @@
 package com.atguigu.common.to.mq;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -12,7 +12,8 @@ import java.util.Date;
  * @description
  */
 @Data
-public class OrderTo {
+public class OrderTo implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * id

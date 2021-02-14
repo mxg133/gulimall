@@ -26,7 +26,7 @@ public class OrderCloseListener {
     @RabbitHandler
     public void listening(OrderEntity entity, Channel channel, Message message) throws IOException {
 
-        System.out.println("收到过期的订单，准备关闭订单。orderID:"+entity.getId()+";orderSn:"+entity.getOrderSn());
+        System.out.println("收到过期的订单，准备关闭订单。orderID:" + entity.getId() + "; orderSn:" + entity.getOrderSn());
         try {
             orderService.closeOrder(entity);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);

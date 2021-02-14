@@ -1,10 +1,7 @@
 package com.atguigu.gulimall.order.config;
 
-import com.atguigu.gulimall.order.entity.OrderEntity;
-import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -14,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +19,17 @@ import java.util.Map;
  * @date 2021-02-06 11:47 上午
  * @description创建RabbitMQ 队列 交换机
  * 运行之前，一定要小心，否则要删除队列/交换机重新运行 麻烦！
+ *
+ * 解决消息丢失(最怕)
+ *  1 做好消息确认机制（publisher，consumer【手动ack】）
+ *  2 每一个发送的消息都在数据库做好记录。定期将失败的消息再次发送一次
+ * 解决消息重复
+ *  1 幂等性
+ *  2 防重表
+ *  3 RabbitMQ自带redelivered (做法过于暴力)
+ * 解决消息积压
+ *  1 增加更多的消费者
+ *  2 上线专门的队列消费服务，取出来，记录到数据库，离线慢慢处理
  */
 //开启RabbitMQ消息队列
 @EnableRabbit
@@ -74,7 +81,7 @@ public class MyRabbitMQConfig {
                 Binding.DestinationType.QUEUE,
                 "order-event-exchange",
                 "order.create.order",
-                new HashMap<>());
+                null);
     }
 
     @Bean
@@ -85,17 +92,18 @@ public class MyRabbitMQConfig {
                 Binding.DestinationType.QUEUE,
                 "order-event-exchange",
                 "order.release.order",
-                new HashMap<>());
+                null);
     }
 
     @Bean
     public Binding orderReleaseOtherBinding() {
 
-        //订单释放直接和库存失望进行绑定
+        //订单释放直接和库存释放进行绑定
         return new Binding("stock.release.stock.queue",
                 Binding.DestinationType.QUEUE,
-                "order-event-exchange", "order.release.other.#",
-                new HashMap<>());
+                "order-event-exchange",
+                "order.release.other.#",
+                null);
     }
 
 //    @Bean

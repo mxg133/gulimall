@@ -2,7 +2,7 @@ package com.atguigu.common.to.mq;
 
 import lombok.Data;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * @author 孟享广
@@ -10,7 +10,8 @@ import java.util.List;
  * @description
  */
 @Data
-public class StockLockedTo {
+public class StockLockedTo implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     //库存工作单id
     private Long id;

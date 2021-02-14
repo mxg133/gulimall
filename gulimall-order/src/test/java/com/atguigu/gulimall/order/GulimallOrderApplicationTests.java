@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.order;
 
+//import com.atguigu.common.to.mq.OrderTo;
 import com.atguigu.gulimall.order.entity.OrderEntity;
 import com.atguigu.gulimall.order.entity.OrderReturnReasonEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,13 @@ public class GulimallOrderApplicationTests {
 
     @Autowired
     RabbitTemplate rabbitTemplate;
+
+//    @Test
+//    public void test() {
+//        OrderTo orderTo = new OrderTo();
+//        orderTo.setId(1234L);
+//        rabbitTemplate.convertAndSend("order-event-exchange", "order.release.other", orderTo);
+//    }
 
     /**
      * 发送消息
