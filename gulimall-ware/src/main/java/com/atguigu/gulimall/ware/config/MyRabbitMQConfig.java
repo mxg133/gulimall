@@ -20,7 +20,7 @@ import java.util.Map;
 //开启RabbitMQ消息队列
 @EnableRabbit
 @Configuration
-public class MyRabbitConfig {
+public class MyRabbitMQConfig {
 
     @Autowired
     RabbitTemplate rabbitTemplate;

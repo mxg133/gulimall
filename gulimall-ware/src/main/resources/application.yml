@@ -38,7 +38,7 @@ spring:
         acknowledge-mode: manual
 
 mybatis-plus:
-#  搞死Mybatis Plus 扫描哪里
+#  告诉Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml
 #  主键自增！
   global-config:
@@ -49,3 +49,9 @@ mybatis-plus:
 logging:
   level:
     com.atguigu: debug
+  #设置nacos-Naming客户端的日志级别
+    com:
+      alibaba:
+        nacos:
+          client:
+            naming: warn

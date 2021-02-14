@@ -2,6 +2,7 @@ package com.atguigu.gulimall.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.exception.NoStockException;
+import com.atguigu.common.to.mq.OrderTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResVo;
 import com.atguigu.gulimall.order.constant.OrderConstant;
@@ -15,6 +16,8 @@ import com.atguigu.gulimall.order.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimall.order.service.OrderItemService;
 import com.atguigu.gulimall.order.vo.*;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -68,6 +71,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     OrderItemService orderItemService;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -210,7 +216,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     responseVo.setOrder(orderCreatTo.getOrder());
                     //TODO 5 远程扣减积分
                     //库存成功了，但是网络原因超时了，订单回滚，库存不回滚
-                    int i = 1 / 0;//模拟积分系统异常
+//                    int i = 1 / 0;//模拟积分系统异常
+                    //TODO 订单创建成功，发消息给MQ
+                    rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", orderCreatTo.getOrder());
                     return responseVo;
                 } else {
                     //锁定失败
@@ -232,6 +240,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         OrderEntity entity = this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
         return entity;
+    }
+
+    /**
+     * 超过30分钟，关闭订单
+     */
+    @Override
+    public void closeOrder(OrderEntity entity) {
+
+        //先来查询当前这个订单的最新状态
+        OrderEntity orderEntity = this.getById(entity);
+        //需要关单的状态是：代付款 0
+        if (orderEntity.getStatus() == OrderStatusEnum.CREATE_NEW.getCode()) {
+            //关单
+            OrderEntity updateOrder = new OrderEntity();
+            updateOrder.setId(entity.getId());
+            updateOrder.setStatus(OrderStatusEnum.CANCLED.getCode());
+            this.updateById(updateOrder);
+            //发给MQ一个
+            OrderTo orderTo = new OrderTo();
+            BeanUtils.copyProperties(orderEntity, orderTo);
+            rabbitTemplate.convertAndSend("order-event-exchange", "order.release.order", orderTo);
+        }
     }
 
     //保存到数据库
