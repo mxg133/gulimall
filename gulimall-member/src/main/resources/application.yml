@@ -14,7 +14,17 @@ spring:
         server-addr: 127.0.0.1:8848
   application:
     name: gulimall-member
-
+  #关闭thymeleaf缓存 开发期间就能看到实时效果；上线以后就要打开缓存了(效果不大)
+  thymeleaf:
+    cache: false
+    #cache: true
+  #配置Redis缓存
+  redis:
+    host: 10.211.55.3
+    port: 6379
+  #整合Spring Session 指定session是存到redis里
+  session:
+    store-type: redis
 mybatis-plus:
 #  搞死Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml

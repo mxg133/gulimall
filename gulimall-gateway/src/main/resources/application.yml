@@ -77,6 +77,12 @@ spring:
           uri: lb://gulimall-ware
           predicates:
             - Host=ware.gulimall.com
+
+        #ware服务转发
+        - id: gulimall_member_route
+          uri: lb://gulimall-member
+          predicates:
+            - Host=member.gulimall.com
 ##前段项目，/api
 ## http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg
 ## http://localhost:88/api/product/category/list/tree http://localhost:10000/product/category/list/tree
