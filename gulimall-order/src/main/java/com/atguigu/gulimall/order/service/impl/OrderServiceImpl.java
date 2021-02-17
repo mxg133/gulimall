@@ -271,6 +271,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }
     }
 
+    /**
+     * 获取当前订单的支付信息 PayVo
+     */
+    @Override
+    public PayVo getPayOrder(String orderSn) {
+
+        //要返回的大对象
+        PayVo payVo = new PayVo();
+
+        OrderEntity orderEntity = this.getOrderByOrderSn(orderSn);
+        List<OrderItemEntity> orderItemEntities = orderItemService.list(new QueryWrapper<OrderItemEntity>().eq("order_sn", orderSn));
+
+        //大对象属性1：设置订单的备注
+        payVo.setBody(orderItemEntities.get(0).getSkuAttrsVals());
+        //大对象属性2：订单号
+        payVo.setOut_trade_no(orderEntity.getOrderSn());
+        //大对象属性3：订单的主题
+        payVo.setSubject("谷粒商城" + orderItemEntities.get(0).getSkuName());
+        //大对象属性4：订单的金额 小数点后2位+向上取值
+        BigDecimal payNum = orderEntity.getPayAmount().setScale(2, BigDecimal.ROUND_UP);
+        payVo.setTotal_amount(payNum.toString());
+
+        //返回给前端这个大对象
+        return payVo;
+    }
+
     //保存到数据库
     private void saveOrder(OrderCreatTo orderCreatTo) {
 

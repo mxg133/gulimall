@@ -54,3 +54,7 @@ mybatis-plus:
 #    #上线后，可以降低日志级别
 #    #    com.atguigu.gulimall: debuug
 #    com.atguigu.gulimall: error
+
+#配置支付宝
+alipay:
+  app_id: 2021000117611615
