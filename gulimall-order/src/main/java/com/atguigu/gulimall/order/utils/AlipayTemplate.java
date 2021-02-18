@@ -29,7 +29,7 @@ public class AlipayTemplate {
 
     // 服务器【异步通知】页面路径  需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
     // 支付宝会悄悄的给我们发送一个请求，告诉我们支付成功的信息
-    public static String notify_url = "http://lta90jctj6.52http.tech/alipay.trade.page.pay-JAVA-UTF-8/notify_url.jsp";
+    public static String notify_url = "http://lta90jctj6.52http.tech/payed/notify";
 
     // 页面跳转【同步通知】页面路径 需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
     //同步通知，支付成功，一般跳转到成功页

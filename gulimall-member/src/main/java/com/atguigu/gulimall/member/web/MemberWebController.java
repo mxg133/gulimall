@@ -25,6 +25,9 @@ public class MemberWebController {
     @GetMapping("/memberOrder.html")
     public String memberOrderPage(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum, Map<String, R> map) {
 
+        //获取到支付宝给我们出来的，所以我请求数据
+        //签名正确 可以修改
+
         Map<String, Object> page = new HashMap<>();
         page.put("page", pageNum.toString());
         //
