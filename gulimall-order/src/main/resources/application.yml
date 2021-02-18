@@ -40,7 +40,11 @@ spring:
   #整合Spring Session 指定session是存到redis里
   session:
     store-type: redis
-
+  #日期格式化 2选一
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
 mybatis-plus:
   #告诉Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml

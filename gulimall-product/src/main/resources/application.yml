@@ -21,7 +21,7 @@ spring:
 #        endpoint: oss-cn-beijing.aliyuncs.com
   application:
     name: gulimall-product
-    #日期格式化
+  #日期格式化
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
   #关闭thymeleaf缓存 开发期间就能看到实时效果；上线以后就要打开缓存了(效果不大)
