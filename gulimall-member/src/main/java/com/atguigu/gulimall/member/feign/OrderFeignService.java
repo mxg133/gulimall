@@ -17,7 +17,7 @@ import java.util.Map;
 public interface OrderFeignService {
 
     /**
-     * 给远程服务使用的
+     * 给远程服务使用的 我的订单
      * 查询当前登录用户的所有订单详情数据（分页）
      * @RequestBody 远程传输必须用这个
      */
