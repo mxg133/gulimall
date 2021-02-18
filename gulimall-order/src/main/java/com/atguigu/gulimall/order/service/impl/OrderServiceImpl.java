@@ -297,6 +297,35 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return payVo;
     }
 
+    /**
+     * 给远程服务使用的
+     * 查询当前登录用户的所有订单详情数据（分页）
+     */
+    @Override
+    public PageUtils queryPageWithItem(Map<String, Object> params) {
+
+        MemberResVo memberResVo = LoginUserInterceptor.loginUser.get();
+
+        QueryWrapper<OrderEntity> wrapper = new QueryWrapper<>();
+        //降序排列
+        wrapper.eq("member_id", memberResVo.getId()).orderByDesc("id");
+        IPage<OrderEntity> page = this.page(
+                new Query<OrderEntity>().getPage(params),
+                wrapper
+        );
+
+        List<OrderEntity> orderEntities = page.getRecords().stream().map((orderEntity) -> {
+            List<OrderItemEntity> orderItemEntities = orderItemService.list(new QueryWrapper<OrderItemEntity>().eq("order_sn", orderEntity.getOrderSn()));
+            orderEntity.setOrderItemEntities(orderItemEntities);
+            return orderEntity;
+        }).collect(Collectors.toList());
+
+        //重新设置返回数据
+        page.setRecords(orderEntities);
+
+        return new PageUtils(page);
+    }
+
     //保存到数据库
     private void saveOrder(OrderCreatTo orderCreatTo) {
 

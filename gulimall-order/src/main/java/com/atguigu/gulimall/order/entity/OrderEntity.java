@@ -1,11 +1,14 @@
 package com.atguigu.gulimall.order.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -192,4 +195,10 @@ public class OrderEntity implements Serializable {
 	 */
 	private Date modifyTime;
 
+	/**
+	 * 增加 订单项
+	 * @TableField(exist = false) 不是数据库字段
+	 */
+	@TableField(exist = false)
+	private List<OrderItemEntity> orderItemEntities;
 }

@@ -1,4 +1,4 @@
-package com.atguigu.gulimall.order.config;
+package com.atguigu.gulimall.member.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
