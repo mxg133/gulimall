@@ -22,6 +22,13 @@ spring:
   #整合Spring Session 指定session是存到redis里
   session:
     store-type: redis
+  #spring给我们配的线程池
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 50
+
 mybatis-plus:
 #  告诉Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml
@@ -32,9 +39,9 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
 
-logging:
-  level:
+#logging:
+#  level:
     #上线后，可以降低日志级别
 #    com.atguigu.gulimall: debuug
-    com.atguigu.gulimall: error
+#    com.atguigu.gulimall: error
 
