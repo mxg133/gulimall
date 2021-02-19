@@ -25,7 +25,7 @@
             <artifactId>gulimall-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <exclusions>
-                <!--                排除seata分布式事务-->
+                <!-- 排除seata分布式事务-->
                 <exclusion>
                     <groupId>com.alibaba.cloud</groupId>
                     <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
@@ -37,7 +37,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-<!--        引入远程调用openfeign -->
+        <!--引入远程调用openfeign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -49,25 +49,25 @@
             <scope>test</scope>
         </dependency>
 
-<!--        引入模版引擎 thymeleaf -->
+        <!--引入模版引擎 thymeleaf -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-<!--        在不重启服务器的时候，实时更新html-->
+        <!--在不重启服务器的时候，实时更新html-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
 
-<!--        引入redis-->
+        <!-- 引入redis-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
             <exclusions>
-<!--                 Lettuce的bug导致netty堆外内存溢出 切换使用jedis-->
+                <!-- Lettuce的bug导致netty堆外内存溢出 切换使用jedis-->
                 <exclusion>
                     <groupId>io.lettuce</groupId>
                     <artifactId>lettuce-core</artifactId>
@@ -75,33 +75,33 @@
             </exclusions>
         </dependency>
 
-<!--       Lettuce的bug导致netty堆外内存溢出 切换使用jedis-->
+        <!--Lettuce的bug导致netty堆外内存溢出 切换使用jedis-->
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
 
-<!--        整合redisson 作为分布式锁，分布式对象等功能框架-->
+        <!--整合redisson 作为分布式锁，分布式对象等功能框架-->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
             <version>3.12.0</version>
         </dependency>
 
-<!--        整合SringCache 简化缓存开发-->
+        <!--整合SringCache 简化缓存开发-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
-<!--        属性提示工具 自创配置文件的时候就有提示了 -->
+        <!--属性提示工具 自创配置文件的时候就有提示了 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!--        整合Spring Session完成session共享问题 微服务自治，就不放在common里了-->
+        <!-- 整合Spring Session完成session共享问题 微服务自治，就不放在common里了-->
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-redis</artifactId>

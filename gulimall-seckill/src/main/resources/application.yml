@@ -1,0 +1,40 @@
+server:
+  port: 25000
+spring:
+#  datasource:
+#    type: com.alibaba.druid.pool.DruidDataSource
+#    druid:
+#      driver-class-name: com.mysql.cj.jdbc.Driver
+#      url: jdbc:mysql://10.211.55.3:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#      username: root
+#      password: root
+  #Nacos 注册中心
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: gulimall-seckill
+  #配置Redis缓存
+  redis:
+    host: 10.211.55.3
+    port: 6379
+  #整合Spring Session 指定session是存到redis里
+  session:
+    store-type: redis
+mybatis-plus:
+#  告诉Mybatis Plus 扫描哪里
+  mapper-locations: classpath:/mapper/**/*.xml
+#  主键自增！
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+logging:
+  level:
+    #上线后，可以降低日志级别
+#    com.atguigu.gulimall: debuug
+    com.atguigu.gulimall: error
+
