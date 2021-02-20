@@ -37,9 +37,9 @@ public class HelloScheduled {
      *          解决异步+定时任务来完成定时任务
      */
     //异步任务 + 下
-    @Async
+//    @Async
     //定时任务
-    @Scheduled(cron = "* * * * * *")
+//    @Scheduled(cron = "* * * * * *")
     public void hello() throws InterruptedException {
         log.info("hello .. .");
         Thread.sleep(3000);

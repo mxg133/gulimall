@@ -15,6 +15,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
  * @date 2021-02-20 11:18 上午
  * @description
  */
+@Service
 public class SeckillServiceImpl implements SeckillService {
 
     //活动信息
@@ -73,7 +75,7 @@ public class SeckillServiceImpl implements SeckillService {
 
             String key = SESSION_CACHE_PREFIX + startTime + "_" + endTime;
             List<String> ids = seckillSessionsWithSkus.getSeckillSkuRelationEntities().stream().map((seckillSkuRelationEntity) -> {
-                return seckillSkuRelationEntity.getId().toString();
+                return seckillSkuRelationEntity.getSkuId().toString();
             }).collect(Collectors.toList());
             redisTemplate.opsForList().leftPushAll(key, ids);
         });
@@ -118,7 +120,7 @@ public class SeckillServiceImpl implements SeckillService {
                 semaphore.trySetPermits(seckillSkuVo.getSeckillCount());
 
                 String s = JSON.toJSONString(seckillSkuRedisTo);
-                ops.put(seckillSkuVo.getId(), s);
+                ops.put(seckillSkuVo.getSkuId().toString(), s);
             });
         });
     }

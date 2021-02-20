@@ -23,14 +23,16 @@ public class SecKillSkuScheduled {
     @Autowired
     SeckillService seckillService;
 
-    //异步任务 + 下
-    @Async
+    //TODO 幂等性处理
+//    //异步任务 + 下
+//    @Async
     //定时任务
-    @Scheduled(cron = "0 0 3 * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     public void uploadSeckillSkuLatest3Days() {
 
         //重复上架无需处理
         seckillService.uploadSeckillSkuLatest3Days();
+        log.info("上架秒杀商品信息....");
     }
 
 }
