@@ -1,6 +1,8 @@
 package com.atguigu.gulimall.seckill.feign;
 
+import com.atguigu.common.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * @author 孟享广
@@ -11,5 +13,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 @FeignClient("gulimall-coupon")//这个远程服务
 public interface CouponFeignService {
 
-
+    /**
+     * 给远程服务gulimall-seckill调用
+     * 扫描需要参与秒杀的活动
+     */
+    @GetMapping("/coupon/seckillsession/latest3DaysSession")
+    R getLatest3DaysSession();
 }
