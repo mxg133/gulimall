@@ -74,10 +74,13 @@ public class SeckillServiceImpl implements SeckillService {
             Long endTime = seckillSessionsWithSkus.getEndTime().getTime();
 
             String key = SESSION_CACHE_PREFIX + startTime + "_" + endTime;
-            List<String> ids = seckillSessionsWithSkus.getSeckillSkuRelationEntities().stream().map((seckillSkuRelationEntity) -> {
-                return seckillSkuRelationEntity.getSkuId().toString();
-            }).collect(Collectors.toList());
-            redisTemplate.opsForList().leftPushAll(key, ids);
+            Boolean hasKey = redisTemplate.hasKey(key);
+            if (!hasKey) {
+                List<String> ids = seckillSessionsWithSkus.getSeckillSkuRelationEntities().stream().map((seckillSkuRelationEntity) -> {
+                    return seckillSkuRelationEntity.getPromotionSessionId()+"场->"+seckillSkuRelationEntity.getSkuId().toString();
+                }).collect(Collectors.toList());
+                redisTemplate.opsForList().leftPushAll(key, ids);
+            }
         });
     }
 
@@ -91,36 +94,42 @@ public class SeckillServiceImpl implements SeckillService {
             BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
             seckillSessionsWithSkus.getSeckillSkuRelationEntities().stream().forEach(seckillSkuVo -> {
 
-                //缓存商品
-                SeckillSkuRedisTo seckillSkuRedisTo = new SeckillSkuRedisTo();
-
-                //1 sku的基本数据
-                R r = productFeignService.getSkuInfo(seckillSkuVo.getSkuId());
-                if (r.getCode() == 0) {
-                    SkuInfoVo skuInfoVo = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
-                    });
-                    seckillSkuRedisTo.setSkuInfoVo(skuInfoVo);
-                }
-
-                //2 sku的秒杀信息
-                BeanUtils.copyProperties(seckillSkuVo, seckillSkuRedisTo);
-
-                //3 sku的秒杀时间信息
-                seckillSkuRedisTo.setStartTime(seckillSessionsWithSkus.getStartTime().getTime());
-                seckillSkuRedisTo.setEndTime(seckillSessionsWithSkus.getEndTime().getTime());
-
-                //4 秒杀随机码 : 防止恶意多刷 高并发
+                //生成随机码
                 String token = UUID.randomUUID().toString().replace("-", "");
-                seckillSkuRedisTo.setRandomCode(token);
 
-                /**
-                 * 商品可以秒杀的数量(库存)作为信号量  信号量的作用 -- 限流
-                 */
-                RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
-                semaphore.trySetPermits(seckillSkuVo.getSeckillCount());
+                Boolean hasKey1 = ops.hasKey(seckillSkuVo.getPromotionSessionId().toString()+"场->"+seckillSkuVo.getSkuId().toString());
+                if (!hasKey1) {
+                    //缓存商品
+                    SeckillSkuRedisTo seckillSkuRedisTo = new SeckillSkuRedisTo();
 
-                String s = JSON.toJSONString(seckillSkuRedisTo);
-                ops.put(seckillSkuVo.getSkuId().toString(), s);
+                    //1 sku的基本数据
+                    R r = productFeignService.getSkuInfo(seckillSkuVo.getSkuId());
+                    if (r.getCode() == 0) {
+                        SkuInfoVo skuInfoVo = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
+                        });
+                        seckillSkuRedisTo.setSkuInfoVo(skuInfoVo);
+                    }
+
+                    //2 sku的秒杀信息
+                    BeanUtils.copyProperties(seckillSkuVo, seckillSkuRedisTo);
+
+                    //3 sku的秒杀时间信息
+                    seckillSkuRedisTo.setStartTime(seckillSessionsWithSkus.getStartTime().getTime());
+                    seckillSkuRedisTo.setEndTime(seckillSessionsWithSkus.getEndTime().getTime());
+
+                    //4 秒杀随机码 : 防止恶意多刷 高并发
+                    seckillSkuRedisTo.setRandomCode(token);
+
+                    String s = JSON.toJSONString(seckillSkuRedisTo);
+                    ops.put(seckillSkuVo.getPromotionSessionId().toString()+"场->"+seckillSkuVo.getSkuId().toString(), s);
+
+                    /**
+                     * 5 商品可以秒杀的数量(库存)作为信号量  信号量的作用 -- 限流
+                     * 如果当前这个场次的商品的库存信息已经上架就不需要上架
+                     */
+                    RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
+                    semaphore.trySetPermits(seckillSkuVo.getSeckillCount());
+                }
             });
         });
     }
