@@ -50,7 +50,8 @@ public class SkuInfoController {
 
 
     /**
-     * 信息
+     * 信息（原）
+     * 远程服务gulimall-seckill用了一次
      */
     @RequestMapping("/info/{skuId}")
     public R info(@PathVariable("skuId") Long skuId){

@@ -44,4 +44,14 @@ public class SeckillSkuRedisTo {
 
     //sku详细信息
     private SkuInfoVo skuInfoVo;
+
+    //当前sku的秒杀开始时间
+    private Long startTime;
+
+    //当前sku的秒杀结束时间
+    private Long endTime;
+
+    //秒杀随机码
+    private String randomCode;
+
 }
