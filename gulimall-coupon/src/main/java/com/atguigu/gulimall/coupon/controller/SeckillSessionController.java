@@ -1,14 +1,11 @@
 package com.atguigu.gulimall.coupon.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gulimall.coupon.entity.SeckillSessionEntity;
 import com.atguigu.gulimall.coupon.service.SeckillSessionService;
@@ -29,6 +26,18 @@ import com.atguigu.common.utils.R;
 public class SeckillSessionController {
     @Autowired
     private SeckillSessionService seckillSessionService;
+
+    /**
+     * 给远程服务gulimall-seckill调用
+     * 扫描需要参与秒杀的活动
+     */
+    @GetMapping("/latest3DaysSession")
+    public R getLatest3DaysSession() {
+
+        List<SeckillSessionEntity> seckillSessionEntities = seckillSessionService. getLatest3DaysSession();
+        return R.ok().setData(seckillSessionEntities);
+    }
+
 
     /**
      * 列表

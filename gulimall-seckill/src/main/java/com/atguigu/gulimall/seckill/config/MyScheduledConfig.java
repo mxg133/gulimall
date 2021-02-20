@@ -16,5 +16,5 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 //开启定时任务功能
 @EnableScheduling
 @Configuration
-public class Scheduling {
+public class MyScheduledConfig {
 }

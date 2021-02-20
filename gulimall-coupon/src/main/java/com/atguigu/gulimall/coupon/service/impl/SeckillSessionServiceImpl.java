@@ -1,6 +1,9 @@
 package com.atguigu.gulimall.coupon.service.impl;
 
+import com.atguigu.gulimall.coupon.utils.CouponTimeForStringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +27,21 @@ public class SeckillSessionServiceImpl extends ServiceImpl<SeckillSessionDao, Se
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 给远程服务gulimall-seckill调用
+     * 扫描需要参与秒杀的活动
+     */
+    @Override
+    public List<SeckillSessionEntity> getLatest3DaysSession() {
+
+        //计算最近3天
+        String start = CouponTimeForStringUtils.startTimeString();
+        String end = CouponTimeForStringUtils.endTimeForString();
+        List<SeckillSessionEntity> seckillSessionEntities = this.list(new QueryWrapper<SeckillSessionEntity>().between("start_time", start, end));
+
+        return seckillSessionEntities;
     }
 
 }
