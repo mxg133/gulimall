@@ -35,11 +35,11 @@ public class SeckillSkuVo {
     /**
      * 秒杀总量
      */
-    private Integer seckillCount;
+    private BigDecimal seckillCount;
     /**
      * 每人限购数量
      */
-    private Integer seckillLimit;
+    private BigDecimal seckillLimit;
     /**
      * 排序
      */

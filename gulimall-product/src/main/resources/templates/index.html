@@ -247,11 +247,13 @@
                             <p class="">Hi, 欢迎来到!</p>
                             <p>
                             <li>
-                                <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}" class="li_2">您好:请登录</a>
-                                <a th:if="${session.loginUser != null}" class="li_2">亲爱的:[[${session.loginUser.nickname}]]</a>
+                                <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}"
+                                   class="li_2" style="color: #C81623;font-size: 12px">登录</a>
+                                <a th:if="${session.loginUser != null}" style="color: #C81623;font-size: 12px" class="li_2">亲爱的:[[${session.loginUser.nickname}]]</a>
                             </li>
                             <li>
-                                <a href="http://auth.gulimall.com/reg.html" th:if="${session.loginUser == null}">免费注册</a>
+                                <a href="http://auth.gulimall.com/reg.html" style="color: #C81623;font-size: 12px"
+                                   th:if="${session.loginUser == null}">免费注册</a>
                             </li>
                             </p>
                         </div>
@@ -529,32 +531,8 @@
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
                     <ul>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img1.jpg" alt="">
-                            <p>花王 (Merries) 妙而舒 纸尿裤 大号 L54片 尿不湿（9-14千克） （日本官方直采） 花王 (Merries) 妙而舒 纸尿裤 大号 L54片
-                                尿不湿（9-14千</p>
-                            <span>¥83.9</span><s>¥99.9</s>
-                        </li>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img2.jpg" alt="">
-                            <p>华为mate9 4GB+32GB版 月光银 移动联通电信4G手机 双卡</p>
-                            <span>¥17.90</span><s>¥29.90</s>
-                        </li>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img3.jpg" alt="">
-                            <p>超能 植翠低泡洗衣液（鲜艳亮丽）2kg/袋装（新老包装随机</p>
-                            <span>¥20.70</span><s>¥44.90</s>
-                        </li>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img4.jpg" alt="">
-                            <p>长城（GreatWall）红酒 特选5年橡木桶解百纳干红葡萄酒 整</p>
-                            <span>¥399.00</span><s>¥599.00</s>
-                        </li>
-                        <li>
-                            <img src="/static/index/img/section_second_list_img5.jpg" alt="">
-                            <p>惠普(HP)暗影精灵2代Pro 15.6英寸游戏笔记本电脑(i5-7300H</p>
-                            <span>¥5999.00</span><s>¥6499.00</s>
-                        </li>
+                        <ul id="seckillSContent">
+                        </ul>
                     </ul>
                 </div>
                 <div class="swiper-slide">
@@ -621,6 +599,22 @@
         window.location.href = "http://search.gulimall.com/list.html?keyword=" + keyword;
     }
 
+    function to_href(skuId) {
+        location.href = "http://item.gulimall.com/" + skuId + ".html";
+    }
+
+    $.get("http://seckill.gulimall.com/currentSeckillSkus", function (resp) {
+        if (resp.data.length > 0) {
+            resp.data.forEach(function (item) {
+                $("<li onclick='to_href(" + item.skuId + ")'></li>")
+                    .append($("<img style='width: 130px; height: 130px' src =' " + item.skuInfoVo.skuDefaultImg + " '/>"))
+                    .append($("<p>" + item.skuInfoVo.skuTitle + "</p>"))
+                    .append($("<span>" + item.seckillPrice + "</span>"))
+                    .append($("<s> " + item.skuInfoVo.price + "</s>"))
+                    .appendTo("#seckillSContent");
+            })
+        }
+    });
 </script>
 <script type="text/javascript" src="/static/index/js/text.js"></script>
 <script type="text/javascript" src="/static/index/js/header.js"></script>

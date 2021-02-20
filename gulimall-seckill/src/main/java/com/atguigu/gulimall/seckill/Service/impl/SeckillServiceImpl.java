@@ -17,8 +17,8 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +65,42 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     /**
+     * 返回当前时间可以参与的秒杀商品信息
+     */
+    @Override
+    public List<SeckillSkuRedisTo> getCurrentSeckillSkus() {
+
+        //1 确定当前时间属于哪个秒杀场次
+        //当前时间
+        long now = new Date().getTime();
+        Set<String> keys = redisTemplate.keys(SESSION_CACHE_PREFIX + "*");
+        for (String key : keys) {
+            //seckill:sessions:1613757600000_1613761200000
+            String replace = key.replace(SESSION_CACHE_PREFIX, "");
+            String[] s = replace.split("_");
+            long start = Long.parseLong(s[0]);
+            long end = Long.parseLong(s[1]);
+            if (start <= now && now <= end) {
+                //说明在当前场次的时间区间内
+                List<String> row = redisTemplate.opsForList().range(key, -100, 100);
+                //已修改 BoundHashOperations<String, Object, Object> hashOps = r
+                BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+                List<String> list = hashOps.multiGet(row);
+                if (list != null) {
+                    List<SeckillSkuRedisTo> collect = list.stream().map((item) -> {
+                        SeckillSkuRedisTo to = JSON.parseObject((String) item, SeckillSkuRedisTo.class);
+//                        to.setRandomCode(null);//当前秒杀开始就需要随机码
+                        return to;
+                    }).collect(Collectors.toList());
+                    return collect;
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 1 缓存活动信息
      */
     private void saveSessionInfos(List<SeckillSessionsWithSkus> seckillSessionWithSkuses) {
@@ -77,7 +113,7 @@ public class SeckillServiceImpl implements SeckillService {
             Boolean hasKey = redisTemplate.hasKey(key);
             if (!hasKey) {
                 List<String> ids = seckillSessionsWithSkus.getSeckillSkuRelationEntities().stream().map((seckillSkuRelationEntity) -> {
-                    return seckillSkuRelationEntity.getPromotionSessionId()+"场->"+seckillSkuRelationEntity.getSkuId().toString();
+                    return seckillSkuRelationEntity.getPromotionSessionId() + "场->" + seckillSkuRelationEntity.getSkuId().toString();
                 }).collect(Collectors.toList());
                 redisTemplate.opsForList().leftPushAll(key, ids);
             }
@@ -97,7 +133,7 @@ public class SeckillServiceImpl implements SeckillService {
                 //生成随机码
                 String token = UUID.randomUUID().toString().replace("-", "");
 
-                Boolean hasKey1 = ops.hasKey(seckillSkuVo.getPromotionSessionId().toString()+"场->"+seckillSkuVo.getSkuId().toString());
+                Boolean hasKey1 = ops.hasKey(seckillSkuVo.getPromotionSessionId().toString() + "场->" + seckillSkuVo.getSkuId().toString());
                 if (!hasKey1) {
                     //缓存商品
                     SeckillSkuRedisTo seckillSkuRedisTo = new SeckillSkuRedisTo();
@@ -121,14 +157,15 @@ public class SeckillServiceImpl implements SeckillService {
                     seckillSkuRedisTo.setRandomCode(token);
 
                     String s = JSON.toJSONString(seckillSkuRedisTo);
-                    ops.put(seckillSkuVo.getPromotionSessionId().toString()+"场->"+seckillSkuVo.getSkuId().toString(), s);
+                    ops.put(seckillSkuVo.getPromotionSessionId().toString() + "场->" + seckillSkuVo.getSkuId().toString(), s);
 
                     /**
                      * 5 商品可以秒杀的数量(库存)作为信号量  信号量的作用 -- 限流
                      * 如果当前这个场次的商品的库存信息已经上架就不需要上架
                      */
                     RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
-                    semaphore.trySetPermits(seckillSkuVo.getSeckillCount());
+//                    semaphore.trySetPermits(seckillSkuVo.getSeckillCount());
+                    semaphore.trySetPermits(Integer.parseInt(seckillSkuVo.getSeckillCount().toString()));
                 }
             });
         });

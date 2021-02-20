@@ -80,17 +80,23 @@ spring:
           predicates:
             - Host=order.gulimall.com
 
-        #ware服务转发
+        #ware服务转发  没用到
         - id: gulimall_ware_route
           uri: lb://gulimall-ware
           predicates:
             - Host=ware.gulimall.com
 
-        #ware服务转发
+        #member服务转发
         - id: gulimall_member_route
           uri: lb://gulimall-member
           predicates:
             - Host=member.gulimall.com
+
+        #seckill服务转发
+        - id: gulimall_seckill_route
+          uri: lb://gulimall-seckill
+          predicates:
+            - Host=seckill.gulimall.com
 ##前段项目，/api
 ## http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg
 ## http://localhost:88/api/product/category/list/tree http://localhost:10000/product/category/list/tree
