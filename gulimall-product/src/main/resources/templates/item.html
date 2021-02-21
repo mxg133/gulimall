@@ -656,13 +656,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box-btns-two" th:if="${item.seckillSkuInfoVo != null && #dates.createNow().getTime()>=item.seckillSkuInfoVo.startTime && #dates.createNow().getTime()<=item.seckillSkuInfoVo.endTime}">
-                        <a href="#" id="seckillA" th:attr="skuId = ${item.info.skuId},sessionId=${item.seckillSkuInfoVo.promotionSessionId},code=${item.seckillSkuInfoVo.randomCode}" >
+                    <div class="box-btns-two"
+                         th:if="${item.seckillSkuInfoVo != null && #dates.createNow().getTime()>=item.seckillSkuInfoVo.startTime && #dates.createNow().getTime()<=item.seckillSkuInfoVo.endTime}">
+                        <a href="#" id="seckillA"
+                           th:attr="skuId = ${item.info.skuId},sessionId=${item.seckillSkuInfoVo.promotionSessionId},code=${item.seckillSkuInfoVo.randomCode}">
                             立即抢购
                         </a>
                     </div>
-                    <div class="box-btns-two" th:if="${item.seckillSkuInfoVo == null || #dates.createNow().getTime()< item.seckillSkuInfoVo.startTime || #dates.createNow().getTime()>item.seckillSkuInfoVo.endTime}">
-                        <a href="#" id="addToCartA" th:attr="skuId = ${item.info.skuId}" >
+                    <div class="box-btns-two"
+                         th:if="${item.seckillSkuInfoVo == null || #dates.createNow().getTime()< item.seckillSkuInfoVo.startTime || #dates.createNow().getTime()>item.seckillSkuInfoVo.endTime}">
+                        <a href="#" id="addToCartA" th:attr="skuId = ${item.info.skuId}">
                             加入购物车
                         </a>
                     </div>
@@ -1367,17 +1370,17 @@
         location.href = "http://cart.gulimall.com/addToCart?skuId=" + skuId + "&num=" + num;
         return false;
     })
-    $("#seckillA").click(function() {
-    	var isLogin = [[${session.loginUser != null}]]
-    	if(isLogin) {
-    		var killId = $(this).attr("sessionid") + "场->" + $(this).attr("skuid");
-    		var key =$(this).attr("code");
-    		var num = $("#numInput").val();
-    		location.href ="http://seckill.gulimall.com/kill?killId=" + killId+"&key=" +key +"&num=" + num+"";
-    		return false
-    	} else {
-    		alert("秒杀前你得请先登录鸭=(^.^)=");
-    	}
+    $("#seckillA").click(function () {
+        var isLogin = [[${session.loginUser != null}]]
+        if (isLogin) {
+            var killId = $(this).attr("sessionid") + "场->" + $(this).attr("skuid");
+            var key = $(this).attr("code");
+            var num = $("#numInput").val();
+            location.href = "http://seckill.gulimall.com/kill?killId=" + killId + "&key=" + key + "&num=" + num + "";
+            return false
+        } else {
+            alert("秒杀前你得请先登录鸭=(^.^)=");
+        }
     })
 </script>
 

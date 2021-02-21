@@ -2,6 +2,7 @@ package com.atguigu.gulimall.seckill.Service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.to.mq.SeckillOrderTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResVo;
 import com.atguigu.gulimall.seckill.Service.SeckillService;
@@ -12,8 +13,10 @@ import com.atguigu.gulimall.seckill.to.SeckillSkuRedisTo;
 import com.atguigu.gulimall.seckill.vo.SeckillSessionsWithSkus;
 import com.atguigu.gulimall.seckill.vo.SkuInfoVo;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
@@ -33,6 +36,7 @@ import java.util.stream.Collectors;
  * @date 2021-02-20 11:18 上午
  * @description
  */
+@Slf4j
 @Service
 public class SeckillServiceImpl implements SeckillService {
 
@@ -54,6 +58,9 @@ public class SeckillServiceImpl implements SeckillService {
 
     @Autowired
     RedissonClient redissonClient;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public void uploadSeckillSkuLatest3Days() {
@@ -151,6 +158,8 @@ public class SeckillServiceImpl implements SeckillService {
     @Override
     public String kill(String killId, String key, Integer num) {
 
+        long s1 = System.currentTimeMillis();
+
         MemberResVo memberResVo = LoginUserInterceptor.loginUser.get();
 
         //1 获取当前秒杀sku的详细信息
@@ -164,6 +173,7 @@ public class SeckillServiceImpl implements SeckillService {
             long now = new Date().getTime();
             Long startTime = seckillSkuRedisTo.getStartTime();
             Long endTime = seckillSkuRedisTo.getEndTime();
+            Long ttl = endTime - startTime;
             if (startTime <= now && now <= endTime) {
                 //验证2 时间合法
                 String randomCode = seckillSkuRedisTo.getRandomCode();
@@ -176,22 +186,30 @@ public class SeckillServiceImpl implements SeckillService {
                         //验证4 验证此人是否购买过 幂等性；如果秒杀成功，就去redis仅仅占位置
                         String newKey = memberResVo.getId() + "_" + id;
                         //自动过期 活动结束即结束
-                        Long ttl = endTime - startTime;
                         Boolean b = redisTemplate.opsForValue().setIfAbsent(newKey, num.toString(), ttl, TimeUnit.MILLISECONDS);
                         if (b) {
                             //说明此人没买过
                             //触发信号量
                             RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomCode);
                             //不能被阻塞！最多等100ms
-                            try {
-                                boolean b1 = semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
+                            boolean b1 = semaphore.tryAcquire(num);
+                            if (b1) {
                                 //真正到了秒杀 快速下单
                                 //创建订单号
                                 String timeId = IdWorker.getTimeId();
+                                SeckillOrderTo seckillOrderTo = new SeckillOrderTo();
+                                seckillOrderTo.setOrderSn(timeId);
+                                seckillOrderTo.setMemberId(memberResVo.getId());
+                                seckillOrderTo.setNum(num);
+                                seckillOrderTo.setPromotionSessionId(seckillSkuRedisTo.getPromotionSessionId());
+                                seckillOrderTo.setSkuId(seckillSkuRedisTo.getSkuId());
+                                seckillOrderTo.setSeckillPrice(seckillSkuRedisTo.getSeckillPrice());
+                                rabbitTemplate.convertAndSend("order-event-exchange", "order.seckill.order", seckillOrderTo);
+                                long s2 = System.currentTimeMillis();
+                                log.info("秒杀创建耗时：{}", (s2 - s1));
                                 return timeId;
-                            } catch (InterruptedException e) {
-                                return null;
                             }
+                            return null;
                         } else {
                             return null;
                         }

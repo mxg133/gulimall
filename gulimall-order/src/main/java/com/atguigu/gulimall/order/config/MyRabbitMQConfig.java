@@ -31,7 +31,7 @@ import java.util.Map;
  *  1 增加更多的消费者
  *  2 上线专门的队列消费服务，取出来，记录到数据库，离线慢慢处理
  */
-//开启RabbitMQ消息队列
+//开启RabbitMQ消息队列 不监听消息可以不加
 @EnableRabbit
 @Configuration
 public class MyRabbitMQConfig {
@@ -106,19 +106,22 @@ public class MyRabbitMQConfig {
                 null);
     }
 
-//    @Bean
-//    public Queue orderSeckillOrderQueue() {
-//        return new Queue("order.seckill.order.queue", true, false, false);
-//    }
-//
-//    @Bean
-//    public Binding orderSeckillOrderQueueBinding() {
-//        return new Binding("order.seckill.order.queue",
-//                Binding.DestinationType.QUEUE,
-//                "order-event-exchange",
-//                "order.seckill.order",
-//                new HashMap<>());
-//    }
+    @Bean
+    public Queue orderSeckillOrderQueue() {
+
+        //是否持久化的 是否排他的(大家都能监听，谁抢到算谁的) 是否自动删除
+        return new Queue("order.seckill.order.queue", true, false, false);
+    }
+
+    @Bean
+    public Binding orderSeckillOrderQueueBinding() {
+
+        return new Binding("order.seckill.order.queue",
+                Binding.DestinationType.QUEUE,
+                "order-event-exchange",
+                "order.seckill.order",
+                null);
+    }
 
     /**
      * 下面全都是基础配置
