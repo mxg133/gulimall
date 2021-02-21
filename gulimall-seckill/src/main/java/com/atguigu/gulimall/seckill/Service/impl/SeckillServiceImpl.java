@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -43,7 +42,7 @@ public class SeckillServiceImpl implements SeckillService {
     //活动信息
     private final String SESSION_CACHE_PREFIX = "seckill:sessions:";
     //sku信息
-    private final String SKUKILL_CACHE_PREFIX = "seckill:skus:";
+    private final String SKUKILL_CACHE_PREFIX = "seckill:skus";//多了个:
     //高平发
     private final String SKU_STOCK_SEMAPHORE = "seckill:stock:";//+随机码
 
@@ -154,6 +153,8 @@ public class SeckillServiceImpl implements SeckillService {
     /**
      * 秒杀
      * http://seckill.gulimall.com/kill?killId=1_1&key=320c924165244276882adfaea84dac12&num=1
+     * TODO 上架秒杀商品的时候，每一个数据都有过期时间
+     * TODO 秒杀的后续流程，简化了收货地址等信息
      */
     @Override
     public String kill(String killId, String key, Integer num) {

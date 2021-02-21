@@ -44,6 +44,10 @@ spring:
       simple:
         #手动ack消息 手动确认收货 手动确认模式 防止消息丢失
         acknowledge-mode: manual
+  #关闭thymeleaf缓存 开发期间就能看到实时效果；上线以后就要打开缓存了(效果不大)
+  thymeleaf:
+    cache: false
+    #cache: true
 mybatis-plus:
 #  告诉Mybatis Plus 扫描哪里
   mapper-locations: classpath:/mapper/**/*.xml
