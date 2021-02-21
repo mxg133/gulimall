@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -95,6 +96,43 @@ public class SeckillServiceImpl implements SeckillService {
                     return collect;
                 }
                 break;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 给远程服务gulimall-product使用
+     * 获取当前sku的秒杀预告信息
+     */
+    @Override
+    public SeckillSkuRedisTo getSkuSeckillInfo(Long skuId) {
+
+        //1 找到所有需要参与秒杀的key
+        BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+        Set<String> keys = hashOps.keys();
+        if (keys != null && keys.size() > 0) {
+            String regx = "\\d场->" + skuId;
+            for (String key : keys) {
+                //1场->1 正则 d表示匹配一个数字
+                boolean b = Pattern.matches(regx, key);
+                if (b) {
+                    //匹配上了
+                    String s = hashOps.get(key);
+                    SeckillSkuRedisTo seckillSkuRedisTo = JSON.parseObject(s, SeckillSkuRedisTo.class);
+                    //随机码需要处理 是不是在秒杀时间内
+                    long now = new Date().getTime();
+                    Long startTime = seckillSkuRedisTo.getStartTime();
+                    Long endTime = seckillSkuRedisTo.getEndTime();
+                    if (startTime <= now && now <= endTime) {
+                        //在时间范围内部
+
+                    }else {
+                        //不在时间内部 随机码置空
+                        seckillSkuRedisTo.setRandomCode(null);
+                    }
+                    return seckillSkuRedisTo;
+                }
             }
         }
         return null;

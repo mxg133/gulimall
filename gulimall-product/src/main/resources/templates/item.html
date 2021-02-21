@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml"
+      xmlns:HH="http://www.w3.org/1999/xhtml">
 
 <head>
     <meta charset="UTF-8">
@@ -519,13 +520,21 @@
                 </div>
                 <div class="box-summary clear">
                     <ul>
-                        <li>狗东价</li>
+                        <li>京东价</li>
                         <li>
                             <span>￥</span>
+                            <!--thymeleaf文档上 数字格式化-->
                             <span th:text="${ #numbers.formatDecimal(item.info.price,3,2)}">4499.00</span>
                         </li>
-                        <li>
-                            预约享资格
+                        <li style="color: red;" th:if="${item.seckillSkuInfoVo != null}">
+							<span th:if="${#dates.createNow().getTime() < item.seckillSkuInfoVo.startTime}">
+									商品将会在{[[${#dates.format(new java.util.Date(item.seckillSkuInfoVo.startTime),"yyyy-MM-dd HH:mm:ss")}]]
+                                - [[${#dates.format(new java.util.Date(item.seckillSkuInfoVo.endTime),"yyyy-MM-dd HH:mm:ss")}]]}进行抢购
+							</span>
+
+                            <span th:if="${#dates.createNow().getTime() >= item.seckillSkuInfoVo.startTime && #dates.createNow().getTime() <= item.seckillSkuInfoVo.endTime}">
+										秒杀价：[[${#numbers.formatDecimal(item.seckillSkuInfoVo.seckillPrice,1,2)}]] | 秒杀结束时间：[[${#dates.format(new java.util.Date(item.seckillSkuInfoVo.endTime),"yyyy-MM-dd HH:mm:ss")}]]
+							</span>
                         </li>
                         <li>
                             <a href="/static/item/">

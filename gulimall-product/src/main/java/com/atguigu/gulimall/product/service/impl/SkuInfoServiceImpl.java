@@ -1,12 +1,15 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.entity.SkuImagesEntity;
 import com.atguigu.gulimall.product.entity.SpuInfoDescEntity;
+import com.atguigu.gulimall.product.feign.SeckillFeignService;
 import com.atguigu.gulimall.product.service.*;
+import com.atguigu.gulimall.product.vo.SeckillSkuInfoVo;
 import com.atguigu.gulimall.product.vo.SkuItemSaleAttrVo;
 import com.atguigu.gulimall.product.vo.SkuItemVo;
 import com.atguigu.gulimall.product.vo.SpuItemAttrGroupVo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +50,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     @Autowired
     ThreadPoolExecutor executor;
 
+    @Autowired
+    SeckillFeignService seckillFeignService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SkuInfoEntity> page = this.page(
@@ -73,37 +79,37 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
          * max: 0
          */
         String key = (String) params.get("key");
-        if(!StringUtils.isEmpty(key)){
-            wrapper.and((obj)->{
-                obj.eq("sku_id",key).or().like("sku_name",key);
+        if (!StringUtils.isEmpty(key)) {
+            wrapper.and((obj) -> {
+                obj.eq("sku_id", key).or().like("sku_name", key);
             });
         }
 
         String catelogId = (String) params.get("catelogId");
-        if(!StringUtils.isEmpty(catelogId)&&!"0".equalsIgnoreCase(catelogId)){
+        if (!StringUtils.isEmpty(catelogId) && !"0".equalsIgnoreCase(catelogId)) {
 
-            wrapper.eq("catalog_id",catelogId);
+            wrapper.eq("catalog_id", catelogId);
         }
 
         String brandId = (String) params.get("brandId");
-        if(!StringUtils.isEmpty(brandId)&&!"0".equalsIgnoreCase(brandId)){
-            wrapper.eq("brand_id",brandId);
+        if (!StringUtils.isEmpty(brandId) && !"0".equalsIgnoreCase(brandId)) {
+            wrapper.eq("brand_id", brandId);
         }
 
         String min = (String) params.get("min");
-        if(!StringUtils.isEmpty(min)){
-            wrapper.ge("price",min);
+        if (!StringUtils.isEmpty(min)) {
+            wrapper.ge("price", min);
         }
 
         String max = (String) params.get("max");
-        if(!StringUtils.isEmpty(max)){
-            try{
+        if (!StringUtils.isEmpty(max)) {
+            try {
                 BigDecimal bigDecimal = new BigDecimal(max);
 
-                if(bigDecimal.compareTo(new BigDecimal("0"))==1){
-                    wrapper.le("price",max);
+                if (bigDecimal.compareTo(new BigDecimal("0")) == 1) {
+                    wrapper.le("price", max);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
 
@@ -173,9 +179,21 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             skuItemVo.setImages(images);
         }, executor);
 
+        CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
+            //查询当前sku是否参加秒杀优惠
+            R r = seckillFeignService.getSkuSeckillInfo(skuId);
+            if (r.getCode() == 0) {
+                SeckillSkuInfoVo seckillSkuRedisVo = r.getData(new TypeReference<SeckillSkuInfoVo>() {
+                });
+                skuItemVo.setSeckillSkuInfoVo(seckillSkuRedisVo);
+            }
+        }, executor);
+
+
+
         //异步编排 - 阻塞等结果
         //等待所有1 2 3 4 5任务都完成 infoFuture可以省略
-        CompletableFuture.allOf(saleAttrFuture, descFuture, baseFuture, imagesFuture).get();
+        CompletableFuture.allOf(saleAttrFuture, descFuture, baseFuture, imagesFuture, seckillFuture).get();
 
         return skuItemVo;
     }

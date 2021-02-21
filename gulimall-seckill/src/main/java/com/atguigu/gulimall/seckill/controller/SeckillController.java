@@ -3,9 +3,9 @@ package com.atguigu.gulimall.seckill.controller;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.seckill.Service.SeckillService;
 import com.atguigu.gulimall.seckill.to.SeckillSkuRedisTo;
-import com.atguigu.gulimall.seckill.vo.SeckillSkuVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,5 +29,16 @@ public class SeckillController {
 
         List<SeckillSkuRedisTo> seckillSkuRedisTos = seckillService.getCurrentSeckillSkus();
         return R.ok().setData(seckillSkuRedisTos);
+    }
+
+    /**
+     * 给远程服务gulimall-product使用
+     * 获取当前sku的秒杀预告信息
+     */
+    @GetMapping("/sku/seckill/{skuId}")
+    public R getSkuSeckillInfo(@PathVariable("skuId") Long skuId) {
+
+        SeckillSkuRedisTo to = seckillService.getSkuSeckillInfo(skuId);
+        return R.ok().setData(to);
     }
 }
