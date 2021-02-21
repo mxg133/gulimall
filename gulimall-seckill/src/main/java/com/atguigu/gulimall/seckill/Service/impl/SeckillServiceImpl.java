@@ -3,12 +3,15 @@ package com.atguigu.gulimall.seckill.Service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.vo.MemberResVo;
 import com.atguigu.gulimall.seckill.Service.SeckillService;
 import com.atguigu.gulimall.seckill.feign.CouponFeignService;
 import com.atguigu.gulimall.seckill.feign.ProductFeignService;
+import com.atguigu.gulimall.seckill.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimall.seckill.to.SeckillSkuRedisTo;
 import com.atguigu.gulimall.seckill.vo.SeckillSessionsWithSkus;
 import com.atguigu.gulimall.seckill.vo.SkuInfoVo;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
@@ -16,9 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -127,12 +133,74 @@ public class SeckillServiceImpl implements SeckillService {
                     if (startTime <= now && now <= endTime) {
                         //在时间范围内部
 
-                    }else {
+                    } else {
                         //不在时间内部 随机码置空
                         seckillSkuRedisTo.setRandomCode(null);
                     }
                     return seckillSkuRedisTo;
                 }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 秒杀
+     * http://seckill.gulimall.com/kill?killId=1_1&key=320c924165244276882adfaea84dac12&num=1
+     */
+    @Override
+    public String kill(String killId, String key, Integer num) {
+
+        MemberResVo memberResVo = LoginUserInterceptor.loginUser.get();
+
+        //1 获取当前秒杀sku的详细信息
+        BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+        String s = hashOps.get(killId);
+        if (StringUtils.isEmpty(s)) {
+            return null;
+        } else {
+            SeckillSkuRedisTo seckillSkuRedisTo = JSON.parseObject(s, SeckillSkuRedisTo.class);
+            //验证1 校验合法性
+            long now = new Date().getTime();
+            Long startTime = seckillSkuRedisTo.getStartTime();
+            Long endTime = seckillSkuRedisTo.getEndTime();
+            if (startTime <= now && now <= endTime) {
+                //验证2 时间合法
+                String randomCode = seckillSkuRedisTo.getRandomCode();
+                String id = seckillSkuRedisTo.getPromotionSessionId() + "场->" + seckillSkuRedisTo.getSkuId();
+                if (randomCode.equals(key) && killId.equals(id)) {
+                    //合法数据 随机码匹配ok
+                    //验证3 库存数量
+                    BigDecimal limit = seckillSkuRedisTo.getSeckillLimit();
+                    if (num <= Integer.parseInt(limit.toString())) {
+                        //验证4 验证此人是否购买过 幂等性；如果秒杀成功，就去redis仅仅占位置
+                        String newKey = memberResVo.getId() + "_" + id;
+                        //自动过期 活动结束即结束
+                        Long ttl = endTime - startTime;
+                        Boolean b = redisTemplate.opsForValue().setIfAbsent(newKey, num.toString(), ttl, TimeUnit.MILLISECONDS);
+                        if (b) {
+                            //说明此人没买过
+                            //触发信号量
+                            RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomCode);
+                            //不能被阻塞！最多等100ms
+                            try {
+                                boolean b1 = semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
+                                //真正到了秒杀 快速下单
+                                //创建订单号
+                                String timeId = IdWorker.getTimeId();
+                                return timeId;
+                            } catch (InterruptedException e) {
+                                return null;
+                            }
+                        } else {
+                            return null;
+                        }
+                    }
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
             }
         }
         return null;

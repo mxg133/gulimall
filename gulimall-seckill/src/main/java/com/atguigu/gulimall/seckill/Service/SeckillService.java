@@ -16,4 +16,6 @@ public interface SeckillService {
     List<SeckillSkuRedisTo> getCurrentSeckillSkus();
 
     SeckillSkuRedisTo getSkuSeckillInfo(Long skuId);
+
+    String kill(String killId, String key, Integer num);
 }

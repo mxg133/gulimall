@@ -23,11 +23,11 @@
             <artifactId>gulimall-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <exclusions>
-                <exclusion>
-                    <!-- 因为不操作数据库 故排除 mybatis-plus-->
-                    <groupId>com.baomidou</groupId>
-                    <artifactId>mybatis-plus-boot-starter</artifactId>
-                </exclusion>
+<!--                <exclusion>-->
+<!--                    &lt;!&ndash; 因为不操作数据库 故排除 mybatis-plus&ndash;&gt;-->
+<!--                    <groupId>com.baomidou</groupId>-->
+<!--                    <artifactId>mybatis-plus-boot-starter</artifactId>-->
+<!--                </exclusion>-->
                 <exclusion>
                     <!-- 因为不操作数据库 故排除 druid-->
                     <groupId>com.alibaba</groupId>

@@ -51,7 +51,7 @@ public class SeckillController {
     public R getKill(@RequestParam("killId") String killId, @RequestParam("key") String key, @RequestParam("num") Integer num){
 
         //后端再次验证是否登录
-
-        return R.ok();
+        String orderSn = seckillService.kill(killId, key, num);
+        return R.ok().setData(orderSn);
     }
 }
