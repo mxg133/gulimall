@@ -43,7 +43,7 @@ public class SeckillServiceImpl implements SeckillService {
     private final String SESSION_CACHE_PREFIX = "seckill:sessions:";
     //sku信息
     private final String SKUKILL_CACHE_PREFIX = "seckill:skus";//多了个:
-    //高平发
+    //高平发 信号量
     private final String SKU_STOCK_SEMAPHORE = "seckill:stock:";//+随机码
 
     @Autowired
