@@ -18,8 +18,13 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * 03库存预热+快速扣减
  * 04动静分离
  * ....
- * Sentinel高并发方法论&简介
- * 基本概念
+ *
+ *
+ * 整合Sentinel
+ *  1 引入依赖spring-cloud-starter-alibaba-sentinel
+ *  2 下载sentinel控制台 sentinel-dashboard-1.6.3.jar
+ *  3 配置sentinel控制台地址信息
+ *  4 在控制台调整参数 [默认所有的留空设置保存在内存,重启失效]
  */
 //开启feign客户度的远程调用功能
 //扫描feign文件夹下的带有@FeignClient注解的接口

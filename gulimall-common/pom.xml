@@ -105,6 +105,12 @@
 <!--            <groupId>com.alibaba.cloud</groupId>-->
 <!--            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>-->
 <!--        </dependency>-->
+
+        <!--引入sentinel 熔断 降级 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
     </dependencies>
 
 <!--    引入spring cloud alibaba的相关依赖就不用写版本号了-->
