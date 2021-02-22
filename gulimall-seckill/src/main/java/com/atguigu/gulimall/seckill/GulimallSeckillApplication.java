@@ -28,6 +28,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *
  * 2 每一个微服务都引入统计审计信息spring-boot-starter-actuator
  *     并配置management.endpoints.web.exposure.include=*
+ *     流控模式&效果 全服务引入
  */
 //开启feign客户度的远程调用功能
 //扫描feign文件夹下的带有@FeignClient注解的接口
