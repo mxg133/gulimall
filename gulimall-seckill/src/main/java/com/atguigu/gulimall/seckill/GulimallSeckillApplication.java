@@ -28,7 +28,14 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *
  * 2 每一个微服务都引入统计审计信息spring-boot-starter-actuator
  *     并配置management.endpoints.web.exposure.include=*
- *     流控模式&效果 全服务引入
+ *
+ * 3 流控模式&效果 全服务引入
+ *
+ * 4 使用Sentinel来保护Feign远程调用：熔断机制
+ *     1) 调用方开启熔断保护
+ *     2) 调用手动指定远程服务的降级策略 远程服务被降级处理，出发我们的熔断回调方法
+ *     3) 超大浏览的时候，必须牺牲一些远程服务。在服务的提供方（远程服务）指定降级策略，
+ *         提供方是在运行，但使不运行自己的业务逻辑，返回他是默认的降级数据（限流的数据）
  */
 //开启feign客户度的远程调用功能
 //扫描feign文件夹下的带有@FeignClient注解的接口

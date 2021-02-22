@@ -29,3 +29,16 @@ spring:
 #  global-config:
 #    db-config:
 #      id-type: auto
+
+#management.endpoints.web.exposure.include=*
+#配置actuator统计审计信息 配合sentinel
+management:
+  endpoints:
+    web:
+      exposure:
+        include: all
+
+#开启feign sentinel 熔断保护
+feign:
+  sentinel:
+    enabled: true

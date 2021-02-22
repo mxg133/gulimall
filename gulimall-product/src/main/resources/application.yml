@@ -54,6 +54,19 @@ mybatis-plus:
 logging:
   level:
     #上线后，可以降低日志级别
-#    com.atguigu.gulimall: debuug
-    com.atguigu.gulimall: error
+#    com.atguigu.gulimall: debug
+#    com.atguigu.gulimall: error
+    com.atguigu.gulimall: info
 
+#management.endpoints.web.exposure.include=*
+#配置actuator统计审计信息 配合sentinel
+management:
+  endpoints:
+    web:
+      exposure:
+        include: all
+
+#开启feign sentinel 熔断保护
+feign:
+  sentinel:
+    enabled: true
