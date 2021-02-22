@@ -9,10 +9,17 @@ spring:
       username: root
       password: root
   cloud:
+    #配置nacos
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-#    alibaba:
+    #配置sentinel
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        #控制台的port
+        port: 8719
+  #    alibaba:
 #      seata:
 #        tx-service-group: gulimall-ware-fescar-service-group
   application:
@@ -55,3 +62,11 @@ logging:
         nacos:
           client:
             naming: warn
+
+#management.endpoints.web.exposure.include=*
+#配置actuator统计审计信息 配合sentinel
+management:
+  endpoints:
+    web:
+      exposure:
+        include: all

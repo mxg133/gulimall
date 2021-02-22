@@ -48,3 +48,10 @@ spring:
     cache: false
     #cache: true
 
+#management.endpoints.web.exposure.include=*
+#配置actuator统计审计信息 配合sentinel
+management:
+  endpoints:
+    web:
+      exposure:
+        include: all

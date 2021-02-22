@@ -1,11 +1,17 @@
 server:
   port: 30001
 spring:
-  #      Nacos 注册中心
   cloud:
+    #Nacos 注册中心
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    #配置sentinel
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        #控制台的port
+        port: 8719
   #    关闭thymeleaf缓存 开发期间就能看到实时效果；上线以后就要打开缓存了(效果不大)
   thymeleaf:
     cache: false
@@ -17,3 +23,11 @@ spring:
   #    整合Spring Session 指定session是存到redis里
   session:
     store-type: redis
+
+#management.endpoints.web.exposure.include=*
+#配置actuator统计审计信息 配合sentinel
+management:
+  endpoints:
+    web:
+      exposure:
+        include: all

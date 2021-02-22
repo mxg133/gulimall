@@ -2,9 +2,16 @@ server:
   port: 30000
 spring:
   cloud:
+    #配置nacos
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    #配置sentinel
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        #控制台的port
+        port: 8719
     #阿里云对象上传
     alicloud:
       access-key: LTAI4G6sWhsMNcDrwdR7mKck
@@ -21,3 +28,11 @@ spring:
 
   application:
     name: gulimall-third-party
+
+#management.endpoints.web.exposure.include=*
+#配置actuator统计审计信息 配合sentinel
+management:
+  endpoints:
+    web:
+      exposure:
+        include: all

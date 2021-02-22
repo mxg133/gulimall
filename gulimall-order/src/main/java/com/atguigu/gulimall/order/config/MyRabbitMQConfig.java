@@ -2,15 +2,15 @@ package com.atguigu.gulimall.order.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,10 +36,22 @@ import java.util.Map;
 @Configuration
 public class MyRabbitMQConfig {
 
-    @Autowired
+//    @Autowired
     RabbitTemplate rabbitTemplate;
 
-//    @RabbitListener(queues = "order.release.order.queue")
+    //TODO RabbitTemplate
+    @Primary
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        this.rabbitTemplate = rabbitTemplate;
+        rabbitTemplate.setMessageConverter(messageConverter());
+        initRabbitTemplate();
+        return rabbitTemplate;
+    }
+
+
+    //    @RabbitListener(queues = "order.release.order.queue")
 //    public void listening(OrderEntity entity, Channel channel, Message message) throws IOException {
 //        System.out.println("收到过期的订单，准备关闭订单。order："+entity.getOrderSn());
 //        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
@@ -144,7 +156,7 @@ public class MyRabbitMQConfig {
      * 消息就一直是unacked状态 即使Consumer宕机 消息不会丢失 会重新变成ready
      * 2.如果签收
      */
-    @PostConstruct  //MyRabbitConfig对象创建完成以后执行这个方法
+//    @PostConstruct  //MyRabbitConfig对象创建完成以后执行这个方法
     public void initRabbitTemplate() {
 
         //设置确认回调 消息到了队列

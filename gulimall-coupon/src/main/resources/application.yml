@@ -1,6 +1,6 @@
 #server:
 #  port: 7000
-#spring:
+spring:
 #  datasource:
 #    type: com.alibaba.druid.pool.DruidDataSource
 #    druid:
@@ -9,7 +9,13 @@
 #      username: root
 #      password: root
 ##      Nacos 注册中心
-#  cloud:
+  cloud:
+    #配置sentinel
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        #控制台的port
+        port: 8719
 #    nacos:
 #      discovery:
 #        server-addr: 127.0.0.1:8848

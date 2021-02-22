@@ -1,5 +1,11 @@
 spring:
   cloud:
+    #配置sentinel
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        #控制台的port
+        port: 8719
     gateway:
       routes:
 #product /hello为压力测试
@@ -101,3 +107,10 @@ spring:
 ## http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg
 ## http://localhost:88/api/product/category/list/tree http://localhost:10000/product/category/list/tree
 
+#management.endpoints.web.exposure.include=*
+#配置actuator统计审计信息 配合sentinel
+management:
+  endpoints:
+    web:
+      exposure:
+        include: all

@@ -13,7 +13,13 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-#        阿里云对象上传
+    #配置sentinel
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        #控制台的port
+        port: 8719
+  #        阿里云对象上传
 #    alicloud:
 #      access-key: LTAI4G6sWhsMNcDrwdR7mKck
 #      secret-key: ODyHrcm0AuMLobxHWl4IWM2vsqnh65

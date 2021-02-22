@@ -2,12 +2,14 @@ package com.atguigu.gulimall.ware.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +24,17 @@ import java.util.Map;
 @Configuration
 public class MyRabbitMQConfig {
 
-    @Autowired
     RabbitTemplate rabbitTemplate;
+
+    //TODO RabbitTemplate
+    @Primary
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        this.rabbitTemplate = rabbitTemplate;
+        rabbitTemplate.setMessageConverter(messageConverter());
+        return rabbitTemplate;
+    }
 
     //没有这个方法， 不能创建RabbitMQ的东西
 //    @RabbitListener(queues = "stock.release.stock.queue")
