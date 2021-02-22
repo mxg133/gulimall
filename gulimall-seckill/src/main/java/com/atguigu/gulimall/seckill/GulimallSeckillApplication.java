@@ -18,6 +18,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * 03库存预热+快速扣减
  * 04动静分离
  * ....
+ * Sentinel高并发方法论&简介
+ * 基本概念
  */
 //开启feign客户度的远程调用功能
 //扫描feign文件夹下的带有@FeignClient注解的接口
