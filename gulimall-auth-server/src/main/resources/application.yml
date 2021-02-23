@@ -30,6 +30,18 @@ spring:
 #    整合Spring Session 指定session是存到redis里
   session:
     store-type: redis
+  #配置Zipkin链路追踪可视化展示
+  zipkin:
+    base-url: http://10.211.55.3:9411/
+    #关闭自己的服务发现功能
+    discovery-client-enabled: false
+    sender:
+      #设置采用http的方式
+      type: web
+  sleuth:
+    sampler:
+      #配置sleuth采样器 100%
+      probability: 1
 #logging:
 #  level:
 #    #上线后，可以降低日志级别
