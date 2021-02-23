@@ -48,6 +48,14 @@ spring:
     cache: false
     #cache: true
 
+logging:
+  level:
+    #上线后，可以降低日志级别
+    #openfeign链路追踪
+    org.springframework.cloud.openfeign: debug
+    #sleuth链路追踪
+    org.springframework.cloud.sleuth: debug
+
 #management.endpoints.web.exposure.include=*
 #配置actuator统计审计信息 配合sentinel
 management:

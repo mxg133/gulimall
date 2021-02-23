@@ -2,9 +2,6 @@ package com.atguigu.gulimall.gateway.config;
 
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.BlockRequestHandler;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.GatewayCallbackManager;
-import com.alibaba.csp.sentinel.adapter.servlet.callback.UrlBlockHandler;
-import com.alibaba.csp.sentinel.adapter.servlet.callback.WebCallbackManager;
-import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.atguigu.common.exception.BizCodeEnume;
 import com.atguigu.common.utils.R;
