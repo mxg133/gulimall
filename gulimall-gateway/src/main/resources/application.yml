@@ -6,6 +6,12 @@ spring:
         dashboard: localhost:8080
         #控制台的port
         port: 8719
+      scg:
+        fallback:
+          #如果限流成功 给我返回json
+          content-type: application.json
+          #错误状态码
+          response-status: 400
     gateway:
       routes:
 #product /hello为压力测试
