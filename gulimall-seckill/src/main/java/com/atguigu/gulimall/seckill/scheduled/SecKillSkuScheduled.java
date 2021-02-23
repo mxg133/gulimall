@@ -36,7 +36,7 @@ public class SecKillSkuScheduled {
 //    //异步任务 + 下
 //    @Async
     //定时任务
-    @Scheduled(cron = "0/8 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void uploadSeckillSkuLatest3Days() {
 
         log.info("上架秒杀商品信息....");
