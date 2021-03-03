@@ -249,69 +249,73 @@ public class SeckillServiceImpl implements SeckillService {
      */
     private void saveSessionInfos(List<SeckillSessionsWithSkus> seckillSessionWithSkuses) {
 
-        seckillSessionWithSkuses.stream().forEach((seckillSessionsWithSkus) -> {
-            Long startTime = seckillSessionsWithSkus.getStartTime().getTime();
-            Long endTime = seckillSessionsWithSkus.getEndTime().getTime();
+        if (seckillSessionWithSkuses != null && seckillSessionWithSkuses.size() > 0) {
+            seckillSessionWithSkuses.stream().forEach((seckillSessionsWithSkus) -> {
+                Long startTime = seckillSessionsWithSkus.getStartTime().getTime();
+                Long endTime = seckillSessionsWithSkus.getEndTime().getTime();
 
-            String key = SESSION_CACHE_PREFIX + startTime + "_" + endTime;
-            Boolean hasKey = redisTemplate.hasKey(key);
-            if (!hasKey) {
-                List<String> ids = seckillSessionsWithSkus.getSeckillSkuRelationEntities().stream().map((seckillSkuRelationEntity) -> {
-                    return seckillSkuRelationEntity.getPromotionSessionId() + "场->" + seckillSkuRelationEntity.getSkuId().toString();
-                }).collect(Collectors.toList());
-                redisTemplate.opsForList().leftPushAll(key, ids);
-            }
-        });
+                String key = SESSION_CACHE_PREFIX + startTime + "_" + endTime;
+                Boolean hasKey = redisTemplate.hasKey(key);
+                if (!hasKey) {
+                    List<String> ids = seckillSessionsWithSkus.getSeckillSkuRelationEntities().stream().map((seckillSkuRelationEntity) -> {
+                        return seckillSkuRelationEntity.getPromotionSessionId() + "场->" + seckillSkuRelationEntity.getSkuId().toString();
+                    }).collect(Collectors.toList());
+                    redisTemplate.opsForList().leftPushAll(key, ids);
+                }
+            });
+        }
     }
 
     /**
      * 2 缓存商品信息
      */
     private void saveSessionSkuInfos(List<SeckillSessionsWithSkus> seckillSessionWithSkuses) {
+        if (seckillSessionWithSkuses != null && seckillSessionWithSkuses.size() > 0) {
 
-        seckillSessionWithSkuses.stream().forEach((seckillSessionsWithSkus) -> {
-            //准备hash
-            BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
-            seckillSessionsWithSkus.getSeckillSkuRelationEntities().stream().forEach(seckillSkuVo -> {
+            seckillSessionWithSkuses.stream().forEach((seckillSessionsWithSkus) -> {
+                //准备hash
+                BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+                seckillSessionsWithSkus.getSeckillSkuRelationEntities().stream().forEach(seckillSkuVo -> {
 
-                //生成随机码
-                String token = UUID.randomUUID().toString().replace("-", "");
+                    //生成随机码
+                    String token = UUID.randomUUID().toString().replace("-", "");
 
-                Boolean hasKey1 = ops.hasKey(seckillSkuVo.getPromotionSessionId().toString() + "场->" + seckillSkuVo.getSkuId().toString());
-                if (!hasKey1) {
-                    //缓存商品
-                    SeckillSkuRedisTo seckillSkuRedisTo = new SeckillSkuRedisTo();
+                    Boolean hasKey1 = ops.hasKey(seckillSkuVo.getPromotionSessionId().toString() + "场->" + seckillSkuVo.getSkuId().toString());
+                    if (!hasKey1) {
+                        //缓存商品
+                        SeckillSkuRedisTo seckillSkuRedisTo = new SeckillSkuRedisTo();
 
-                    //1 sku的基本数据
-                    R r = productFeignService.getSkuInfo(seckillSkuVo.getSkuId());
-                    if (r.getCode() == 0) {
-                        SkuInfoVo skuInfoVo = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
-                        });
-                        seckillSkuRedisTo.setSkuInfoVo(skuInfoVo);
-                    }
+                        //1 sku的基本数据
+                        R r = productFeignService.getSkuInfo(seckillSkuVo.getSkuId());
+                        if (r.getCode() == 0) {
+                            SkuInfoVo skuInfoVo = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
+                            });
+                            seckillSkuRedisTo.setSkuInfoVo(skuInfoVo);
+                        }
 
-                    //2 sku的秒杀信息
-                    BeanUtils.copyProperties(seckillSkuVo, seckillSkuRedisTo);
+                        //2 sku的秒杀信息
+                        BeanUtils.copyProperties(seckillSkuVo, seckillSkuRedisTo);
 
-                    //3 sku的秒杀时间信息
-                    seckillSkuRedisTo.setStartTime(seckillSessionsWithSkus.getStartTime().getTime());
-                    seckillSkuRedisTo.setEndTime(seckillSessionsWithSkus.getEndTime().getTime());
+                        //3 sku的秒杀时间信息
+                        seckillSkuRedisTo.setStartTime(seckillSessionsWithSkus.getStartTime().getTime());
+                        seckillSkuRedisTo.setEndTime(seckillSessionsWithSkus.getEndTime().getTime());
 
-                    //4 秒杀随机码 : 防止恶意多刷 高并发
-                    seckillSkuRedisTo.setRandomCode(token);
+                        //4 秒杀随机码 : 防止恶意多刷 高并发
+                        seckillSkuRedisTo.setRandomCode(token);
 
-                    String s = JSON.toJSONString(seckillSkuRedisTo);
-                    ops.put(seckillSkuVo.getPromotionSessionId().toString() + "场->" + seckillSkuVo.getSkuId().toString(), s);
+                        String s = JSON.toJSONString(seckillSkuRedisTo);
+                        ops.put(seckillSkuVo.getPromotionSessionId().toString() + "场->" + seckillSkuVo.getSkuId().toString(), s);
 
-                    /**
-                     * 5 商品可以秒杀的数量(库存)作为信号量  信号量的作用 -- 限流
-                     * 如果当前这个场次的商品的库存信息已经上架就不需要上架
-                     */
-                    RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
+                        /**
+                         * 5 商品可以秒杀的数量(库存)作为信号量  信号量的作用 -- 限流
+                         * 如果当前这个场次的商品的库存信息已经上架就不需要上架
+                         */
+                        RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
 //                    semaphore.trySetPermits(seckillSkuVo.getSeckillCount());
-                    semaphore.trySetPermits(Integer.parseInt(seckillSkuVo.getSeckillCount().toString()));
-                }
+                        semaphore.trySetPermits(Integer.parseInt(seckillSkuVo.getSeckillCount().toString()));
+                    }
+                });
             });
-        });
+        }
     }
 }
